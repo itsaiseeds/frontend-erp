@@ -1,0 +1,1 @@
+class initialization_service {}

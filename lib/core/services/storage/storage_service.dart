@@ -1,0 +1,1 @@
+class storage_service {}
