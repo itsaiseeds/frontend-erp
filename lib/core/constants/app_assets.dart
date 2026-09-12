@@ -1,7 +1,5 @@
 class AppAssets {
   AppAssets._();
 
-  static const String LOGO = '';
-  static const String LOGO_WHITE = '';
-  static const String FAVICON = '';
+  static const String LOGO = 'assets/images/logo/saiseeds-logo.png';
 }
