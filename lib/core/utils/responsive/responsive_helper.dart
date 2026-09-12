@@ -1,1 +1,0 @@
-class responsive_helper {}

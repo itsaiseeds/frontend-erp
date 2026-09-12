@@ -1,1 +1,0 @@
-class auth_state {}

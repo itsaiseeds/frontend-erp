@@ -1,1 +1,0 @@
-class app_scroll_behavior {}

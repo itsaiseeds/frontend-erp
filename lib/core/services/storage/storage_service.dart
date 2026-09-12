@@ -1,1 +1,0 @@
-class storage_service {}

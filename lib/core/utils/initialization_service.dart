@@ -1,1 +1,0 @@
-class initialization_service {}

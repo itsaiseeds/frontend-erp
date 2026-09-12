@@ -1,1 +1,0 @@
-class encryption_utils {}

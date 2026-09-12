@@ -1,140 +1,135 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../constants/font_sizes.dart';
 import 'app_colors.dart';
 
-/// Font size constants.
-class AppFontSize {
-  AppFontSize._();
+class AppTypography {
+  AppTypography._();
 
-  static const double FONT10 = 10.0;
-  static const double FONT10_5 = 10.5;
-  static const double FONT11 = 11.0;
-  static const double FONT12 = 12.0;
-  static const double FONT13 = 13.0;
-  static const double FONT14 = 14.0;
-  static const double FONT15 = 15.0;
-  static const double FONT16 = 16.0;
-  static const double FONT18 = 18.0;
-  static const double FONT20 = 20.0;
-  static const double FONT22 = 22.0;
-  static const double FONT24 = 24.0;
-  static const double FONT28 = 28.0;
-  static const double FONT32 = 32.0;
-  static const double FONT36 = 36.0;
-  static const double FONT40 = 40.0;
-}
-
-/// Text style constants.
-class AppTextStyles {
-  AppTextStyles._();
-
-  // --- Display ---
-  static const TextStyle DISPLAY_LARGE = TextStyle(
-    fontSize: AppFontSize.FONT40,
+  static TextStyle get display => GoogleFonts.inter(
+    fontSize: AppFontSizes.FONT_28,
     fontWeight: FontWeight.w700,
     color: AppColors.TEXT_PRIMARY,
-    letterSpacing: -0.5,
+    letterSpacing: -0.8,
+    height: 1.1,
   );
 
-  static const TextStyle DISPLAY_MEDIUM = TextStyle(
-    fontSize: AppFontSize.FONT32,
-    fontWeight: FontWeight.w700,
-    color: AppColors.TEXT_PRIMARY,
-    letterSpacing: -0.3,
+  static TextStyle get overline => GoogleFonts.inter(
+    fontSize: AppFontSizes.FONT_10,
+    fontWeight: FontWeight.w600,
+    color: AppColors.TEXT_SECONDARY,
+    letterSpacing: 0.8,
   );
 
-  // --- Headings ---
-  static const TextStyle H1 = TextStyle(
-    fontSize: AppFontSize.FONT28,
+  static TextStyle get headingLarge => GoogleFonts.inter(
+    fontSize: AppFontSizes.FONT_32,
     fontWeight: FontWeight.w700,
     color: AppColors.TEXT_PRIMARY,
   );
 
-  static const TextStyle H2 = TextStyle(
-    fontSize: AppFontSize.FONT24,
+  static TextStyle get headingMedium => GoogleFonts.inter(
+    fontSize: AppFontSizes.FONT_24,
     fontWeight: FontWeight.w600,
     color: AppColors.TEXT_PRIMARY,
   );
 
-  static const TextStyle H3 = TextStyle(
-    fontSize: AppFontSize.FONT20,
+  static TextStyle get headingSmall => GoogleFonts.inter(
+    fontSize: AppFontSizes.FONT_20,
     fontWeight: FontWeight.w600,
     color: AppColors.TEXT_PRIMARY,
   );
 
-  static const TextStyle H4 = TextStyle(
-    fontSize: AppFontSize.FONT18,
+  static TextStyle get titleMedium => GoogleFonts.inter(
+    fontSize: AppFontSizes.FONT_18,
     fontWeight: FontWeight.w600,
     color: AppColors.TEXT_PRIMARY,
   );
 
-  // --- Body ---
-  static const TextStyle BODY_LARGE = TextStyle(
-    fontSize: AppFontSize.FONT16,
+  static TextStyle get bodyLarge => GoogleFonts.inter(
+    fontSize: AppFontSizes.FONT_16,
     fontWeight: FontWeight.w400,
     color: AppColors.TEXT_PRIMARY,
-    height: 1.6,
   );
 
-  static const TextStyle BODY_MEDIUM = TextStyle(
-    fontSize: AppFontSize.FONT14,
+  static TextStyle get bodyMedium => GoogleFonts.inter(
+    fontSize: AppFontSizes.FONT_14,
+    fontWeight: FontWeight.w400,
+    color: AppColors.TEXT_PRIMARY,
+  );
+
+  static TextStyle get bodySmall => GoogleFonts.inter(
+    fontSize: AppFontSizes.FONT_12,
     fontWeight: FontWeight.w400,
     color: AppColors.TEXT_SECONDARY,
-    height: 1.5,
   );
 
-  static const TextStyle BODY_SMALL = TextStyle(
-    fontSize: AppFontSize.FONT12,
-    fontWeight: FontWeight.w400,
-    color: AppColors.TEXT_MUTED,
-    height: 1.4,
-  );
-
-  // --- Labels ---
-  static const TextStyle LABEL_LARGE = TextStyle(
-    fontSize: AppFontSize.FONT14,
+  static TextStyle get label => GoogleFonts.inter(
+    fontSize: AppFontSizes.FONT_14,
     fontWeight: FontWeight.w600,
     color: AppColors.TEXT_PRIMARY,
     letterSpacing: 0.1,
   );
 
-  static const TextStyle LABEL_MEDIUM = TextStyle(
-    fontSize: AppFontSize.FONT12,
+  static TextStyle get labelStrong => GoogleFonts.inter(
+    fontSize: AppFontSizes.FONT_12,
+    fontWeight: FontWeight.w700,
+    color: AppColors.TEXT_PRIMARY,
+    letterSpacing: 0.6,
+  );
+
+  static TextStyle get labelSmall => GoogleFonts.inter(
+    fontSize: AppFontSizes.FONT_11,
     fontWeight: FontWeight.w600,
     color: AppColors.TEXT_SECONDARY,
-    letterSpacing: 0.5,
   );
 
-  static const TextStyle LABEL_SMALL = TextStyle(
-    fontSize: AppFontSize.FONT11,
-    fontWeight: FontWeight.w500,
-    color: AppColors.TEXT_MUTED,
-    letterSpacing: 0.5,
+  static TextStyle get labelMedium => GoogleFonts.inter(
+    fontSize: AppFontSizes.FONT_13,
+    fontWeight: FontWeight.w600,
+    color: AppColors.TEXT_PRIMARY,
   );
 
-  // --- Caption / Overline ---
-  static const TextStyle CAPTION = TextStyle(
-    fontSize: AppFontSize.FONT12,
+  static TextStyle get otpDigit => GoogleFonts.inter(
+    fontSize: AppFontSizes.FONT_24,
+    fontWeight: FontWeight.w700,
+    color: AppColors.TEXT_PRIMARY,
+    letterSpacing: 0.4,
+  );
+
+  static TextStyle get caption => GoogleFonts.inter(
+    fontSize: AppFontSizes.FONT_12,
     fontWeight: FontWeight.w400,
-    color: AppColors.TEXT_MUTED,
+    color: AppColors.TEXT_SECONDARY,
   );
 
-  static const TextStyle OVERLINE = TextStyle(
-    fontSize: AppFontSize.FONT10,
-    fontWeight: FontWeight.w600,
-    color: AppColors.TEXT_MUTED,
-    letterSpacing: 1.5,
-  );
-
-  // --- Button ---
-  static const TextStyle BUTTON_LARGE = TextStyle(
-    fontSize: AppFontSize.FONT16,
+  static TextStyle get button => GoogleFonts.inter(
+    fontSize: AppFontSizes.FONT_14,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.2,
   );
 
-  static const TextStyle BUTTON_MEDIUM = TextStyle(
-    fontSize: AppFontSize.FONT14,
+  static TextStyle get drawerItem => GoogleFonts.inter(
+    fontSize: AppFontSizes.FONT_14,
+    fontWeight: FontWeight.w500,
+    color: AppColors.DRAWER_ITEM_TEXT,
+  );
+
+  static TextStyle get drawerItemActive => GoogleFonts.inter(
+    fontSize: AppFontSizes.FONT_14,
+    fontWeight: FontWeight.w700,
+    color: AppColors.PRIMARY,
+  );
+
+  static TextStyle get drawerSectionHeader => GoogleFonts.inter(
+    fontSize: AppFontSizes.FONT_12,
+    fontWeight: FontWeight.w700,
+    color: AppColors.TEXT_SECONDARY,
+    letterSpacing: 1.0,
+  );
+
+  static TextStyle get drawerLogout => GoogleFonts.inter(
+    fontSize: AppFontSizes.FONT_14,
     fontWeight: FontWeight.w600,
-    letterSpacing: 0.2,
+    color: AppColors.ERROR,
   );
 }
