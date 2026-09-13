@@ -75,11 +75,8 @@ class _ClientsFilterSheetState extends State<ClientsFilterSheet> {
     final List<_Section> sections = widget.filters
         .where((filter) => filter.kind != FilterKind.unsupported)
         .map(
-          (filter) => _Section(
-            key: filter.key,
-            title: _titleFor(filter.key),
-            filter: filter,
-          ),
+          (filter) =>
+              _Section(key: filter.key, title: filter.title, filter: filter),
         )
         .toList();
 
@@ -382,7 +379,7 @@ class _ClientsFilterSheetState extends State<ClientsFilterSheet> {
 
   Widget _buildSortOptions() {
     final List<ClientSort> sorts = widget.sorts
-        .where((sort) => _matchesSearch(_titleFor(sort.key)))
+        .where((sort) => _matchesSearch(sort.title))
         .toList();
 
     if (sorts.isEmpty) return const _NoMatches();
@@ -392,7 +389,7 @@ class _ClientsFilterSheetState extends State<ClientsFilterSheet> {
       children: [
         for (final ClientSort sort in sorts)
           _OptionRow(
-            label: _titleFor(sort.key),
+            label: sort.title,
             isSelected: _draft.sort == sort.key,
             isRadio: true,
             onTap: () => setState(() {
@@ -404,14 +401,14 @@ class _ClientsFilterSheetState extends State<ClientsFilterSheet> {
         if (_draft.sort != null) ...[
           const Divider(height: AppSizes.HAIRLINE, color: AppColors.HAIRLINE),
           _OptionRow(
-            label: AppStrings.CLIENTS_SORT_NEWEST,
+            label: _descendingLabel(sorts),
             isSelected: _draft.descending,
             isRadio: true,
             onTap: () =>
                 setState(() => _draft = _draft.copyWith(descending: true)),
           ),
           _OptionRow(
-            label: AppStrings.CLIENTS_SORT_OLDEST,
+            label: _ascendingLabel(sorts),
             isSelected: !_draft.descending,
             isRadio: true,
             onTap: () =>
@@ -421,11 +418,38 @@ class _ClientsFilterSheetState extends State<ClientsFilterSheet> {
       ],
     );
   }
+}
 
-  static String _titleFor(String key) {
-    final String spaced = key.replaceAll('_id', '').replaceAll('_', ' ');
-    if (spaced.isEmpty) return key;
-    return spaced[0].toUpperCase() + spaced.substring(1);
+/// The two direction rows are worded for whatever is being sorted: a date
+/// reads newest/oldest, a number highest/lowest, anything else A-Z.
+extension _SortDirectionLabels on _ClientsFilterSheetState {
+  SortKind _selectedKind(List<ClientSort> sorts) {
+    for (final ClientSort sort in sorts) {
+      if (sort.key == _draft.sort) return sort.kind;
+    }
+    return SortKind.text;
+  }
+
+  String _descendingLabel(List<ClientSort> sorts) {
+    switch (_selectedKind(sorts)) {
+      case SortKind.date:
+        return AppStrings.CLIENTS_SORT_NEWEST;
+      case SortKind.number:
+        return AppStrings.SORT_HIGHEST;
+      case SortKind.text:
+        return AppStrings.SORT_Z_TO_A;
+    }
+  }
+
+  String _ascendingLabel(List<ClientSort> sorts) {
+    switch (_selectedKind(sorts)) {
+      case SortKind.date:
+        return AppStrings.CLIENTS_SORT_OLDEST;
+      case SortKind.number:
+        return AppStrings.SORT_LOWEST;
+      case SortKind.text:
+        return AppStrings.SORT_A_TO_Z;
+    }
   }
 }
 

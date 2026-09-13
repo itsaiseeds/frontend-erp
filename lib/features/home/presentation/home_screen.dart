@@ -6,6 +6,8 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../auth/presentation/bloc/session_cubit.dart';
 import '../../clients/presentation/clients_screen.dart';
+import '../../orders/presentation/orders_screen.dart';
+import '../../products/presentation/products_screen.dart';
 import '../data/drawer_items.dart';
 import 'widgets/custom_drawer.dart';
 import 'widgets/home_placeholder_view.dart';
@@ -173,6 +175,14 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _buildBody() {
     if (_selectedDrawerIndex == DrawerItems.CLIENTS) {
       return const ClientsScreen();
+    }
+
+    if (_selectedDrawerIndex == DrawerItems.PRODUCTS) {
+      return const ProductsScreen();
+    }
+
+    if (_selectedDrawerIndex == DrawerItems.ORDERS) {
+      return const OrdersScreen();
     }
 
     return BlocBuilder<SessionCubit, SessionState>(

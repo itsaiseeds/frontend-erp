@@ -47,6 +47,11 @@ class _GeoPickerFieldState<T> extends State<GeoPickerField<T>> {
   OverlayEntry? _overlay;
   String _query = '';
 
+  /// A mouse press inside the panel blurs the field before the tap resolves.
+  /// Tearing the overlay down on that blur would destroy the option before it
+  /// is ever tapped, which is why the picker looked dead on web.
+  bool _isPointerInPanel = false;
+
   @override
   void initState() {
     super.initState();
@@ -83,10 +88,12 @@ class _GeoPickerFieldState<T> extends State<GeoPickerField<T>> {
       _controller.clear();
       _query = '';
       _showOverlay();
-    } else {
-      _removeOverlay();
-      _syncText();
+      return;
     }
+
+    if (_isPointerInPanel) return;
+    _removeOverlay();
+    _syncText();
   }
 
   List<T> get _filtered {
@@ -105,20 +112,34 @@ class _GeoPickerFieldState<T> extends State<GeoPickerField<T>> {
 
     _overlay = OverlayEntry(
       builder: (context) => Positioned(
+        // Anchored at the origin and moved by the follower: a Positioned with
+        // no left/top is unconstrained, which leaves the panel painting in one
+        // place while taps route to another.
+        left: 0,
+        top: 0,
         width: box.size.width,
         child: CompositedTransformFollower(
           link: _link,
           showWhenUnlinked: false,
           offset: Offset(0, box.size.height + AppSpacing.XS4),
-          child: _OptionsPanel<T>(
-            items: _filtered,
-            itemLabel: widget.itemLabel,
-            isSelected: (item) =>
-                widget.value != null && widget.isSame(item, widget.value as T),
-            onSelected: (item) {
-              widget.onSelected(item);
-              _focusNode.unfocus();
-            },
+          child: Listener(
+            onPointerDown: (_) => _isPointerInPanel = true,
+            onPointerUp: (_) => _isPointerInPanel = false,
+            onPointerCancel: (_) => _isPointerInPanel = false,
+            child: _OptionsPanel<T>(
+              items: _filtered,
+              itemLabel: widget.itemLabel,
+              isSelected: (item) =>
+                  widget.value != null &&
+                  widget.isSame(item, widget.value as T),
+              onSelected: (item) {
+                _isPointerInPanel = false;
+                widget.onSelected(item);
+                _removeOverlay();
+                _focusNode.unfocus();
+                _syncText();
+              },
+            ),
           ),
         ),
       ),

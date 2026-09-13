@@ -24,6 +24,7 @@ class AppTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final bool isRequired;
   final bool autofocus;
+  final int maxLines;
 
   const AppTextField({
     super.key,
@@ -45,6 +46,7 @@ class AppTextField extends StatelessWidget {
     this.textInputAction,
     this.isRequired = false,
     this.autofocus = false,
+    this.maxLines = 1,
   });
 
   OutlineInputBorder _border(
@@ -104,6 +106,7 @@ class AppTextField extends StatelessWidget {
           onFieldSubmitted: onSubmitted,
           enabled: enabled,
           autofocus: autofocus,
+          maxLines: maxLines,
           textInputAction: textInputAction,
           style: AppTypography.bodyMedium,
           cursorColor: AppColors.PRIMARY,

@@ -3,6 +3,9 @@ import 'package:equatable/equatable.dart';
 import '../../../../core/utils/json_parser.dart';
 
 class ClientAddress extends Equatable {
+  /// Link id from the client payload; the order endpoint's
+  /// ``client_address_id``. Zero for an address not yet saved.
+  final int id;
   final String label;
   final String line1;
   final String line2;
@@ -17,6 +20,7 @@ class ClientAddress extends Equatable {
 
   const ClientAddress({
     required this.line1,
+    this.id = 0,
     this.label = '',
     this.line2 = '',
     this.pincode = '',
@@ -31,6 +35,7 @@ class ClientAddress extends Equatable {
 
   factory ClientAddress.fromJson(Map<String, dynamic> json) {
     return ClientAddress(
+      id: JsonParser.asInt(json['id']),
       label: JsonParser.asString(json['label']),
       line1: JsonParser.asString(json['line_1']),
       line2: JsonParser.asString(json['line_2']),
@@ -72,6 +77,7 @@ class ClientAddress extends Equatable {
 
   @override
   List<Object?> get props => [
+    id,
     label,
     line1,
     line2,

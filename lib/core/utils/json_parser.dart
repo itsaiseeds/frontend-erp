@@ -14,6 +14,12 @@ class JsonParser {
     return 0;
   }
 
+  static num asNum(dynamic value) {
+    if (value is num) return value;
+    if (value is String) return num.tryParse(value.trim()) ?? 0;
+    return 0;
+  }
+
   static int? asNullableInt(dynamic value) {
     if (value == null) return null;
     if (value is int) return value;

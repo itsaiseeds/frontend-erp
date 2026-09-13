@@ -24,8 +24,10 @@ class AppColors {
 
   static const Color TEXT_PRIMARY = Color(0xFF1A1E1B);
   static const Color TEXT_SECONDARY = Color(0xFF5B635C);
+  static const Color TEXT_TERTIARY = Color(0xFF8B918C);
   static const Color TEXT_DISABLED = Color(0xFFA3A9A3);
   static const Color TEXT_ON_PRIMARY = Color(0xFFFFFFFF);
+  static const Color TEXT_ON_PRIMARY_MUTED = Color(0xFFCFE2D4);
 
   static const Color SUCCESS = Color(0xFF2E7D32);
   static const Color SUCCESS_LIGHT = Color(0xFFE8F5E9);

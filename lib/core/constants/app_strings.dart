@@ -95,6 +95,10 @@ class AppStrings {
   static const String CLIENTS_RESET = 'Reset';
   static const String CLIENTS_SORT_NEWEST = 'Newest first';
   static const String CLIENTS_SORT_OLDEST = 'Oldest first';
+  static const String SORT_HIGHEST = 'Highest first';
+  static const String SORT_LOWEST = 'Lowest first';
+  static const String SORT_A_TO_Z = 'A to Z';
+  static const String SORT_Z_TO_A = 'Z to A';
   static const String CLIENTS_DATE_FROM = 'From';
   static const String CLIENTS_DATE_TO = 'To';
   static const String CLIENTS_DATE_ANY = 'Any date';
@@ -243,6 +247,103 @@ class AppStrings {
       'Too many attempts. Please wait a moment and try again.';
   static const String ERROR_UNEXPECTED_RESPONSE =
       'Received an unexpected response from the server.';
+  static const String PACKETS_LABEL = 'packets';
+  static const String KG_LABEL = 'kg';
+  static const String TOTAL_LABEL = 'Total';
+  static const String KG_UNIT = 'Kg';
+  static const String PRODUCTS_TITLE = 'Products';
+  static const String PRODUCTS_SEARCH_HINT = 'Search products';
+  static const String PRODUCTS_EMPTY_TITLE = 'No products found';
+  static const String PRODUCTS_EMPTY_BODY =
+      'Try a different search or clear your filters.';
+  static const String PRODUCTS_ERROR_TITLE = 'Could not load products';
+  static const String PRODUCT_ADD = 'ADD';
+  static const String PRODUCT_ADD_TO_CART = 'Add to cart';
+  static const String PRODUCT_DETAIL_TITLE = 'Product';
+  static const String CART_VIEW = 'View cart';
+  static const String CART_ITEM = 'item';
+  static const String CART_ITEMS = 'items';
+  static const String CART_TITLE = 'Checkout';
+  static const String CART_EMPTY_TITLE = 'Your cart is empty';
+  static const String CART_EMPTY_BODY = 'Add products to place an order.';
+  static const String CART_ORDER_SUMMARY = 'Order summary';
+  static const String CART_TOTAL = 'Total';
+  static const String CART_PLACE_ORDER = 'Place order';
+  static const String CART_DELIVERY_TITLE = 'Delivery details';
+  static const String CART_CONTINUE = 'Continue';
+  static const String CART_SHIPMENT_TITLE = 'Your order';
+  static const String CART_SHIPMENT_OF = 'Shipment of';
+  static const String CART_DELIVERING_TO = 'Delivering to';
+  static const String CART_SELECT_CLIENT = 'Client';
+  static const String CART_SELECT_CLIENT_HINT = 'Select a client';
+  static const String CART_SELECT_ADDRESS = 'Delivery address';
+  static const String CART_SELECT_ADDRESS_HINT = 'Select an address';
+  static const String CART_SELECT_AGENCY = 'Transport agency';
+  static const String CART_SELECT_AGENCY_HINT = 'Select dispatch';
+  static const String CART_PRIVATE_DISPATCH = 'Private dispatch';
+  static const String CART_LOADING_OPTIONS = 'Loading...';
+  static const String CART_NO_ADDRESSES = 'No saved address for this client';
+  static const String CART_COMMENTS = 'Special comments';
+  static const String CART_COMMENTS_HINT = 'Anything the team should know';
+  static const String CART_ORDER_PLACED = 'Order placed';
+  static const String VALIDATION_CLIENT_REQUIRED = 'Select a client.';
+  static const String VALIDATION_ADDRESS_REQUIRED =
+      'Select a delivery address.';
+  static const String PRIMARY_BADGE = 'Main';
+  static const String PRODUCT_PER_BAG = 'per bag';
+  static const String IMAGE_ZOOM_HINT = 'Double tap or pinch to zoom';
+  static const String PRODUCT_VIEW_IMAGE = 'View image';
+  static const String PRODUCT_DESCRIPTION = 'Description';
+
+  static const String ORDERS_EMPTY_TITLE = 'No orders yet';
+  static const String ORDERS_EMPTY_BODY = 'Orders you book will appear here.';
+  static const String ORDERS_ERROR_TITLE = 'Could not load orders';
+  static const String ORDERS_COUNT_ONE = 'order';
+  static const String ORDERS_COUNT_MANY = 'orders';
+
+  static const String ORDER_STATUS_BOOKED = 'Booked';
+  static const String ORDER_STATUS_UNDER_REVIEW = 'Under review';
+  static const String ORDER_STATUS_CONFIRMED = 'Confirmed';
+  static const String ORDER_STATUS_DISPATCHED = 'Dispatched';
+  static const String ORDER_STATUS_DELIVERED = 'Delivered';
+  static const String ORDER_STATUS_ON_HOLD = 'On hold';
+  static const String ORDER_STATUS_REJECTED = 'Rejected';
+  static const String ORDER_STATUS_UNKNOWN = 'Unknown';
+
+  static const String ORDER_DETAIL_TITLE = 'Order details';
+  static const String ORDER_ITEMS = 'Items';
+  static const String ORDER_SUMMARY = 'Summary';
+  static const String ORDER_DELIVERY = 'Delivery';
+  static const String ORDER_BOOKED_ON = 'Booked on';
+  static const String ORDER_EXPECTED_DELIVERY = 'Expected delivery';
+  static const String ORDER_DISPATCH_MODE = 'Dispatch';
+  static const String ORDER_DISPATCH_AGENCY = 'Transport agency';
+  static const String ORDER_DISPATCH_PRIVATE = 'Own vehicle';
+  static const String ORDER_TOTAL_AMOUNT = 'Total amount';
+  static const String ORDER_TOTAL_PACKETS = 'Total packets';
+  static const String ORDER_PRODUCTS_COUNT = 'Products';
+  static const String ORDER_QUANTITY_PREFIX = 'Qty';
+  static const String ORDER_PACKETS_SUFFIX = 'packets';
+  static const String ORDER_BAGS_SUFFIX = 'bags';
+  static const String ORDER_VERIFIED = 'Verified';
+  static const String ORDER_VERIFIED_BY = 'Verified by';
+  static const String ORDER_VERIFIED_ON = 'Verified on';
+  static const String ORDER_AWAITING_VERIFICATION = 'Awaiting verification';
+  static const String ORDER_VERIFICATION = 'Verification';
+  static const String ORDER_LIST_PRICE = 'List price';
+  static const String ORDER_AGREED_PRICE = 'Agreed';
+  static const String ORDER_BAG_PRICE = 'per bag';
+  static const String ORDER_LINE_TOTAL = 'Line total';
+  static const String ORDER_MORE_PRODUCTS_PREFIX = '+';
+  static const String ORDER_MORE_PRODUCTS_SUFFIX = 'more';
+  static const String ORDER_DELIVERY_ADDRESS = 'Delivery address';
+  static const String ORDER_NO_DATE = '--';
+  static const String TIMEZONE_IST = 'IST';
+  static const String ORDERS_SEARCH_HINT = 'Search client or product';
+  static const String ORDERS_NO_MATCH_TITLE = 'No match';
+  static const String ORDERS_NO_MATCH_BODY =
+      'No client or product matches that name.';
+
   static const String SESSION_EXPIRED =
       'Your session has expired. Please sign in again.';
 }

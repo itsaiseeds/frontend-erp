@@ -3,6 +3,7 @@ class AppSpacing {
 
   static const double XXS2 = 2.0;
   static const double XS4 = 4.0;
+  static const double XS5 = 5.0;
   static const double XS6 = 6.0;
   static const double SM8 = 8.0;
   static const double SM10 = 10.0;
@@ -49,6 +50,33 @@ class AppSizes {
   static const double ICON_MD = 18.0;
   static const double ICON_LG = 20.0;
   static const double ICON_XL = 24.0;
+  static const double STEPPER_HEIGHT = 34.0;
+  static const double STEPPER_BUTTON = 26.0;
+  static const double STEPPER_COUNT_WIDTH = 22.0;
+  static const double CART_BAR_HEIGHT = 46.0;
+  static const double CART_THUMB = 34.0;
+  static const double CART_THUMB_STEP = 22.0;
+  static const double CHECKOUT_ICON_BOX = 40.0;
+  static const double CHECKOUT_ACTION_HEIGHT = 54.0;
+  static const double CART_DIVIDER = 18.0;
+  static const double PRODUCT_DETAIL_IMAGE = 260.0;
+  static const double PRODUCT_DETAIL_BOTTOM_INSET = 110.0;
+  static const double PRODUCT_BULLET = 6.0;
+  static const double VIEWER_BUTTON = 40.0;
+  static const double PRODUCT_DETAIL_ACTION_WIDTH = 150.0;
+  static const double PRODUCT_DETAIL_STEPPER_WIDTH = 104.0;
+  static const double PRODUCT_CARD_IMAGE = 132.0;
+  static const double PRODUCT_CARD_IMAGE_MIN = 96.0;
+  static const double PRODUCT_CARD_CONTENT = 168.0;
+  static const double PRODUCT_CARD_STEPPER_WIDTH = 78.0;
+  static const double PRODUCT_CARD_STEPPER_OVERLAP = 17.0;
+  static const double PRODUCT_CARD_TAG_INSET = 30.0;
+  static const double PRODUCT_CARD_BADGE_OVERLAP = 11.0;
+  static const double CART_THUMBNAIL = 56.0;
+
+  /// Left inset of the cart-line separator: past the row padding, the
+  /// thumbnail and the gap, so the rule starts under the product name.
+  static const double CART_SEPARATOR_INSET = 84.0;
   static const double ICON_XXL = 40.0;
 
   static const double INPUT_HEIGHT = 48.0;
@@ -108,6 +136,14 @@ class AppSizes {
   static const double RANGE_FILL_OPACITY = 0.12;
   static const double RANGE_OVERLAY_OPACITY = 0.08;
   static const double CLIENT_LIST_BOTTOM_INSET = 96.0;
+
+  static const double ORDER_ICON_BOX = 40.0;
+  static const double ORDER_CHIP_THUMB = 18.0;
+  static const double ORDER_LINE_THUMB = 48.0;
+  static const double ORDER_CARD_ACCENT = 3.0;
+  static const double ORDER_DOT = 4.0;
+  static const double ORDER_TIMELINE_DOT = 10.0;
+  static const double ORDER_LIST_BOTTOM_INSET = 24.0;
   static const double CLIENT_SHEET_HANDLE_WIDTH = 36.0;
   static const double CLIENT_SHEET_HANDLE_HEIGHT = 4.0;
   static const double CLIENT_SHEET_MAX_HEIGHT = 0.75;
