@@ -10,12 +10,17 @@ class StorageService {
   static const String _userRoleKey = 'user_role';
   static const String _onboardingSeenKey = 'onboarding_seen';
 
+  /// Which shell a dual-role user chose last, so it opens straight to it
+  /// on the next launch instead of asking again.
+  static const String _activeRoleKey = 'active_android_role';
+
   static const List<String> _sessionKeys = [
     _authTokenKey,
     _userIdKey,
     _userNameKey,
     _userPhoneNumberKey,
     _userRoleKey,
+    _activeRoleKey,
   ];
 
   static String? _cachedToken;
@@ -78,6 +83,16 @@ class StorageService {
   static Future<bool> hasOnboardingBeenSeen() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_onboardingSeenKey) ?? false;
+  }
+
+  static Future<String?> getActiveAndroidRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_activeRoleKey);
+  }
+
+  static Future<void> saveActiveAndroidRole(String role) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_activeRoleKey, role);
   }
 
   static Future<void> markOnboardingSeen() async {

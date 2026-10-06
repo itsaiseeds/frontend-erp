@@ -11,11 +11,25 @@ class CustomDrawer extends StatelessWidget {
   final ValueChanged<int> onItemSelected;
   final VoidCallback onLogout;
 
+  /// Defaults to the sales-person item lists so every existing call site is
+  /// unaffected; the godown shell passes its own lists through these so the
+  /// two roles share one drawer widget rather than one drawer each.
+  final List<DrawerItem> primaryItems;
+  final List<DrawerItem> accountItems;
+
+  /// Shown above Logout, only for a user who holds both Android roles.
+  final String? switchRoleLabel;
+  final VoidCallback? onSwitchRole;
+
   const CustomDrawer({
     super.key,
     required this.selectedIndex,
     required this.onItemSelected,
     required this.onLogout,
+    this.primaryItems = DrawerItems.primary,
+    this.accountItems = DrawerItems.account,
+    this.switchRoleLabel,
+    this.onSwitchRole,
   });
 
   @override
@@ -56,7 +70,7 @@ class CustomDrawer extends StatelessWidget {
                   horizontal: AppSpacing.MD16,
                 ),
                 children: [
-                  for (final item in DrawerItems.primary)
+                  for (final item in primaryItems)
                     _buildDrawerItem(
                       index: item.index,
                       icon: item.icon,
@@ -74,7 +88,7 @@ class CustomDrawer extends StatelessWidget {
                       style: AppTypography.drawerSectionHeader,
                     ),
                   ),
-                  for (final item in DrawerItems.account)
+                  for (final item in accountItems)
                     _buildDrawerItem(
                       index: item.index,
                       icon: item.icon,
@@ -84,6 +98,50 @@ class CustomDrawer extends StatelessWidget {
               ),
             ),
 
+            if (switchRoleLabel != null && onSwitchRole != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.LG24,
+                  0,
+                  AppSpacing.LG24,
+                  AppSpacing.SM8,
+                ),
+                child: Material(
+                  color: AppColors.PRIMARY_SURFACE,
+                  borderRadius: BorderRadius.circular(AppSizes.DRAWER_ITEM_RADIUS),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: onSwitchRole,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppSpacing.SMD12,
+                        horizontal: AppSpacing.MD16,
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.swap_horiz_rounded,
+                            color: AppColors.PRIMARY,
+                            size: AppSizes.DRAWER_ITEM_ICON,
+                          ),
+                          const SizedBox(width: AppSpacing.SMD12),
+                          Expanded(
+                            child: Text(
+                              switchRoleLabel!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTypography.drawerItem.copyWith(
+                                color: AppColors.PRIMARY,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             Padding(
               padding: const EdgeInsets.all(AppSpacing.LG24),
               child: GestureDetector(

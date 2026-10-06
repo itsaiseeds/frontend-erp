@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,6 +10,7 @@ import 'package:toastification/toastification.dart';
 import 'core/config/app_config_keys.dart';
 import 'core/constants/app_strings.dart';
 import 'core/network/api_client.dart';
+import 'core/services/push_service.dart';
 import 'core/routing/app_router.dart';
 import 'core/services/metadata_service.dart';
 import 'core/theme/app_theme.dart';
@@ -42,6 +45,9 @@ class _SaiseedsSalesAppState extends State<SaiseedsSalesApp> {
   late final AuthBloc _authBloc;
   late final GoRouter _router;
 
+  StreamSubscription<SessionState>? _sessionSubscription;
+  bool _wasAuthenticated = false;
+
   @override
   void initState() {
     super.initState();
@@ -52,10 +58,30 @@ class _SaiseedsSalesAppState extends State<SaiseedsSalesApp> {
     _authBloc = AuthBloc(authRepository: _authRepository);
     _router = AppRouter.create(sessionCubit: _sessionCubit);
     _sessionCubit.bootstrap();
+    _startPush();
+  }
+
+  /// Pushes are additive: the inbox works without them, so a failure here
+  /// is logged inside the service and never blocks startup.
+  Future<void> _startPush() async {
+    await PushService.instance.initialise(apiClient: _apiClient);
+    if (_sessionCubit.state.status == SessionStatus.authenticated) {
+      await PushService.instance.registerDevice();
+    }
+
+    // Logout drops the token server-side, so a re-login has to register
+    // again rather than relying on the one taken at startup.
+    _sessionSubscription = _sessionCubit.stream.listen((state) {
+      final bool justSignedIn =
+          state.status == SessionStatus.authenticated && !_wasAuthenticated;
+      _wasAuthenticated = state.status == SessionStatus.authenticated;
+      if (justSignedIn) PushService.instance.registerDevice();
+    });
   }
 
   @override
   void dispose() {
+    _sessionSubscription?.cancel();
     _authBloc.close();
     _sessionCubit.close();
     super.dispose();

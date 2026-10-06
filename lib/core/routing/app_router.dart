@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../features/auth/data/models/android_role.dart';
 import '../../features/auth/presentation/bloc/session_cubit.dart';
 import '../../features/auth/presentation/login_screen.dart';
+import '../../features/godown/presentation/godown_home_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/splash/presentation/splash_screen.dart';
@@ -50,7 +53,18 @@ class AppRouter {
         GoRoute(
           path: Routes.HOME,
           name: RouteNames.HOME,
-          builder: (context, state) => const HomeScreen(),
+          // The server enforces role access on every endpoint; routing here
+          // only picks the matching shell, never a security boundary of its
+          // own. A role switch does not change `location`, so GoRouter would
+          // not otherwise re-run this builder -- the BlocBuilder is what
+          // actually reacts to it and swaps the shell in place.
+          builder: (context, state) => BlocBuilder<SessionCubit, SessionState>(
+            buildWhen: (previous, current) =>
+                previous.effectiveRole != current.effectiveRole,
+            builder: (context, state) => state.effectiveRole == AndroidRole.godownManager
+                ? const GodownHomeScreen()
+                : const HomeScreen(),
+          ),
         ),
       ],
     );

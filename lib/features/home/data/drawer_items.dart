@@ -20,8 +20,9 @@ class DrawerItems {
   static const int PRODUCTS = 1;
   static const int ORDERS = 2;
   static const int CLIENTS = 3;
-  static const int REPORTS = 4;
+  static const int FIELD_TRIPS = 4;
   static const int PROFILE = 5;
+  static const int RETURN_ORDERS = 6;
 
   static const List<DrawerItem> primary = [
     DrawerItem(
@@ -40,14 +41,19 @@ class DrawerItems {
       title: AppStrings.DRAWER_ORDERS,
     ),
     DrawerItem(
+      index: RETURN_ORDERS,
+      icon: Icons.assignment_return_outlined,
+      title: AppStrings.DRAWER_RETURN_ORDERS,
+    ),
+    DrawerItem(
       index: CLIENTS,
       icon: Icons.storefront_rounded,
       title: AppStrings.DRAWER_CLIENTS,
     ),
     DrawerItem(
-      index: REPORTS,
-      icon: Icons.analytics_outlined,
-      title: AppStrings.DRAWER_REPORTS,
+      index: FIELD_TRIPS,
+      icon: Icons.map_rounded,
+      title: AppStrings.DRAWER_FIELD_TRIPS,
     ),
   ];
 

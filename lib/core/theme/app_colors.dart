@@ -24,8 +24,10 @@ class AppColors {
 
   static const Color TEXT_PRIMARY = Color(0xFF1A1E1B);
   static const Color TEXT_SECONDARY = Color(0xFF5B635C);
+  static const Color TEXT_TERTIARY = Color(0xFF8B918C);
   static const Color TEXT_DISABLED = Color(0xFFA3A9A3);
   static const Color TEXT_ON_PRIMARY = Color(0xFFFFFFFF);
+  static const Color TEXT_ON_PRIMARY_MUTED = Color(0xFFCFE2D4);
 
   static const Color SUCCESS = Color(0xFF2E7D32);
   static const Color SUCCESS_LIGHT = Color(0xFFE8F5E9);
@@ -41,6 +43,17 @@ class AppColors {
 
   static const Color INFO = Color(0xFF1565C0);
   static const Color INFO_LIGHT = Color(0xFFE3F2FD);
+
+  // One colour per order status for the dashboard charts. Statuses that
+  // share a semantic tone elsewhere (a badge only ever shows one at a time)
+  // must stay distinguishable here, where they sit side by side in a bar.
+  static const Color STATUS_BOOKED = Color(0xFFB07D0A);
+  static const Color STATUS_UNDER_REVIEW = Color(0xFFE0A43C);
+  static const Color STATUS_CONFIRMED = Color(0xFF1565C0);
+  static const Color STATUS_DISPATCHED = Color(0xFF00A0B0);
+  static const Color STATUS_DELIVERED = Color(0xFF2E7D32);
+  static const Color STATUS_ON_HOLD = Color(0xFF7A5BA6);
+  static const Color STATUS_REJECTED = Color(0xFFC62828);
 
   static const Color DRAWER_BG = Color(0xFFF6F7F6);
   static const Color DRAWER_ITEM_ACTIVE_BG = Color(0xFFE9F2EB);
