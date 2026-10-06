@@ -45,6 +45,10 @@ class OrderStatusX {
     }
   }
 
+  /// Whether the order has left the warehouse, and so has a challan.
+  static bool hasChallan(OrderStatus status) =>
+      status == OrderStatus.dispatched || status == OrderStatus.delivered;
+
   static String labelOf(OrderStatus status) {
     switch (status) {
       case OrderStatus.booked:

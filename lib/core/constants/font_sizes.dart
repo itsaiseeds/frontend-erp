@@ -16,4 +16,5 @@ class AppFontSizes {
   static const double FONT_32 = 32.0;
   static const double FONT_36 = 36.0;
   static const double FONT_40 = 40.0;
+  static const double FONT_48 = 48.0;
 }

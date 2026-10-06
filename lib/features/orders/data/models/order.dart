@@ -143,6 +143,10 @@ class Order extends Equatable {
 
   /// Sales-admin approval, separate from the lifecycle status.
   /// ``verifiedBy`` / ``verifiedAt`` stay empty until it happens.
+  ///
+  /// The API derives this from the CURRENT status, so it reads false again
+  /// once a verified order moves past CONFIRMED. Use [hasBeenVerified]
+  /// instead of this flag to ask whether verification ever happened.
   final bool isVerified;
   final String verifiedBy;
   final DateTime? verifiedAt;
@@ -214,6 +218,16 @@ class Order extends Equatable {
     if (parsed == null) return null;
     return DateTime.utc(parsed.year, parsed.month, parsed.day);
   }
+
+  /// Whether this order has ever been verified by a sales admin.
+  ///
+  /// [isVerified] alone is not enough: the API computes it from the current
+  /// status, so a verified order that has since been dispatched reports
+  /// false and the screen claims it is still awaiting verification. An
+  /// order cannot reach dispatch without passing that gate, and a recorded
+  /// ``verified_at`` is proof it did.
+  bool get hasBeenVerified =>
+      isVerified || verifiedAt != null || OrderStatusX.hasChallan(status);
 
   bool get isAgencyDispatch => dispatchMode.toUpperCase() == DISPATCH_AGENCY;
 

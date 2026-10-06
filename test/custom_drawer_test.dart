@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:frontend_erp/core/constants/app_strings.dart';
 import 'package:frontend_erp/core/theme/app_colors.dart';
 import 'package:frontend_erp/core/theme/app_spacing.dart';
 import 'package:frontend_erp/features/home/data/drawer_items.dart';
@@ -133,9 +134,41 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text(DrawerItems.all[DrawerItems.REPORTS].title));
+    await tester.tap(
+      find.text(
+        DrawerItems.all
+            .firstWhere((item) => item.index == DrawerItems.CLIENTS)
+            .title,
+      ),
+    );
 
-    expect(tapped, DrawerItems.REPORTS);
+    expect(tapped, DrawerItems.CLIENTS);
+  });
+
+  testWidgets('Return Orders is listed with a unique index per row', (
+    tester,
+  ) async {
+    await _pumpDrawer(tester);
+
+    expect(find.text(AppStrings.DRAWER_RETURN_ORDERS), findsOneWidget);
+
+    // The rows are matched to their index by hand, so a duplicated or stale
+    // constant would light up the wrong destination after a tap.
+    final List<int> indexes = DrawerItems.all
+        .map((item) => item.index)
+        .toList();
+    expect(indexes.toSet(), hasLength(indexes.length));
+
+    final int clientsPosition = DrawerItems.all.indexWhere(
+      (item) => item.index == DrawerItems.CLIENTS,
+    );
+    final int returnsPosition = DrawerItems.all.indexWhere(
+      (item) => item.index == DrawerItems.RETURN_ORDERS,
+    );
+
+    expect(returnsPosition, greaterThan(0));
+    // Return Orders reads next to Orders rather than at the end of the list.
+    expect(returnsPosition, lessThan(clientsPosition));
   });
 
   testWidgets('tapping logout invokes the logout callback', (tester) async {

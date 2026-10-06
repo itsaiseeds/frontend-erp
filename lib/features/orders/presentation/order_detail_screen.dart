@@ -7,8 +7,72 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../core/utils/image_url_resolver.dart';
+import '../../../core/utils/toast_utils.dart';
+import '../../challan/presentation/challan_screen.dart';
+import '../../return_orders/presentation/create_return_order_screen.dart';
 import '../data/models/order.dart';
+import '../data/models/order_status.dart';
 import 'widgets/order_status_badge.dart';
+
+/// Opens the challan, or says why there isn't one yet.
+///
+/// The button stays visible on an undispatched order rather than vanishing:
+/// a missing control reads as a bug, whereas a tap that explains itself
+/// answers the question the salesperson actually had.
+class _ChallanAction extends StatelessWidget {
+  final Order order;
+
+  const _ChallanAction({required this.order});
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isReady = OrderStatusX.hasChallan(order.status);
+
+    return IconButton(
+      tooltip: AppStrings.CHALLAN_VIEW,
+      onPressed: () {
+        if (!isReady) {
+          ToastUtils.showInfo(context, AppStrings.CHALLAN_NOT_DISPATCHED);
+          return;
+        }
+        ChallanScreen.open(context, orderPublicId: order.publicId);
+      },
+      icon: Icon(
+        Icons.receipt_long_outlined,
+        size: AppSizes.ICON_LG,
+        color: isReady ? AppColors.PRIMARY : AppColors.TEXT_DISABLED,
+      ),
+    );
+  }
+}
+
+/// Raises a return against the order.
+///
+/// Only a dispatched or delivered order can take one, so the icon reads muted
+/// until it leaves the warehouse -- and a tap on it still opens the screen,
+/// which explains the block in the order's own terms. A control that vanishes
+/// reads as a bug; one that answers the question does not.
+class _ReturnOrderAction extends StatelessWidget {
+  final Order order;
+
+  const _ReturnOrderAction({required this.order});
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isReady = OrderStatusX.hasChallan(order.status);
+
+    return IconButton(
+      tooltip: AppStrings.RETURN_ORDER_TOOLTIP,
+      onPressed: () =>
+          CreateReturnOrderScreen.open(context, order.publicId),
+      icon: Icon(
+        Icons.assignment_return_outlined,
+        size: AppSizes.ICON_LG,
+        color: isReady ? AppColors.PRIMARY : AppColors.TEXT_DISABLED,
+      ),
+    );
+  }
+}
 
 /// The list payload carries everything a preview needs, so the detail renders
 /// from the card that was tapped rather than a second request.
@@ -37,6 +101,11 @@ class OrderDetailScreen extends StatelessWidget {
           AppStrings.ORDER_DETAIL_TITLE,
           style: AppTypography.titleMedium,
         ),
+        actions: [
+          _ChallanAction(order: order),
+          _ReturnOrderAction(order: order),
+          const SizedBox(width: AppSpacing.XS4),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(
@@ -450,7 +519,7 @@ class _VerificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isVerified = order.isVerified;
+    final bool isVerified = order.hasBeenVerified;
 
     return _Card(
       child: Column(

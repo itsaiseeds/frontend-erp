@@ -1,13 +1,27 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/network/api_client.dart';
+import '../../../core/services/push_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../auth/data/models/android_role.dart';
 import '../../auth/presentation/bloc/session_cubit.dart';
 import '../../clients/presentation/clients_screen.dart';
+import '../../notifications/data/models/app_notification.dart';
+import '../../notifications/notification_router.dart';
+import '../../notifications/data/notifications_repository.dart';
+import '../../notifications/presentation/notifications_screen.dart';
+import '../../notifications/presentation/widgets/notification_bell.dart';
+import '../../analytics/presentation/analytics_dashboard.dart';
+import '../../field_trips/presentation/field_trips_screen.dart';
 import '../../orders/presentation/orders_screen.dart';
+import '../../profile/presentation/profile_screen.dart';
 import '../../products/presentation/products_screen.dart';
+import '../../return_orders/presentation/return_orders_screen.dart';
 import '../data/drawer_items.dart';
 import 'widgets/custom_drawer.dart';
 import 'widgets/home_placeholder_view.dart';
@@ -27,6 +41,10 @@ class _HomeScreenState extends State<HomeScreen>
   late final AnimationController _animationController;
   int _selectedDrawerIndex = DrawerItems.DASHBOARD;
 
+  StreamSubscription<AppNotification>? _notificationTaps;
+
+  int _unreadCount = 0;
+
   @override
   void initState() {
     super.initState();
@@ -34,10 +52,61 @@ class _HomeScreenState extends State<HomeScreen>
       vsync: this,
       duration: _drawerAnimation,
     );
+    _listenForNotificationTaps();
+    _refreshUnreadCount();
+  }
+
+  /// The badge is a count, not a live list: it is refetched on open, after
+  /// the inbox is read, and whenever a push arrives.
+  Future<void> _refreshUnreadCount() async {
+    try {
+      final int count = await NotificationsRepository(
+        apiClient: context.read<ApiClient>(),
+      ).fetchUnreadCount();
+      if (mounted) setState(() => _unreadCount = count);
+    } catch (_) {
+      // A badge that cannot be fetched simply stays as it is; nothing here
+      // is worth interrupting the user for.
+    }
+  }
+
+  Future<void> _openNotifications() async {
+    _animationController.reverse();
+    await NotificationsScreen.push(context);
+    if (mounted) await _refreshUnreadCount();
+  }
+
+  /// Home is the only screen the router lands on once signed in, so this is
+  /// where a notification tap becomes a push. A tap that arrived during a
+  /// cold start is waiting in the service and is drained first.
+  void _listenForNotificationTaps() {
+    _notificationTaps = PushService.instance.onTap.listen(_openNotification);
+
+    final AppNotification? pending = PushService.instance.takePending();
+    if (pending == null) return;
+
+    // The first frame has to exist before anything can be pushed onto it.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _openNotification(pending);
+    });
+  }
+
+  void _openNotification(AppNotification notification) {
+    if (!mounted) return;
+    _animationController.reverse();
+
+    NotificationRouter.open(
+      context,
+      notification: notification,
+      apiClient: context.read<ApiClient>(),
+    );
+    // The tap marks it read server-side, so the badge has to catch up.
+    _refreshUnreadCount();
   }
 
   @override
   void dispose() {
+    _notificationTaps?.cancel();
     _animationController.dispose();
     super.dispose();
   }
@@ -64,6 +133,11 @@ class _HomeScreenState extends State<HomeScreen>
     await context.read<SessionCubit>().signOut();
   }
 
+  void _switchToGodownManager() {
+    _animationController.reverse();
+    context.read<SessionCubit>().switchRole(AndroidRole.godownManager);
+  }
+
   double get _slideWidth =>
       MediaQuery.of(context).size.width * AppSizes.DRAWER_WIDTH_FACTOR;
 
@@ -83,6 +157,10 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    final bool hasRoleChoice = context.select<SessionCubit, bool>(
+      (cubit) => cubit.state.hasRoleChoice,
+    );
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
@@ -114,6 +192,10 @@ class _HomeScreenState extends State<HomeScreen>
                         selectedIndex: _selectedDrawerIndex,
                         onItemSelected: _onDrawerItemSelected,
                         onLogout: _handleLogout,
+                        switchRoleLabel: hasRoleChoice
+                            ? AppStrings.SWITCH_TO_GODOWN_MANAGER
+                            : null,
+                        onSwitchRole: hasRoleChoice ? _switchToGodownManager : null,
                       ),
                     ),
                   ),
@@ -166,6 +248,12 @@ class _HomeScreenState extends State<HomeScreen>
             DrawerItems.titleFor(_selectedDrawerIndex),
             style: AppTypography.titleMedium,
           ),
+          actions: [
+            NotificationBell(
+              unreadCount: _unreadCount,
+              onPressed: _openNotifications,
+            ),
+          ],
         ),
         body: _buildBody(),
       ),
@@ -183,6 +271,25 @@ class _HomeScreenState extends State<HomeScreen>
 
     if (_selectedDrawerIndex == DrawerItems.ORDERS) {
       return const OrdersScreen();
+    }
+
+    if (_selectedDrawerIndex == DrawerItems.RETURN_ORDERS) {
+      return const ReturnOrdersScreen();
+    }
+
+    if (_selectedDrawerIndex == DrawerItems.FIELD_TRIPS) {
+      return const FieldTripsScreen();
+    }
+
+    if (_selectedDrawerIndex == DrawerItems.PROFILE) {
+      return const ProfileScreen();
+    }
+
+    if (_selectedDrawerIndex == DrawerItems.DASHBOARD) {
+      return BlocBuilder<SessionCubit, SessionState>(
+        builder: (context, state) =>
+            AnalyticsDashboard(userName: state.session?.name ?? ''),
+      );
     }
 
     return BlocBuilder<SessionCubit, SessionState>(

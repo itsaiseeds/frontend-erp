@@ -135,6 +135,8 @@ class ClientSort extends Equatable {
     'count',
     'quantity',
     'weight',
+    'area',
+    'bigha',
   ];
 
   @override

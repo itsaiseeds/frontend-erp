@@ -522,9 +522,22 @@ void main() {
     testWidgets('says an unverified order is still awaiting approval', (
       tester,
     ) async {
-      await pumpDetail(tester, _order);
+      // Booked, not dispatched: an order that reaches dispatch has passed
+      // verification, so only one still early in its life is awaiting it.
+      await pumpDetail(
+        tester,
+        const Order(publicId: 'O-2', status: OrderStatus.booked),
+      );
 
       expect(find.text('Awaiting verification'), findsOneWidget);
+    });
+
+    testWidgets('a dispatched order is not shown as awaiting verification', (
+      tester,
+    ) async {
+      await pumpDetail(tester, _order);
+
+      expect(find.text('Awaiting verification'), findsNothing);
     });
 
     testWidgets('an own-vehicle order says so', (tester) async {

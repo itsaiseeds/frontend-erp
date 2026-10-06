@@ -38,6 +38,12 @@ dependencies:
   flutter_dotenv: ^5.1.0
   url_launcher: ^6.3.2
   encrypt: ^5.0.3
+  pdf: ^3.12.0
+  printing: ^5.14.3
+  fl_chart: ^1.2.0
+  firebase_core: ^4.15.0
+  firebase_messaging: ^16.7.0
+  flutter_local_notifications: ^22.3.1
 
 dev_dependencies:
   flutter_test:

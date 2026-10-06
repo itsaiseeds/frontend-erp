@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
+import '../constants/app_strings.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
 
@@ -30,6 +31,21 @@ class ToastUtils {
     context: context,
     title: title,
     description: description,
+    type: AppToastType.error,
+  );
+
+  /// For a server-side validation message, which can run to a full
+  /// sentence: the title stays a short, fixed label so it never needs
+  /// truncating, and the actual message goes in the description, which
+  /// allows six lines instead of the title's two.
+  static ToastificationItem showServerError(
+    BuildContext context,
+    String message, {
+    String title = AppStrings.SOMETHING_WENT_WRONG_TITLE,
+  }) => show(
+    context: context,
+    title: title,
+    description: message,
     type: AppToastType.error,
   );
 

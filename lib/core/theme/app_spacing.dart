@@ -51,7 +51,7 @@ class AppSizes {
   static const double ICON_LG = 20.0;
   static const double ICON_XL = 24.0;
   static const double STEPPER_HEIGHT = 34.0;
-  static const double STEPPER_BUTTON = 26.0;
+  static const double STEPPER_BUTTON = 30.0;
   static const double STEPPER_COUNT_WIDTH = 22.0;
   static const double CART_BAR_HEIGHT = 46.0;
   static const double CART_THUMB = 34.0;
@@ -68,7 +68,7 @@ class AppSizes {
   static const double PRODUCT_CARD_IMAGE = 132.0;
   static const double PRODUCT_CARD_IMAGE_MIN = 96.0;
   static const double PRODUCT_CARD_CONTENT = 168.0;
-  static const double PRODUCT_CARD_STEPPER_WIDTH = 78.0;
+  static const double PRODUCT_CARD_STEPPER_WIDTH = 88.0;
   static const double PRODUCT_CARD_STEPPER_OVERLAP = 17.0;
   static const double PRODUCT_CARD_TAG_INSET = 30.0;
   static const double PRODUCT_CARD_BADGE_OVERLAP = 11.0;
@@ -78,6 +78,7 @@ class AppSizes {
   /// thumbnail and the gap, so the rule starts under the product name.
   static const double CART_SEPARATOR_INSET = 84.0;
   static const double ICON_XXL = 40.0;
+  static const double PROFILE_AVATAR = 56.0;
 
   static const double INPUT_HEIGHT = 48.0;
   static const double BUTTON_HEIGHT = 52.0;
@@ -126,6 +127,12 @@ class AppSizes {
   static const double CLIENT_SEGMENT_HEIGHT = 40.0;
   static const double CLIENT_FILTER_CHIP_HEIGHT = 36.0;
   static const double CLIENT_STATUS_DOT = 6.0;
+
+  // Mobile table columns -- narrower than the admin web table's since a
+  // phone needs several visible at once with the rest a short scroll away.
+  static const double GODOWN_TABLE_COLUMN_NARROW = 100.0;
+  static const double GODOWN_TABLE_COLUMN_MEDIUM = 140.0;
+  static const double GODOWN_TABLE_COLUMN_WIDE = 170.0;
   static const double CLIENT_BADGE_COUNT = 18.0;
   static const double FILTER_RAIL_WIDTH = 132.0;
   static const double FILTER_RAIL_ACTIVE_BAR = 3.0;
@@ -137,6 +144,23 @@ class AppSizes {
   static const double RANGE_OVERLAY_OPACITY = 0.08;
   static const double CLIENT_LIST_BOTTOM_INSET = 96.0;
 
+  // An IconButton pads itself, so the default 56 leaves the title drifting
+  // away from a back chevron that is already inset.
+  static const double APP_BAR_LEADING_WIDTH = 44.0;
+  static const double FARMER_FILTER_ROW = 56.0;
+
+  static const double DATETIME_SHEET_MAX_HEIGHT = 0.9;
+  static const double DATETIME_SHEET_CELL = 40.0;
+  static const double DATETIME_SHEET_HANDLE_WIDTH = 36.0;
+  static const double DATETIME_SHEET_HANDLE_HEIGHT = 4.0;
+
+  static const double NOTIFICATION_ICON_BOX = 38.0;
+  static const double STOCK_STATUS_ICON_BOX = 38.0;
+  static const double NOTIFICATION_UNREAD_DOT = 8.0;
+  static const double NOTIFICATION_BADGE_MIN = 16.0;
+  static const double NOTIFICATION_BADGE_RING = 1.5;
+  static const double NOTIFICATION_LIST_BOTTOM_INSET = 24.0;
+
   static const double ORDER_ICON_BOX = 40.0;
   static const double ORDER_CHIP_THUMB = 18.0;
   static const double ORDER_LINE_THUMB = 48.0;
@@ -147,6 +171,15 @@ class AppSizes {
   static const double CLIENT_SHEET_HANDLE_WIDTH = 36.0;
   static const double CLIENT_SHEET_HANDLE_HEIGHT = 4.0;
   static const double CLIENT_SHEET_MAX_HEIGHT = 0.75;
+
+  static const double FIELD_TRIP_ICON_BOX = 40.0;
+  static const double FIELD_TRIP_LIST_BOTTOM_INSET = 96.0;
+  static const double FIELD_TRIP_CARD_HEIGHT = 158.0;
+  static const double FIELD_TRIP_TIMELINE_DOT = 12.0;
+  static const double FIELD_TRIP_TIMELINE_RAIL = 2.0;
+  static const double FIELD_TRIP_TIMELINE_GUTTER = 28.0;
+  static const double FIELD_TRIP_TIMELINE_SEGMENT = 22.0;
+  static const double FARMER_AVATAR = 36.0;
 
   static const double DIVIDER_THIN = 0.5;
   static const double HAIRLINE = 1.0;

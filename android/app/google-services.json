@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "386261240131",
+    "project_id": "sales-saiseeds",
+    "storage_bucket": "sales-saiseeds.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:386261240131:android:ade169368315b33b8947f6",
+        "android_client_info": {
+          "package_name": "com.saiseeds.sales"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_VDU8wpKOaqDHf2EHUfh0_RPTV7y1j7U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
