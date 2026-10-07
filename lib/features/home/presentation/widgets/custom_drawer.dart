@@ -4,7 +4,14 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../auth/data/models/android_role.dart';
 import '../../data/drawer_items.dart';
+
+String roleDisplayName(AndroidRole role) => switch (role) {
+  AndroidRole.salesPerson => AppStrings.SWITCH_ROLE_SALES_PERSON,
+  AndroidRole.godownManager => AppStrings.SWITCH_ROLE_GODOWN_MANAGER,
+  AndroidRole.labTester => AppStrings.SWITCH_ROLE_LAB_TESTER,
+};
 
 class CustomDrawer extends StatelessWidget {
   final int selectedIndex;
@@ -12,14 +19,17 @@ class CustomDrawer extends StatelessWidget {
   final VoidCallback onLogout;
 
   /// Defaults to the sales-person item lists so every existing call site is
-  /// unaffected; the godown shell passes its own lists through these so the
-  /// two roles share one drawer widget rather than one drawer each.
+  /// unaffected; the godown and lab-tester shells pass their own lists
+  /// through these so every role shares one drawer widget rather than one
+  /// drawer each.
   final List<DrawerItem> primaryItems;
   final List<DrawerItem> accountItems;
 
-  /// Shown above Logout, only for a user who holds both Android roles.
-  final String? switchRoleLabel;
-  final VoidCallback? onSwitchRole;
+  /// Shown above Logout, only for a user who holds two or more Android
+  /// roles. Tapping it opens a picker over [availableRoles].
+  final List<AndroidRole> availableRoles;
+  final AndroidRole? activeRole;
+  final ValueChanged<AndroidRole>? onRoleSelected;
 
   const CustomDrawer({
     super.key,
@@ -28,9 +38,59 @@ class CustomDrawer extends StatelessWidget {
     required this.onLogout,
     this.primaryItems = DrawerItems.primary,
     this.accountItems = DrawerItems.account,
-    this.switchRoleLabel,
-    this.onSwitchRole,
+    this.availableRoles = const [],
+    this.activeRole,
+    this.onRoleSelected,
   });
+
+  bool get _canSwitchRole =>
+      availableRoles.length >= 2 && onRoleSelected != null;
+
+  Future<void> _openRolePicker(BuildContext context) async {
+    final AndroidRole? chosen = await showModalBottomSheet<AndroidRole>(
+      context: context,
+      backgroundColor: AppColors.SURFACE,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.XL)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.LG24,
+                  AppSpacing.LG24,
+                  AppSpacing.LG24,
+                  AppSpacing.SM8,
+                ),
+                child: Text(AppStrings.SWITCH_ROLE, style: AppTypography.titleMedium),
+              ),
+              for (final role in availableRoles)
+                ListTile(
+                  leading: Icon(
+                    role == activeRole
+                        ? Icons.radio_button_checked_rounded
+                        : Icons.radio_button_unchecked_rounded,
+                    color: role == activeRole
+                        ? AppColors.PRIMARY
+                        : AppColors.DRAWER_ICON_IDLE,
+                  ),
+                  title: Text(roleDisplayName(role), style: AppTypography.drawerItem),
+                  onTap: () => Navigator.of(sheetContext).pop(role),
+                ),
+              const SizedBox(height: AppSpacing.SM8),
+            ],
+          ),
+        );
+      },
+    );
+    if (chosen != null && chosen != activeRole) {
+      onRoleSelected?.call(chosen);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +158,7 @@ class CustomDrawer extends StatelessWidget {
               ),
             ),
 
-            if (switchRoleLabel != null && onSwitchRole != null)
+            if (_canSwitchRole)
               Padding(
                 padding: const EdgeInsets.fromLTRB(
                   AppSpacing.LG24,
@@ -111,7 +171,7 @@ class CustomDrawer extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppSizes.DRAWER_ITEM_RADIUS),
                   clipBehavior: Clip.antiAlias,
                   child: InkWell(
-                    onTap: onSwitchRole,
+                    onTap: () => _openRolePicker(context),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         vertical: AppSpacing.SMD12,
@@ -127,7 +187,7 @@ class CustomDrawer extends StatelessWidget {
                           const SizedBox(width: AppSpacing.SMD12),
                           Expanded(
                             child: Text(
-                              switchRoleLabel!,
+                              AppStrings.SWITCH_ROLE,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: AppTypography.drawerItem.copyWith(

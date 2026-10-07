@@ -11,9 +11,11 @@ import '../../../core/utils/toast_utils.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
 import '../../../core/widgets/inputs/geo_picker_field.dart';
 import '../../../core/widgets/layout/dismiss_keyboard.dart';
+import '../../auth/presentation/bloc/session_cubit.dart';
 import '../../clients/data/clients_repository.dart';
 import '../../clients/data/models/client.dart';
 import '../../clients/data/models/client_address.dart';
+import '../../clients/data/models/sales_person_option.dart';
 import '../../clients/data/models/transport_agency.dart';
 import '../data/models/cart_line.dart';
 import '../data/products_repository.dart';
@@ -29,11 +31,14 @@ class CheckoutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ApiClient apiClient = context.read<ApiClient>();
+    final bool isAdmin =
+        context.read<SessionCubit>().state.session?.isSalesAdmin ?? false;
 
     return BlocProvider<CheckoutCubit>(
       create: (_) => CheckoutCubit(
         clientsRepository: ClientsRepository(apiClient: apiClient),
         productsRepository: ProductsRepository(apiClient: apiClient),
+        isAdmin: isAdmin,
       )..loadClients(),
       child: const _CheckoutView(),
     );
@@ -282,6 +287,14 @@ class _DeliveryStep extends StatelessWidget {
     required this.commentsController,
   });
 
+  /// The picker needs a real item meaning "no one chosen" -- id 0 is never a
+  /// valid sales person, matching how [TransportAgency.PRIVATE_DISPATCH] sits
+  /// in the agency list below for the same reason.
+  static const SalesPersonOption _bookForSelf = SalesPersonOption(
+    id: 0,
+    name: AppStrings.CART_BOOK_FOR_SELF,
+  );
+
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -299,6 +312,21 @@ class _DeliveryStep extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
               children: [
+                if (state.isAdmin) ...[
+                  GeoPickerField<SalesPersonOption>(
+                    label: AppStrings.CART_BOOK_FOR,
+                    hint: AppStrings.CART_BOOK_FOR_HINT,
+                    value: state.bookingFor ?? _bookForSelf,
+                    items: [_bookForSelf, ...state.salesPersons],
+                    itemLabel: (person) => person.name,
+                    isSame: (a, b) => a.id == b.id,
+                    onSelected: (person) => cubit.selectSalesPerson(
+                      person.id == 0 ? null : person,
+                    ),
+                    enabled: !state.isLoadingSalesPersons && !state.isSubmitting,
+                  ),
+                  const SizedBox(height: AppSpacing.MD16),
+                ],
                 GeoPickerField<Client>(
                   label: AppStrings.CART_SELECT_CLIENT,
                   hint: AppStrings.CART_SELECT_CLIENT_HINT,

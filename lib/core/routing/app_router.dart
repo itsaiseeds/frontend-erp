@@ -8,6 +8,7 @@ import '../../features/auth/presentation/bloc/session_cubit.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/godown/presentation/godown_home_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
+import '../../features/lab_tester/presentation/lab_tester_home_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/splash/presentation/splash_screen.dart';
 import 'route_constants.dart';
@@ -61,9 +62,11 @@ class AppRouter {
           builder: (context, state) => BlocBuilder<SessionCubit, SessionState>(
             buildWhen: (previous, current) =>
                 previous.effectiveRole != current.effectiveRole,
-            builder: (context, state) => state.effectiveRole == AndroidRole.godownManager
-                ? const GodownHomeScreen()
-                : const HomeScreen(),
+            builder: (context, state) => switch (state.effectiveRole) {
+              AndroidRole.godownManager => const GodownHomeScreen(),
+              AndroidRole.labTester => const LabTesterHomeScreen(),
+              AndroidRole.salesPerson => const HomeScreen(),
+            },
           ),
         ),
       ],

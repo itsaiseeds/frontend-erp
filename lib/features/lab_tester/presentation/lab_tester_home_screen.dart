@@ -10,32 +10,27 @@ import '../../auth/presentation/bloc/session_cubit.dart';
 import '../../home/presentation/widgets/custom_drawer.dart';
 import '../../home/presentation/widgets/logout_confirmation_dialog.dart';
 import '../../profile/presentation/profile_screen.dart';
-import 'bag_stock_screen.dart';
-import 'inward_other_list_screen.dart';
-import 'inward_raw_list_screen.dart';
-import 'other_material_recipes_screen.dart';
-import 'other_material_stock_screen.dart';
-import 'packet_stock_screen.dart';
-import 'raw_material_stock_screen.dart';
-import 'widgets/godown_drawer.dart';
+import 'lab_reports_screen.dart';
+import 'pending_lots_screen.dart';
+import 'widgets/lab_tester_drawer_items.dart';
 
-/// The godown-manager shell. The slide-out drawer, drag gestures and
-/// animation are the exact mechanics `HomeScreen` uses -- the same widget
-/// ([CustomDrawer]), handed this role's own item lists -- so the two shells
-/// feel like one app rather than two.
-class GodownHomeScreen extends StatefulWidget {
-  const GodownHomeScreen({super.key});
+/// The lab-tester shell. The slide-out drawer, drag gestures and animation
+/// are the exact mechanics `HomeScreen` and `GodownHomeScreen` use -- the
+/// same widget ([CustomDrawer]), handed this role's own item lists -- so all
+/// three shells feel like one app rather than three.
+class LabTesterHomeScreen extends StatefulWidget {
+  const LabTesterHomeScreen({super.key});
 
   @override
-  State<GodownHomeScreen> createState() => _GodownHomeScreenState();
+  State<LabTesterHomeScreen> createState() => _LabTesterHomeScreenState();
 }
 
-class _GodownHomeScreenState extends State<GodownHomeScreen>
+class _LabTesterHomeScreenState extends State<LabTesterHomeScreen>
     with SingleTickerProviderStateMixin {
   static const Duration _drawerAnimation = Duration(milliseconds: 250);
 
   late final AnimationController _animationController;
-  int _selectedIndex = GodownDrawerItems.RAW_MATERIAL_STOCK;
+  int _selectedIndex = LabTesterDrawerItems.PENDING_LOTS;
 
   @override
   void initState() {
@@ -136,8 +131,8 @@ class _GodownHomeScreenState extends State<GodownHomeScreen>
                         selectedIndex: _selectedIndex,
                         onItemSelected: _onDrawerItemSelected,
                         onLogout: _handleLogout,
-                        primaryItems: GodownDrawerItems.primary,
-                        accountItems: GodownDrawerItems.account,
+                        primaryItems: LabTesterDrawerItems.primary,
+                        accountItems: LabTesterDrawerItems.account,
                         availableRoles: availableRoles,
                         activeRole: activeRole,
                         onRoleSelected: _onRoleSelected,
@@ -182,24 +177,14 @@ class _GodownHomeScreenState extends State<GodownHomeScreen>
 
   Widget _buildBody() {
     switch (_selectedIndex) {
-      case GodownDrawerItems.RAW_MATERIAL_STOCK:
-        return RawMaterialStockScreen(onMenuTap: _toggleDrawer);
-      case GodownDrawerItems.OTHER_MATERIAL_STOCK:
-        return OtherMaterialStockScreen(onMenuTap: _toggleDrawer);
-      case GodownDrawerItems.INWARD_RAW_MATERIALS:
-        return InwardRawListScreen(onMenuTap: _toggleDrawer);
-      case GodownDrawerItems.INWARD_OTHER_MATERIALS:
-        return InwardOtherListScreen(onMenuTap: _toggleDrawer);
-      case GodownDrawerItems.RECIPES:
-        return OtherMaterialRecipesScreen(onMenuTap: _toggleDrawer);
-      case GodownDrawerItems.BAG_STOCK:
-        return BagStockScreen(onMenuTap: _toggleDrawer);
-      case GodownDrawerItems.PACKET_STOCK:
-        return PacketStockScreen(onMenuTap: _toggleDrawer);
-      case GodownDrawerItems.PROFILE:
+      case LabTesterDrawerItems.PENDING_LOTS:
+        return PendingLotsScreen(onMenuTap: _toggleDrawer);
+      case LabTesterDrawerItems.LAB_REPORTS:
+        return LabReportsScreen(onMenuTap: _toggleDrawer);
+      case LabTesterDrawerItems.PROFILE:
         return _ProfileWithMenu(onMenuTap: _toggleDrawer);
       default:
-        return RawMaterialStockScreen(onMenuTap: _toggleDrawer);
+        return PendingLotsScreen(onMenuTap: _toggleDrawer);
     }
   }
 }

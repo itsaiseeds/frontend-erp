@@ -12,6 +12,13 @@ class AuthSession extends Equatable {
   /// than one enum -- routing reads these, never ``role``.
   final bool isSalesPerson;
   final bool isGodownManager;
+  final bool isLabTester;
+
+  /// An app admin who also has Android access -- can book an order on
+  /// behalf of any sales person (see `utilities/sales-persons` and
+  /// `create-multi-select-bag-order`'s `created_by`). False for a regular
+  /// sales person or godown manager.
+  final bool isSalesAdmin;
 
   const AuthSession({
     required this.userId,
@@ -20,6 +27,8 @@ class AuthSession extends Equatable {
     required this.role,
     this.isSalesPerson = false,
     this.isGodownManager = false,
+    this.isLabTester = false,
+    this.isSalesAdmin = false,
   });
 
   factory AuthSession.fromJson(Map<String, dynamic> json) {
@@ -35,6 +44,8 @@ class AuthSession extends Equatable {
       role: JsonParser.asString(userMap['role']),
       isSalesPerson: userMap['is_sales_person'] == true,
       isGodownManager: userMap['is_godown_manager'] == true,
+      isLabTester: userMap['is_lab_tester'] == true,
+      isSalesAdmin: userMap['is_sales_admin'] == true,
     );
   }
 
@@ -46,5 +57,7 @@ class AuthSession extends Equatable {
     role,
     isSalesPerson,
     isGodownManager,
+    isLabTester,
+    isSalesAdmin,
   ];
 }

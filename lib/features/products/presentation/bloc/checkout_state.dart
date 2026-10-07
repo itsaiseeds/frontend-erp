@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 import '../../../clients/data/models/client.dart';
 import '../../../clients/data/models/client_address.dart';
+import '../../../clients/data/models/sales_person_option.dart';
 import '../../../clients/data/models/transport_agency.dart';
 
 enum CheckoutStatus { initial, loading, ready, failure }
@@ -13,6 +14,17 @@ enum CheckoutStep { review, delivery }
 class CheckoutState extends Equatable {
   final CheckoutStatus status;
   final CheckoutStep step;
+
+  /// Whether the caller is an app admin who may book on behalf of another
+  /// sales person -- gates whether the "Book for" picker shows at all.
+  final bool isAdmin;
+
+  /// Populated only for an admin; the person currently being booked for is
+  /// [bookingFor] (null means booking as the admin themselves).
+  final List<SalesPersonOption> salesPersons;
+  final SalesPersonOption? bookingFor;
+  final bool isLoadingSalesPersons;
+
   final List<Client> clients;
   final Client? client;
 
@@ -31,6 +43,10 @@ class CheckoutState extends Equatable {
   const CheckoutState({
     this.status = CheckoutStatus.initial,
     this.step = CheckoutStep.review,
+    this.isAdmin = false,
+    this.salesPersons = const [],
+    this.bookingFor,
+    this.isLoadingSalesPersons = false,
     this.clients = const [],
     this.client,
     this.addresses = const [],
@@ -47,8 +63,14 @@ class CheckoutState extends Equatable {
   CheckoutState copyWith({
     CheckoutStatus? status,
     CheckoutStep? step,
+    bool? isAdmin,
+    List<SalesPersonOption>? salesPersons,
+    SalesPersonOption? bookingFor,
+    bool clearBookingFor = false,
+    bool? isLoadingSalesPersons,
     List<Client>? clients,
     Client? client,
+    bool clearClient = false,
     List<ClientAddress>? addresses,
     List<TransportAgency>? agencies,
     bool? isLoadingLinks,
@@ -66,8 +88,13 @@ class CheckoutState extends Equatable {
     return CheckoutState(
       status: status ?? this.status,
       step: step ?? this.step,
+      isAdmin: isAdmin ?? this.isAdmin,
+      salesPersons: salesPersons ?? this.salesPersons,
+      bookingFor: clearBookingFor ? null : bookingFor ?? this.bookingFor,
+      isLoadingSalesPersons:
+          isLoadingSalesPersons ?? this.isLoadingSalesPersons,
       clients: clients ?? this.clients,
-      client: client ?? this.client,
+      client: clearClient ? null : client ?? this.client,
       addresses: addresses ?? this.addresses,
       agencies: agencies ?? this.agencies,
       isLoadingLinks: isLoadingLinks ?? this.isLoadingLinks,
@@ -96,6 +123,10 @@ class CheckoutState extends Equatable {
   List<Object?> get props => [
     status,
     step,
+    isAdmin,
+    salesPersons,
+    bookingFor,
+    isLoadingSalesPersons,
     clients,
     client,
     addresses,

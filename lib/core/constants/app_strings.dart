@@ -92,7 +92,7 @@ class AppStrings {
   static const String DRAWER_ORDERS = 'Orders';
   static const String DRAWER_RETURN_ORDERS = 'Return Orders';
   static const String DRAWER_CLIENTS = 'Clients';
-  static const String DRAWER_FIELD_TRIPS = 'Field Trips';
+  static const String DRAWER_FIELD_TRIPS = 'Farmer Meetings';
   static const String DRAWER_PROFILE = 'Profile';
 
   static const String CLIENTS_TITLE = 'Clients';
@@ -168,7 +168,7 @@ class AppStrings {
   static const String CLIENT_FIELD_NAME = 'Client Name';
   static const String CLIENT_FIELD_NAME_HINT = 'Registered business name';
   static const String CLIENT_FIELD_PHONE = 'Client Phone';
-  static const String CLIENT_FIELD_GST = 'GST Number';
+  static const String CLIENT_FIELD_GST = 'GST Number (optional)';
   static const String CLIENT_FIELD_GST_HINT = '15-character GSTIN';
   static const String CLIENT_FIELD_LINE1 = 'Address Line 1';
   static const String CLIENT_FIELD_LINE2 = 'Address Line 2';
@@ -344,6 +344,9 @@ class AppStrings {
   static const String CART_SELECT_AGENCY_HINT = 'Select dispatch';
   static const String CART_PRIVATE_DISPATCH = 'Private dispatch';
   static const String CART_LOADING_OPTIONS = 'Loading...';
+  static const String CART_BOOK_FOR = 'Book by';
+  static const String CART_BOOK_FOR_HINT = 'Select who this order is for';
+  static const String CART_BOOK_FOR_SELF = 'Myself';
   static const String CART_NO_ADDRESSES = 'No saved address for this client';
   static const String CART_COMMENTS = 'Special comments';
   static const String CART_COMMENTS_HINT = 'Anything the team should know';
@@ -498,16 +501,16 @@ class AppStrings {
   static const String VALIDATION_RETURN_PACKETS_REQUIRED = 'Enter the count';
   static const String VALIDATION_RETURN_PRICE = 'Enter a valid price';
 
-  static const String FIELD_TRIPS_TITLE = 'Field Trips';
-  static const String FIELD_TRIPS_EMPTY_TITLE = 'No field trips yet';
+  static const String FIELD_TRIPS_TITLE = 'Farmer Meetings';
+  static const String FIELD_TRIPS_EMPTY_TITLE = 'No farmer meetings yet';
   static const String FIELD_TRIPS_EMPTY_BODY =
-      'Plan a trip and it will show up here, ready for approval.';
-  static const String FIELD_TRIPS_ERROR_TITLE = 'Could not load field trips';
-  static const String FIELD_TRIPS_COUNT_ONE = 'trip';
-  static const String FIELD_TRIPS_COUNT_MANY = 'trips';
+      'Plan a meeting and it will show up here, ready for approval.';
+  static const String FIELD_TRIPS_ERROR_TITLE = 'Could not load farmer meetings';
+  static const String FIELD_TRIPS_COUNT_ONE = 'meeting';
+  static const String FIELD_TRIPS_COUNT_MANY = 'meetings';
   static const String FIELD_TRIPS_FILTER_ALL = 'All';
   static const String FIELD_TRIP_SEARCH_HINT = 'Search village...';
-  static const String FIELD_TRIP_PLAN_TOOLTIP = 'Plan a field trip';
+  static const String FIELD_TRIP_PLAN_TOOLTIP = 'Plan a farmer meeting';
 
   static const String FIELD_TRIP_STATUS_PLANNED = 'Planned';
   static const String FIELD_TRIP_STATUS_APPROVED = 'Approved';
@@ -515,14 +518,14 @@ class AppStrings {
   static const String FIELD_TRIP_STATUS_COMPLETED = 'Completed';
   static const String FIELD_TRIP_STATUS_UNKNOWN = 'Unknown';
 
-  static const String FIELD_TRIP_DETAIL_TITLE = 'Field trip';
+  static const String FIELD_TRIP_DETAIL_TITLE = 'Farmer meeting';
   static const String FIELD_TRIP_PLAN = 'Plan';
   static const String FIELD_TRIP_PROGRESS = 'Progress';
   static const String FIELD_TRIP_PEOPLE = 'People';
   static const String FIELD_TRIP_VILLAGE = 'Village';
   static const String FIELD_TRIP_CITY = 'City';
   static const String FIELD_TRIP_FARMERS_VIEW_ALL = 'View all farmers';
-  static const String FIELD_TRIP_FARMERS_TITLE = 'Farmers on this trip';
+  static const String FIELD_TRIP_FARMERS_TITLE = 'Farmers on this meeting';
   static const String FARMER_DETAIL_TITLE = 'Farmer';
   static const String FARMER_DETAIL_CROPS = 'Crops grown';
   static const String FARMER_DETAIL_PRODUCTS = 'Our products used';
@@ -547,56 +550,56 @@ class AppStrings {
   static const String FIELD_TRIP_APPROVED_BY = 'Approved by';
   static const String FIELD_TRIP_AWAITING_APPROVAL = 'Awaiting approval';
   static const String FIELD_TRIP_AWAITING_APPROVAL_BODY =
-      'A sales admin has to approve this trip before you can start it.';
+      'A sales admin has to approve this meeting before you can start it.';
   static const String FIELD_TRIP_TIMELINE_PLANNED = 'Planned';
   static const String FIELD_TRIP_TIMELINE_APPROVED = 'Approved';
   static const String FIELD_TRIP_TIMELINE_STARTED = 'Started';
   static const String FIELD_TRIP_TIMELINE_ENDED = 'Ended';
   static const String FIELD_TRIP_FARMERS = 'Farmers recorded';
   static const String FIELD_TRIP_FARMERS_EMPTY =
-      'No farmers were recorded on this trip.';
+      'No farmers were recorded on this meeting.';
   static const String FIELD_TRIP_FARMERS_EMPTY_RUNNING =
-      'Record the first farmer you meet on this trip.';
+      'Record the first farmer you meet during this meeting.';
   static const String FIELD_TRIP_FARMERS_ERROR = 'Could not load farmers';
   static const String FIELD_TRIP_FARMER_COUNT_ONE = 'farmer';
   static const String FIELD_TRIP_FARMER_COUNT_MANY = 'farmers';
 
-  static const String FIELD_TRIP_START = 'Start trip';
-  static const String FIELD_TRIP_END = 'End trip';
+  static const String FIELD_TRIP_START = 'Start meeting';
+  static const String FIELD_TRIP_END = 'End meeting';
   static const String FIELD_TRIP_EDIT = 'Edit';
   static const String FIELD_TRIP_DELETE = 'Delete';
   static const String FIELD_TRIP_ADD_FARMER = 'Record farmer';
 
-  static const String FIELD_TRIP_START_TITLE = 'Start this trip?';
+  static const String FIELD_TRIP_START_TITLE = 'Start this meeting?';
   static const String FIELD_TRIP_START_BODY =
-      'The trip moves to in progress and you can begin recording farmers.';
+      'The meeting moves to in progress and you can begin recording farmers.';
   static const String FIELD_TRIP_START_CONFIRM = 'Start';
-  static const String FIELD_TRIP_STARTED = 'Trip started';
-  static const String FIELD_TRIP_END_TITLE = 'End this trip?';
+  static const String FIELD_TRIP_STARTED = 'Meeting started';
+  static const String FIELD_TRIP_END_TITLE = 'End this meeting?';
   static const String FIELD_TRIP_END_BODY =
-      'The trip is marked completed. You cannot record more farmers on it '
+      'The meeting is marked completed. You cannot record more farmers on it '
       'afterwards.';
-  static const String FIELD_TRIP_END_CONFIRM = 'End trip';
-  static const String FIELD_TRIP_ENDED = 'Trip completed';
-  static const String FIELD_TRIP_DELETE_TITLE = 'Delete this trip?';
+  static const String FIELD_TRIP_END_CONFIRM = 'End meeting';
+  static const String FIELD_TRIP_ENDED = 'Meeting completed';
+  static const String FIELD_TRIP_DELETE_TITLE = 'Delete this meeting?';
   static const String FIELD_TRIP_DELETE_BODY =
-      'The plan is removed for good. A trip that has already started cannot '
+      'The plan is removed for good. A meeting that has already started cannot '
       'be deleted.';
   static const String FIELD_TRIP_DELETE_CONFIRM = 'Delete';
-  static const String FIELD_TRIP_DELETED = 'Trip deleted';
+  static const String FIELD_TRIP_DELETED = 'Meeting deleted';
 
   static const String FIELD_TRIP_ALREADY_RUNNING_TITLE =
-      'A trip is already running';
+      'A meeting is already running';
   static const String FIELD_TRIP_ALREADY_RUNNING_BODY =
-      'End the trip you have in progress before starting another one.';
+      'End the meeting you have in progress before starting another one.';
 
-  static const String FIELD_TRIP_PLAN_TITLE = 'Plan a field trip';
-  static const String FIELD_TRIP_EDIT_TITLE = 'Edit field trip';
+  static const String FIELD_TRIP_PLAN_TITLE = 'Plan a farmer meeting';
+  static const String FIELD_TRIP_EDIT_TITLE = 'Edit farmer meeting';
   static const String FIELD_TRIP_PLAN_SUBTITLE = 'Where and when';
   static const String FIELD_TRIP_SAVE = 'Save changes';
-  static const String FIELD_TRIP_CREATE = 'Plan trip';
-  static const String FIELD_TRIP_CREATED = 'Trip planned';
-  static const String FIELD_TRIP_UPDATED = 'Trip updated';
+  static const String FIELD_TRIP_CREATE = 'Plan meeting';
+  static const String FIELD_TRIP_CREATED = 'Meeting planned';
+  static const String FIELD_TRIP_UPDATED = 'Meeting updated';
   static const String FIELD_TRIP_VILLAGE_HINT = 'Village you will visit';
   static const String FIELD_TRIP_PICK_CITY = 'Select city';
   static const String FIELD_TRIP_PICK_CITY_HINT = 'Search city';
@@ -612,12 +615,12 @@ class AppStrings {
 
   static const String FIELD_TRIP_PICK_START = 'Select start';
   static const String FIELD_TRIP_PICK_END = 'Select end';
-  static const String FIELD_TRIP_WINDOW = 'Trip window';
+  static const String FIELD_TRIP_WINDOW = 'Meeting window';
 
   static const String FIELD_TRIP_REAPPROVAL_TITLE =
       'Approval will be withdrawn';
   static const String FIELD_TRIP_REAPPROVAL_BODY =
-      'This trip is approved. Changing it sends it back to planned, and a '
+      'This meeting is approved. Changing it sends it back to planned, and a '
       'sales admin has to approve it again.';
   static const String FIELD_TRIP_REAPPROVAL_CONFIRM = 'Edit anyway';
 
@@ -633,7 +636,7 @@ class AppStrings {
   static const String FARMER_VISIT_UPDATED = 'Farmer updated';
   static const String FARMER_VISIT_EDIT = 'Edit';
   static const String FARMER_VISIT_EDIT_LOCKED =
-      'A farmer can only be changed while the trip is running.';
+      'A farmer can only be changed while the meeting is running.';
   static const String FARMER_VISIT_SUBTITLE = 'Who you met today';
   static const String FARMER_VISIT_SAVE = 'Save farmer';
   static const String FARMER_VISIT_SAVED = 'Farmer recorded';
@@ -642,7 +645,7 @@ class AppStrings {
   static const String FARMER_VISIT_CONTACT = 'Contact number';
   static const String FARMER_VISIT_VILLAGE = 'Village';
   static const String FARMER_VISIT_VILLAGE_HINT =
-      'Defaults to the trip village';
+      'Defaults to the meeting village';
   static const String FARMER_VISIT_LAND_AREA = 'Land area (bigha)';
   static const String FARMER_VISIT_LAND_AREA_HINT = '0';
   static const String FARMER_VISIT_BIGHA = 'bigha';
@@ -667,7 +670,7 @@ class AppStrings {
   static const String FARMER_VISIT_VALIDATION_CROPS = 'Pick at least one crop.';
 
   static const String FARMER_VISIT_DUPLICATE =
-      'This farmer is already recorded on this trip.';
+      'This farmer is already recorded on this meeting.';
 
   // Godown manager shell.
   static const String GODOWN_HOME_TITLE = 'Godown';
@@ -678,6 +681,10 @@ class AppStrings {
   static const String DRAWER_RECIPES = 'Recipes';
   static const String SWITCH_TO_SALES_PERSON = 'Switch to Sales Person';
   static const String SWITCH_TO_GODOWN_MANAGER = 'Switch to Godown Manager';
+  static const String SWITCH_ROLE = 'Switch role';
+  static const String SWITCH_ROLE_SALES_PERSON = 'Sales Person';
+  static const String SWITCH_ROLE_GODOWN_MANAGER = 'Godown Manager';
+  static const String SWITCH_ROLE_LAB_TESTER = 'Lab Tester';
 
   static const String GODOWN_STATUS_LAB_TESTING = 'Lab Testing';
   static const String GODOWN_STATUS_IN_USE = 'In Use';
@@ -828,4 +835,70 @@ class AppStrings {
 
   static const String SESSION_EXPIRED =
       'Your session has expired. Please sign in again.';
+
+  // Lab tester shell.
+  static const String LAB_TESTER_HOME_TITLE = 'Lab Testing';
+  static const String DRAWER_PENDING_LOTS = 'Pending Lots';
+  static const String DRAWER_LAB_REPORTS = 'Lab Reports';
+
+  static const String PENDING_LOTS_TITLE = 'Pending Lots';
+  static const String PENDING_LOTS_SEARCH_HINT = 'Search by product...';
+  static const String PENDING_LOTS_EMPTY_TITLE = 'No lots waiting';
+  static const String PENDING_LOTS_EMPTY_BODY =
+      'Lots sent for lab testing will appear here.';
+  static const String PENDING_LOTS_RETEST_TAG = 'Re-test';
+  static const String PENDING_LOT_COUNT_ONE = 'lot';
+  static const String PENDING_LOT_COUNT_MANY = 'lots';
+
+  static const String LAB_REPORTS_TITLE = 'Lab Reports';
+  static const String LAB_REPORTS_SEARCH_HINT = 'Search by product...';
+  static const String LAB_REPORTS_EMPTY_TITLE = 'No reports yet';
+  static const String LAB_REPORTS_EMPTY_BODY =
+      'Tests you submit will appear here.';
+  static const String LAB_REPORT_COUNT_ONE = 'report';
+  static const String LAB_REPORT_COUNT_MANY = 'reports';
+
+  static const String LAB_TEST_FORM_TITLE = 'Lab Test';
+  static const String LAB_TEST_FIELD_NUMBER_OF_PLANTS = 'Number of plants';
+  static const String LAB_TEST_FIELD_NUMBER_OF_PLANTS_HINT = 'e.g. 400';
+  static const String LAB_TEST_FIELD_FEMALE_COUNT = 'Female count';
+  static const String LAB_TEST_FIELD_FEMALE_COUNT_HINT = 'e.g. 4';
+  static const String LAB_TEST_FIELD_OT_COUNT = 'OT count';
+  static const String LAB_TEST_FIELD_OT_COUNT_HINT = 'e.g. 2';
+  static const String LAB_TEST_FIELD_COMMENT = 'Comment';
+  static const String LAB_TEST_FIELD_COMMENT_HINT = 'Optional notes';
+  static const String LAB_TEST_GENETICAL_IMPURITY = 'Genetical Impurity';
+  static const String LAB_TEST_GROW_OUT_TEST = 'Grow Out Test';
+
+  static const String LAB_TEST_VALIDATION_PLANTS =
+      'Enter the number of plants.';
+  static const String LAB_TEST_VALIDATION_PLANTS_POSITIVE =
+      'Number of plants must be greater than zero.';
+  static const String LAB_TEST_VALIDATION_FEMALE = 'Enter the female count.';
+  static const String LAB_TEST_VALIDATION_OT = 'Enter the OT count.';
+  static const String LAB_TEST_VALIDATION_COUNTS_EXCEED_PLANTS =
+      'Female + OT count cannot reach the number of plants.';
+
+  static const String LAB_TEST_PASS = 'Pass';
+  static const String LAB_TEST_FAIL = 'Fail';
+  static const String LAB_TEST_CONFIRM_PASS_TITLE = 'Confirm Pass';
+  static const String LAB_TEST_CONFIRM_PASS_BODY =
+      'This lot will move to In Use stock. Continue?';
+  static const String LAB_TEST_CONFIRM_FAIL_TITLE = 'Confirm Fail';
+  static const String LAB_TEST_CONFIRM_FAIL_BODY =
+      'This lot will be rejected. Continue?';
+  static const String LAB_TEST_SUBMITTED = 'Lab test submitted.';
+  static const String LAB_TEST_UPDATED = 'Lab test updated.';
+  static const String LAB_TEST_FORMULA_TITLE = 'Calculated values';
+
+  static const String LAB_TEST_DETAIL_TITLE = 'Lab Test Report';
+  static const String LAB_TEST_FIELD_TESTED_BY = 'Tested by';
+  static const String LAB_TEST_FIELD_TESTED_AT = 'Tested at';
+  static const String LAB_TEST_FIELD_PRODUCT = 'Product';
+  static const String LAB_TEST_FIELD_PARTY = 'Party';
+  static const String LAB_TEST_FIELD_LOT_NO = 'Lot number';
+  static const String LAB_TEST_FIELD_QUANTITY_KG = 'Quantity';
+  static const String LAB_TEST_EDIT = 'Edit';
+
+  static const String LAB_NO_SEARCH_MATCH = "No product matches that name.";
 }

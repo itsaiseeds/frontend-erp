@@ -15,4 +15,8 @@ class ClientsEndpoints {
 
   /// Both link pickers are scoped to one client by this query param.
   static const String CLIENT_PUBLIC_ID_PARAM = 'client_public_id';
+
+  /// Admin-only: scopes the client list and link pickers to another sales
+  /// person's clients instead of the caller's own.
+  static const String SALES_PERSON_ID_PARAM = 'sales_person_id';
 }

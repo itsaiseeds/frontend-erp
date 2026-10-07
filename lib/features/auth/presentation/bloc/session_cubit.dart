@@ -37,19 +37,31 @@ class SessionState extends Equatable {
         activeRole: activeRole,
       );
 
-  /// True once the session actually holds both roles -- the only time a
+  /// The roles this session actually holds, in a stable display/priority
+  /// order. Empty only for a signed-out state.
+  List<AndroidRole> get availableRoles {
+    final AuthSession? s = session;
+    if (s == null) return const [];
+    return [
+      if (s.isSalesPerson) AndroidRole.salesPerson,
+      if (s.isGodownManager) AndroidRole.godownManager,
+      if (s.isLabTester) AndroidRole.labTester,
+    ];
+  }
+
+  /// True once the session holds two or more roles -- the only time a
   /// choice needs making.
-  bool get hasRoleChoice =>
-      session != null && session!.isSalesPerson && session!.isGodownManager;
+  bool get hasRoleChoice => availableRoles.length >= 2;
 
   /// The role to route by: an explicit choice first, then whichever single
-  /// role the account has, defaulting to sales person if somehow neither
-  /// flag came back true (a state the server should never send).
+  /// role the account has, defaulting to the first available role (sales
+  /// person preferred) if somehow none came back true (a state the server
+  /// should never send).
   AndroidRole get effectiveRole {
     if (activeRole != null) return activeRole!;
-    if (session?.isGodownManager == true && session?.isSalesPerson != true) {
-      return AndroidRole.godownManager;
-    }
+    final List<AndroidRole> roles = availableRoles;
+    if (roles.length == 1) return roles.first;
+    if (roles.isNotEmpty) return roles.first;
     return AndroidRole.salesPerson;
   }
 
@@ -116,8 +128,12 @@ class SessionCubit extends SafeCubit<SessionState> {
   }) async {
     AppLogger.session('authenticated as userId=${session.userId}');
 
-    final bool hasBoth = session.isSalesPerson && session.isGodownManager;
-    final AndroidRole? resolved = hasBoth
+    final int roleCount = [
+      session.isSalesPerson,
+      session.isGodownManager,
+      session.isLabTester,
+    ].where((held) => held).length;
+    final AndroidRole? resolved = roleCount >= 2
         ? (activeRole ?? await _defaultRoleFor(session))
         : null;
 
