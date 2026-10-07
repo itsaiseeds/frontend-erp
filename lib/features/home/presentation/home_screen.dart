@@ -133,9 +133,9 @@ class _HomeScreenState extends State<HomeScreen>
     await context.read<SessionCubit>().signOut();
   }
 
-  void _switchToGodownManager() {
+  void _onRoleSelected(AndroidRole role) {
     _animationController.reverse();
-    context.read<SessionCubit>().switchRole(AndroidRole.godownManager);
+    context.read<SessionCubit>().switchRole(role);
   }
 
   double get _slideWidth =>
@@ -157,8 +157,11 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    final bool hasRoleChoice = context.select<SessionCubit, bool>(
-      (cubit) => cubit.state.hasRoleChoice,
+    final List<AndroidRole> availableRoles = context.select<SessionCubit, List<AndroidRole>>(
+      (cubit) => cubit.state.availableRoles,
+    );
+    final AndroidRole? activeRole = context.select<SessionCubit, AndroidRole?>(
+      (cubit) => cubit.state.effectiveRole,
     );
 
     return PopScope(
@@ -192,10 +195,9 @@ class _HomeScreenState extends State<HomeScreen>
                         selectedIndex: _selectedDrawerIndex,
                         onItemSelected: _onDrawerItemSelected,
                         onLogout: _handleLogout,
-                        switchRoleLabel: hasRoleChoice
-                            ? AppStrings.SWITCH_TO_GODOWN_MANAGER
-                            : null,
-                        onSwitchRole: hasRoleChoice ? _switchToGodownManager : null,
+                        availableRoles: availableRoles,
+                        activeRole: activeRole,
+                        onRoleSelected: _onRoleSelected,
                       ),
                     ),
                   ),

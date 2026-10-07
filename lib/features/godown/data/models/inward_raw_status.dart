@@ -63,8 +63,11 @@ class InwardRawStatusX {
   /// Mirrors `InwardOperations.ALLOWED_RAW_STATUS_TRANSITIONS`.
   static List<InwardRawStatus> allowedNextFrom(InwardRawStatus status) {
     switch (status) {
+      // Deciding a lot is In Use or Rejected is reserved for a future role --
+      // neither the godown manager nor the admin may make that call today.
+      // Mirrors `InwardOperations.ALLOWED_RAW_STATUS_TRANSITIONS`.
       case InwardRawStatus.labTesting:
-        return const [InwardRawStatus.inUse, InwardRawStatus.rejected];
+        return const [];
       case InwardRawStatus.inUse:
       case InwardRawStatus.rejected:
         return const [InwardRawStatus.labTesting];

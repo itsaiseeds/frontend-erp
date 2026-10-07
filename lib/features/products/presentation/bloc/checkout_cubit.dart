@@ -8,6 +8,7 @@ import '../../../clients/data/models/client_address.dart';
 import '../../../clients/data/models/client_status.dart';
 import '../../../clients/data/models/clients_query.dart';
 import '../../../clients/data/models/paginated_clients.dart';
+import '../../../clients/data/models/sales_person_option.dart';
 import '../../../clients/data/models/transport_agency.dart';
 import '../../data/models/cart_line.dart';
 import '../../data/products_repository.dart';
@@ -20,9 +21,10 @@ class CheckoutCubit extends SafeCubit<CheckoutState> {
   CheckoutCubit({
     required ClientsRepository clientsRepository,
     required ProductsRepository productsRepository,
+    bool isAdmin = false,
   }) : _clientsRepository = clientsRepository,
        _productsRepository = productsRepository,
-       super(const CheckoutState());
+       super(CheckoutState(isAdmin: isAdmin));
 
   /// The picker shows every client the sales person can order for, so one
   /// generous page beats paging through a dropdown.
@@ -31,6 +33,24 @@ class CheckoutCubit extends SafeCubit<CheckoutState> {
   Future<void> loadClients() async {
     emit(state.copyWith(status: CheckoutStatus.loading, clearError: true));
 
+    if (state.isAdmin) await _loadSalesPersons();
+
+    await _fetchClients();
+  }
+
+  Future<void> _loadSalesPersons() async {
+    emit(state.copyWith(isLoadingSalesPersons: true));
+    try {
+      final List<SalesPersonOption> options = await _clientsRepository
+          .fetchSalesPersons();
+      emit(state.copyWith(salesPersons: options, isLoadingSalesPersons: false));
+    } catch (e) {
+      AppLogger.session('failed to load sales persons for admin booking: $e');
+      emit(state.copyWith(isLoadingSalesPersons: false));
+    }
+  }
+
+  Future<void> _fetchClients() async {
     try {
       final PaginatedClients result = await _clientsRepository.fetchClients(
         page: 1,
@@ -39,6 +59,7 @@ class CheckoutCubit extends SafeCubit<CheckoutState> {
           ClientStatusX.VERIFIED,
         }),
         rangeParamsByKey: const {},
+        salesPersonId: state.bookingFor?.id,
       );
 
       emit(
@@ -53,6 +74,31 @@ class CheckoutCubit extends SafeCubit<CheckoutState> {
   }
 
   static const String _STATUS_FILTER = 'status';
+
+  /// Switches whose clients the picker shows. Clearing the choice (``null``)
+  /// goes back to booking as the admin themselves. Any client/address/agency
+  /// already chosen belonged to the old scope, so it is dropped.
+  Future<void> selectSalesPerson(SalesPersonOption? person) async {
+    if (state.bookingFor?.id == person?.id) return;
+
+    emit(
+      state.copyWith(
+        bookingFor: person,
+        clearBookingFor: person == null,
+        status: CheckoutStatus.loading,
+        clients: const [],
+        addresses: const [],
+        agencies: const [],
+        clearClient: true,
+        clearAddress: true,
+        clearAgency: true,
+        clearValidation: true,
+        clearError: true,
+      ),
+    );
+
+    await _fetchClients();
+  }
 
   /// Picking a client replaces the address and agency options. Both are link
   /// ids scoped to that client and absent from the list payload, so they come
@@ -75,9 +121,12 @@ class CheckoutCubit extends SafeCubit<CheckoutState> {
 
     try {
       final List<ClientAddress> addresses = await _clientsRepository
-          .fetchAddresses(client.publicId);
+          .fetchAddresses(client.publicId, salesPersonId: state.bookingFor?.id);
       final List<TransportAgency> agencies = await _clientsRepository
-          .fetchTransportAgencies(client.publicId);
+          .fetchTransportAgencies(
+            client.publicId,
+            salesPersonId: state.bookingFor?.id,
+          );
 
       if (state.client?.publicId != client.publicId) return;
 
@@ -167,6 +216,7 @@ class CheckoutCubit extends SafeCubit<CheckoutState> {
             : state.agency?.id,
         specialComments: state.comments,
         lines: lines,
+        createdBy: state.bookingFor?.id,
       );
 
       emit(state.copyWith(isSubmitting: false));

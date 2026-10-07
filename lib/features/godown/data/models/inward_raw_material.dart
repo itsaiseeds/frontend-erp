@@ -4,6 +4,27 @@ import '../../../../core/utils/json_parser.dart';
 import 'godown_refs.dart';
 import 'inward_raw_status.dart';
 
+/// The `lab_testing` block of a lot payload: null until the lot is tested.
+/// A lot waiting for a re-test keeps its record, with [result] null.
+class LabTestingRef extends Equatable {
+  final String publicId;
+  final String? result;
+  final String? growOutTest;
+
+  const LabTestingRef({this.publicId = '', this.result, this.growOutTest});
+
+  factory LabTestingRef.fromJson(Map<String, dynamic> json) {
+    return LabTestingRef(
+      publicId: JsonParser.asString(json['public_id']),
+      result: json['result'] as String?,
+      growOutTest: json['grow_out_test'] as String?,
+    );
+  }
+
+  @override
+  List<Object?> get props => [publicId, result, growOutTest];
+}
+
 /// One inward raw-material lot (`IR-…`).
 ///
 /// Decimal quantities arrive as strings so no precision is lost on the way
@@ -20,6 +41,7 @@ class InwardRawMaterial extends Equatable {
   final DateTime? labSamplingDate;
   final DateTime? effectiveDate;
   final GodownActorRef? createdBy;
+  final LabTestingRef? labTesting;
 
   const InwardRawMaterial({
     required this.publicId,
@@ -33,6 +55,7 @@ class InwardRawMaterial extends Equatable {
     this.labSamplingDate,
     this.effectiveDate,
     this.createdBy,
+    this.labTesting,
   });
 
   factory InwardRawMaterial.fromJson(Map<String, dynamic> json) {
@@ -55,6 +78,7 @@ class InwardRawMaterial extends Equatable {
       labSamplingDate: GodownJson.dateOf(json['lab_sampling_date']),
       effectiveDate: GodownJson.dateOf(json['effective_date']),
       createdBy: GodownJson.refOf(json['created_by'], GodownActorRef.fromJson),
+      labTesting: GodownJson.refOf(json['lab_testing'], LabTestingRef.fromJson),
     );
   }
 
@@ -71,6 +95,9 @@ class InwardRawMaterial extends Equatable {
 
   num? get quantityValue => num.tryParse(quantityKg.trim());
 
+  /// True for a lot sent back to Lab Testing that has not been re-tested yet.
+  bool get isPendingRetest => labTesting != null && labTesting!.result == null;
+
   @override
   List<Object?> get props => [
     publicId,
@@ -84,5 +111,6 @@ class InwardRawMaterial extends Equatable {
     labSamplingDate,
     effectiveDate,
     createdBy,
+    labTesting,
   ];
 }

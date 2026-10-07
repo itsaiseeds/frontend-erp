@@ -34,12 +34,18 @@ class ProductsRepository {
     return PaginatedProducts.fromJson(Map<String, dynamic>.from(response));
   }
 
+  /// [createdBy] is admin-only: the sales person's id to book this order as.
+  /// Omitted, the order is booked as the caller, exactly as before. The
+  /// client/address/agency ids must come from that same sales person's
+  /// clients (see `ClientsRepository.fetchClients`'s `salesPersonId`) --
+  /// using the admin's own client here is a 400.
   Future<void> createOrder({
     required String clientPublicId,
     required int clientAddressId,
     int? clientTransportAgencyId,
     String specialComments = '',
     required List<CartLine> lines,
+    int? createdBy,
   }) async {
     await _apiClient.post(
       ProductsEndpoints.createOrder,
@@ -55,6 +61,7 @@ class ProductsRepository {
               'quantity': line.quantity,
             },
         ],
+        'created_by': ?createdBy,
       },
     );
   }

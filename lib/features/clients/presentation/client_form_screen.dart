@@ -401,7 +401,7 @@ class _StepBody extends StatelessWidget {
                   UpperCaseTextFormatter(),
                 ],
                 onChanged: cubit.updateGstNumber,
-                validator: AppValidators.gstNumber,
+                validator: (value) => AppValidators.gstNumber(value, isRequired: false),
               ),
             ],
           ),
