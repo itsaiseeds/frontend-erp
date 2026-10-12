@@ -125,20 +125,25 @@ class ReturnOrderPrefillOrder extends Equatable {
   List<Object?> get props => [publicId, status, client];
 }
 
-/// What the return screen opens with: the order being returned against, its
-/// live return if one already exists, and the challan lines to pick from.
+/// What the return screen opens with: the order being returned against, every
+/// live return already raised on it (v2: any number, newest first), and the
+/// challan lines to pick from -- [ReturnOrderPrefillLine.returnablePackets]
+/// is already net of everything every live return has claimed, so a new
+/// return is offered exactly what is still available, no local subtraction
+/// needed.
 class ReturnOrderPrefill extends Equatable {
   final ReturnOrderPrefillOrder order;
-  final ReturnOrder? returnOrder;
+  final List<ReturnOrder> returnOrders;
   final List<ReturnOrderPrefillLine> lines;
 
   const ReturnOrderPrefill({
     this.order = const ReturnOrderPrefillOrder(),
-    this.returnOrder,
+    this.returnOrders = const [],
     this.lines = const [],
   });
 
   factory ReturnOrderPrefill.fromJson(Map<String, dynamic> json) {
+    final dynamic returnOrders = json['return_orders'];
     final dynamic returnOrder = json['return_order'];
 
     return ReturnOrderPrefill(
@@ -147,9 +152,13 @@ class ReturnOrderPrefill extends Equatable {
               Map<String, dynamic>.from(json['order'] as Map),
             )
           : const ReturnOrderPrefillOrder(),
-      returnOrder: returnOrder is Map
-          ? ReturnOrder.fromJson(Map<String, dynamic>.from(returnOrder))
-          : null,
+      // v2 sends the list; fall back to the deprecated singular key so this
+      // model still parses an older (v1) response correctly.
+      returnOrders: returnOrders is List
+          ? JsonParser.asList(returnOrders, ReturnOrder.fromJson)
+          : returnOrder is Map
+          ? [ReturnOrder.fromJson(Map<String, dynamic>.from(returnOrder))]
+          : const [],
       lines: JsonParser.asList(json['lines'], ReturnOrderPrefillLine.fromJson),
     );
   }
@@ -184,22 +193,28 @@ class ReturnOrderPrefill extends Equatable {
     return grouped;
   }
 
-  /// Whether the order may still take a return. Only a dispatched or delivered
-  /// order can, and only one live return at a time -- the same rules the API
-  /// enforces, checked here so the screen can explain rather than 400.
+  /// Whether the order may still take a return. Only a dispatched or
+  /// delivered order can -- v2 allows any number of live returns at once, so
+  /// what actually gates a new one is whether anything is still returnable
+  /// (below), the same rule the API enforces.
   bool get isReturnableOrder =>
       ReturnOrderPrefillX.isReturnableOrderStatus(order.status);
 
-  bool get hasLiveReturn => returnOrder?.isLive ?? false;
+  bool get hasLiveReturn => returnOrders.any((r) => r.isLive);
 
-  bool get canCreate => isReturnableOrder && !hasLiveReturn && lines.isNotEmpty;
+  /// Every live return already on this order, newest first -- what a list of
+  /// "returns in progress" renders from.
+  List<ReturnOrder> get liveReturnOrders =>
+      returnOrders.where((r) => r.isLive).toList();
 
-  /// The seed the edit form starts from: the live return's own lines, so an
-  /// admin editing a pending return sees what is actually saved.
-  List<ReturnOrderItem> get existingItems => returnOrder?.items ?? const [];
+  bool get hasReturnablePackets =>
+      lines.any((line) => line.isReturnable);
+
+  bool get canCreate =>
+      isReturnableOrder && hasReturnablePackets && lines.isNotEmpty;
 
   @override
-  List<Object?> get props => [order, returnOrder, lines];
+  List<Object?> get props => [order, returnOrders, lines];
 }
 
 class ReturnOrderPrefillX {

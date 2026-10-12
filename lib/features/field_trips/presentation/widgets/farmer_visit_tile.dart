@@ -61,11 +61,21 @@ class FarmerVisitTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      visit.farmerName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTypography.labelMedium,
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            visit.farmerName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.labelMedium,
+                          ),
+                        ),
+                        if (visit.isLead) ...[
+                          const SizedBox(width: AppSpacing.XS6),
+                          const _LeadBadge(),
+                        ],
+                      ],
                     ),
                     const SizedBox(height: AppSpacing.XXS2),
                     _Meta(visit: visit),
@@ -138,6 +148,29 @@ class _MoreChip extends StatelessWidget {
         style: AppTypography.labelSmall.copyWith(
           color: AppColors.TEXT_SECONDARY,
         ),
+      ),
+    );
+  }
+}
+
+/// Flags a farmer recorded as a sales lead, wherever the tile appears.
+class _LeadBadge extends StatelessWidget {
+  const _LeadBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.SM8,
+        vertical: AppSpacing.XXS2,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.WARNING_LIGHT,
+        borderRadius: BorderRadius.circular(AppRadius.SM),
+      ),
+      child: Text(
+        AppStrings.FARMER_LEAD_BADGE,
+        style: AppTypography.labelSmall.copyWith(color: AppColors.WARNING),
       ),
     );
   }

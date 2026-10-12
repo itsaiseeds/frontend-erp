@@ -9,10 +9,52 @@ import '../../../core/utils/date_formatter.dart';
 import '../../../core/utils/image_url_resolver.dart';
 import '../../../core/utils/toast_utils.dart';
 import '../../challan/presentation/challan_screen.dart';
+import '../../clients/data/models/child_org.dart';
 import '../../return_orders/presentation/create_return_order_screen.dart';
 import '../data/models/order.dart';
 import '../data/models/order_status.dart';
+import 'edit_order_screen.dart';
 import 'widgets/order_status_badge.dart';
+
+/// Opens the edit screen, or says why it is not editable yet.
+///
+/// Only a BOOKED order can be changed -- once the office has reviewed it, a
+/// sales person corrects it by other means. The button stays visible either
+/// way, same reasoning as [_ChallanAction]/[_ReturnOrderAction] below: a
+/// missing control reads as a bug, a tap that explains itself does not.
+///
+/// A save on the edit screen pops `true`; this action passes that straight
+/// through by popping the detail screen itself with the same value, so
+/// whoever opened it (the orders list) knows to refresh.
+class _EditOrderAction extends StatelessWidget {
+  final Order order;
+
+  const _EditOrderAction({required this.order});
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isReady = OrderStatusX.isEditable(order.status);
+
+    return IconButton(
+      tooltip: AppStrings.EDIT_ORDER_TOOLTIP,
+      onPressed: () async {
+        if (!isReady) {
+          ToastUtils.showInfo(context, AppStrings.EDIT_ORDER_NOT_BOOKED);
+          return;
+        }
+        final bool? saved = await EditOrderScreen.open(context, order);
+        if (saved == true && context.mounted) {
+          Navigator.of(context).pop(true);
+        }
+      },
+      icon: Icon(
+        Icons.edit_outlined,
+        size: AppSizes.ICON_LG,
+        color: isReady ? AppColors.PRIMARY : AppColors.TEXT_DISABLED,
+      ),
+    );
+  }
+}
 
 /// Opens the challan, or says why there isn't one yet.
 ///
@@ -89,6 +131,7 @@ class OrderDetailScreen extends StatelessWidget {
         backgroundColor: AppColors.SURFACE,
         surfaceTintColor: AppColors.TRANSPARENT,
         elevation: 0,
+        titleSpacing: AppSpacing.XXS2,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(
@@ -102,6 +145,7 @@ class OrderDetailScreen extends StatelessWidget {
           style: AppTypography.titleMedium,
         ),
         actions: [
+          _EditOrderAction(order: order),
           _ChallanAction(order: order),
           _ReturnOrderAction(order: order),
           const SizedBox(width: AppSpacing.XS4),
@@ -474,6 +518,8 @@ class _DeliveryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ChildOrg? bookedFor = order.bookedFor;
+
     return _Card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -484,9 +530,32 @@ class _DeliveryCard extends StatelessWidget {
             title: AppStrings.ORDER_DELIVERY,
           ),
           _DetailRow(
-            label: AppStrings.ORDER_DELIVERY_ADDRESS,
-            value: order.deliveryAddress,
+            label: bookedFor != null
+                ? AppStrings.ORDER_DELIVERY_TO
+                : AppStrings.ORDER_DELIVERY_ADDRESS,
+            value: order.deliveryToLabel,
           ),
+          if (bookedFor != null && bookedFor.address != null) ...[
+            const _RowSeparator(),
+            _DetailRow(
+              label: AppStrings.ORDER_DELIVERY_ADDRESS,
+              value: bookedFor.address!.formatted,
+            ),
+          ],
+          if (bookedFor != null && bookedFor.transportName.trim().isNotEmpty) ...[
+            const _RowSeparator(),
+            _DetailRow(
+              label: AppStrings.ORDER_DELIVERY_TO_TRANSPORT,
+              value: bookedFor.transportName,
+            ),
+          ],
+          if (bookedFor != null && bookedFor.contactNumber.trim().isNotEmpty) ...[
+            const _RowSeparator(),
+            _DetailRow(
+              label: AppStrings.ORDER_DELIVERY_TO_CONTACT,
+              value: bookedFor.contactNumber,
+            ),
+          ],
           const _RowSeparator(),
           _DetailRow(
             label: AppStrings.ORDER_EXPECTED_DELIVERY,

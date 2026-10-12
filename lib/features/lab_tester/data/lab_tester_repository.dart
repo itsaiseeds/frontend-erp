@@ -4,6 +4,7 @@ import '../../../core/network/api_exception.dart';
 import '../../../core/network/endpoints/lab_endpoints.dart';
 import '../../godown/data/models/godown_page.dart';
 import '../../godown/data/models/inward_raw_material.dart';
+import 'models/lab_report_export.dart';
 import 'models/lab_testing.dart';
 
 /// Every lab-tester-token endpoint: the pending-lot queue and the lab test
@@ -40,6 +41,19 @@ class LabTesterRepository {
       LabEndpoints.labTesting(publicId),
     );
     return LabTesting.fromJson(_asMap(response));
+  }
+
+  /// The date-bounded export the Report Export screen turns into a PDF.
+  /// Dates travel as plain `YYYY-MM-DD` calendar days, not instants.
+  Future<LabReportExport> fetchLabReportExport({
+    required String startDate,
+    required String endDate,
+  }) async {
+    final dynamic response = await _apiClient.get(
+      LabEndpoints.exportLabTestings,
+      queryParams: {'start_date': startDate, 'end_date': endDate},
+    );
+    return LabReportExport.fromJson(_asMap(response));
   }
 
   Future<LabTesting> submitLabTest({

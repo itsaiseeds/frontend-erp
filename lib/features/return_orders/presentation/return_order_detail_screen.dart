@@ -8,15 +8,17 @@ import '../../../core/utils/currency_formatter.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../orders/data/models/order_status.dart';
 import '../data/models/return_order.dart';
+import 'return_order_slip_screen.dart';
 import 'widgets/return_order_status_badge.dart';
 
 /// A return, on its own.
 ///
 /// Deliberately not the order the return was raised against: someone opening a
 /// return wants to see what came back and where it stands, not the order it
-/// came from. For the same reason the app bar carries no actions -- raising a
-/// return and opening a challan are things done from the order, never from the
-/// return itself.
+/// came from. The app bar otherwise carries no actions -- raising a return and
+/// opening a challan are things done from the order, never from the return
+/// itself -- but once accepted there is a document only the return itself
+/// produces: the return order slip.
 class ReturnOrderDetailScreen extends StatelessWidget {
   final ReturnOrder returnOrder;
 
@@ -50,6 +52,19 @@ class ReturnOrderDetailScreen extends StatelessWidget {
           AppStrings.RETURN_ORDER_DETAIL_TITLE,
           style: AppTypography.titleMedium,
         ),
+        actions: returnOrder.status != ReturnOrderStatus.accepted
+            ? null
+            : [
+                IconButton(
+                  onPressed: () =>
+                      ReturnOrderSlipScreen.open(context, returnOrder),
+                  tooltip: AppStrings.RETURN_ORDER_VIEW_SLIP,
+                  icon: const Icon(
+                    Icons.receipt_long_outlined,
+                    color: AppColors.TEXT_PRIMARY,
+                  ),
+                ),
+              ],
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(

@@ -6,6 +6,8 @@ class LabEndpoints {
   static const String pendingLots = '$_base/pending-lots';
   static const String labTestings = '$_base/lab-testings';
 
+  static const String exportLabTestings = '$_base/export/lab-testings';
+
   static String labTesting(String publicId) =>
       '$_base/lab-testing/$publicId';
 }

@@ -11,6 +11,7 @@ class LabTesterDrawerItems {
   static const int PENDING_LOTS = 0;
   static const int LAB_REPORTS = 1;
   static const int PROFILE = 2;
+  static const int LAB_REPORT_EXPORT = 3;
 
   static const List<DrawerItem> primary = [
     DrawerItem(
@@ -22,6 +23,11 @@ class LabTesterDrawerItems {
       index: LAB_REPORTS,
       icon: Icons.fact_check_outlined,
       title: AppStrings.DRAWER_LAB_REPORTS,
+    ),
+    DrawerItem(
+      index: LAB_REPORT_EXPORT,
+      icon: Icons.picture_as_pdf_outlined,
+      title: AppStrings.DRAWER_LAB_REPORT_EXPORT,
     ),
   ];
 

@@ -11,6 +11,7 @@ import 'models/inward_raw_status.dart';
 import 'models/godown_pickable.dart';
 import 'models/other_material_recipe.dart';
 import 'models/product_packaging.dart';
+import 'models/raw_material_waste.dart';
 import 'models/stock_position.dart';
 
 /// Every godown-manager-token endpoint: stock positions, the two inward
@@ -35,7 +36,10 @@ class GodownRepository {
   }) async {
     final dynamic response = await _apiClient.get(
       GodownEndpoints.otherMaterialStock,
-      queryParams: {'material_type': ?materialType},
+      queryParams: {
+        'material_type': ?materialType,
+        'group_by': 'configuration',
+      },
     );
     return OtherMaterialStock.fromJson(_asMap(response));
   }
@@ -253,6 +257,48 @@ class GodownRepository {
         )
         .toList();
   }
+
+  Future<GodownPage<RawMaterialWaste>> fetchRawMaterialWastes({
+    required Map<String, dynamic> queryParams,
+  }) async {
+    final dynamic response = await _apiClient.get(
+      GodownEndpoints.rawMaterialWastes,
+      queryParams: queryParams,
+    );
+    return GodownPage.fromJson(_asMap(response), RawMaterialWaste.fromJson);
+  }
+
+  Future<void> createRawMaterialWaste({
+    required String productPublicId,
+    required String quantityKg,
+    String? reason,
+  }) {
+    return _apiClient.post(
+      GodownEndpoints.rawMaterialWastes,
+      body: {
+        'product': productPublicId,
+        'quantity_kg': quantityKg.trim(),
+        'reason': reason?.trim() ?? '',
+      },
+    );
+  }
+
+  Future<void> updateRawMaterialWaste({
+    required String publicId,
+    String? quantityKg,
+    String? reason,
+  }) {
+    return _apiClient.patch(
+      GodownEndpoints.rawMaterialWaste(publicId),
+      body: {
+        if (quantityKg != null) 'quantity_kg': quantityKg.trim(),
+        if (reason != null) 'reason': reason.trim(),
+      },
+    );
+  }
+
+  Future<void> deleteRawMaterialWaste(String publicId) =>
+      _apiClient.delete(GodownEndpoints.rawMaterialWaste(publicId));
 
   static String? _isoDate(DateTime? value) {
     if (value == null) return null;

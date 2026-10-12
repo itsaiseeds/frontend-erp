@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/constants/app_defaults.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/models/city_model.dart';
+import '../../../core/models/country_model.dart';
+import '../../../core/models/state_model.dart';
 import '../../../core/network/api_client.dart';
+import '../../../core/services/metadata_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/utils/app_validators.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../core/utils/toast_utils.dart';
 import '../../../core/widgets/inputs/app_text_field.dart';
 import '../../../core/widgets/inputs/geo_picker_field.dart';
+import '../../../core/widgets/inputs/main_flag_toggle.dart';
 import '../../../core/widgets/layout/dismiss_keyboard.dart';
 import '../../auth/presentation/bloc/session_cubit.dart';
 import '../../clients/data/clients_repository.dart';
+import '../../clients/data/models/child_org.dart';
 import '../../clients/data/models/client.dart';
 import '../../clients/data/models/client_address.dart';
 import '../../clients/data/models/sales_person_option.dart';
@@ -358,6 +367,8 @@ class _DeliveryStep extends StatelessWidget {
                   isRequired: true,
                 ),
                 const SizedBox(height: AppSpacing.MD16),
+                _DeliverElsewhereSection(state: state, cubit: cubit),
+                const SizedBox(height: AppSpacing.MD16),
                 GeoPickerField<TransportAgency>(
                   label: AppStrings.CART_SELECT_AGENCY,
                   hint: AppStrings.CART_SELECT_AGENCY_HINT,
@@ -411,6 +422,335 @@ class _DeliveryStep extends StatelessWidget {
     ].map((part) => part.trim()).where((part) => part.isNotEmpty).toList();
 
     return parts.join(', ');
+  }
+}
+
+/// The optional "Delivery To" section: a plain toggle that, switched on,
+/// reveals either a picker over the client's existing delivery places or an
+/// inline form for a brand-new one -- all inside the same delivery card, so
+/// booking never leaves this screen.
+class _DeliverElsewhereSection extends StatelessWidget {
+  final CheckoutState state;
+  final CheckoutCubit cubit;
+
+  const _DeliverElsewhereSection({required this.state, required this.cubit});
+
+  @override
+  Widget build(BuildContext context) {
+    final bool hasClient = state.client != null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        MainFlagToggle(
+          value: state.deliversElsewhere,
+          enabled: hasClient && !state.isSubmitting,
+          label: AppStrings.CART_DELIVER_ELSEWHERE,
+          hint: hasClient
+              ? AppStrings.CART_DELIVER_ELSEWHERE_HINT
+              : AppStrings.CART_DELIVER_ELSEWHERE_LOCKED,
+          onChanged: cubit.setDeliversElsewhere,
+        ),
+        if (state.deliversElsewhere) ...[
+          const SizedBox(height: AppSpacing.MD16),
+          _DeliveryPlacePicker(state: state, cubit: cubit),
+        ],
+      ],
+    );
+  }
+}
+
+class _DeliveryPlacePicker extends StatelessWidget {
+  final CheckoutState state;
+  final CheckoutCubit cubit;
+
+  const _DeliveryPlacePicker({required this.state, required this.cubit});
+
+  @override
+  Widget build(BuildContext context) {
+    if (state.isAddingNewDeliveryPlace) {
+      return _NewDeliveryPlaceForm(state: state, cubit: cubit);
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GeoPickerField<ChildOrg>(
+          label: AppStrings.CART_DELIVERY_PLACE,
+          hint: state.isLoadingDeliveryPlaces
+              ? AppStrings.CART_LOADING_OPTIONS
+              : AppStrings.CART_DELIVERY_PLACE_HINT,
+          value: state.deliveryPlace,
+          items: state.deliveryPlaces,
+          itemLabel: (place) => place.label,
+          isSame: (a, b) => a.id == b.id,
+          onSelected: cubit.selectDeliveryPlace,
+          enabled: state.deliveryPlaces.isNotEmpty && !state.isSubmitting,
+          disabledHint: state.isLoadingDeliveryPlaces
+              ? AppStrings.CART_LOADING_OPTIONS
+              : AppStrings.CART_DELIVERY_PLACE_HINT,
+          isRequired: true,
+        ),
+        const SizedBox(height: AppSpacing.SM8),
+        GestureDetector(
+          onTap: state.isSubmitting ? null : cubit.startNewDeliveryPlace,
+          behavior: HitTestBehavior.opaque,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.add_circle_outline_rounded,
+                size: AppSizes.ICON_MD,
+                color: AppColors.PRIMARY,
+              ),
+              const SizedBox(width: AppSpacing.XS6),
+              Text(
+                AppStrings.CART_DELIVERY_PLACE_ADD_NEW,
+                style: AppTypography.labelMedium.copyWith(
+                  color: AppColors.PRIMARY,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// The inline "new delivery place" form: party/village, the same address
+/// fields `AddressEditor` uses for a client's own address, then optional
+/// transport/contact. Kept inline (not a pushed screen) so booking stays in
+/// one flow.
+class _NewDeliveryPlaceForm extends StatefulWidget {
+  final CheckoutState state;
+  final CheckoutCubit cubit;
+
+  const _NewDeliveryPlaceForm({required this.state, required this.cubit});
+
+  @override
+  State<_NewDeliveryPlaceForm> createState() => _NewDeliveryPlaceFormState();
+}
+
+class _NewDeliveryPlaceFormState extends State<_NewDeliveryPlaceForm> {
+  late final TextEditingController _partyController;
+  late final TextEditingController _villageController;
+  late final TextEditingController _line1Controller;
+  late final TextEditingController _line2Controller;
+  late final TextEditingController _pincodeController;
+  late final TextEditingController _transportController;
+  late final TextEditingController _contactController;
+
+  @override
+  void initState() {
+    super.initState();
+    final NewDeliveryPlaceDraft draft = widget.state.newDeliveryPlace;
+    _partyController = TextEditingController(text: draft.partyName);
+    _villageController = TextEditingController(text: draft.villageName);
+    _line1Controller = TextEditingController(text: draft.line1);
+    _line2Controller = TextEditingController(text: draft.line2);
+    _pincodeController = TextEditingController(text: draft.pincode);
+    _transportController = TextEditingController(text: draft.transportName);
+    _contactController = TextEditingController(text: draft.contactNumber);
+
+    // The country picker shows a default when none is picked yet (so the
+    // field never looks empty), but that default has to actually land in the
+    // draft -- otherwise the form reads as complete while `isComplete` still
+    // sees a null country and "Place order" stays disabled forever.
+    if (draft.country == null) {
+      final CountryModel? fallback = _defaultCountry(
+        MetadataService.instance.countries,
+      );
+      if (fallback != null) {
+        _update((current) => current.copyWith(country: fallback));
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _partyController.dispose();
+    _villageController.dispose();
+    _line1Controller.dispose();
+    _line2Controller.dispose();
+    _pincodeController.dispose();
+    _transportController.dispose();
+    _contactController.dispose();
+    super.dispose();
+  }
+
+  NewDeliveryPlaceDraft get _draft => widget.state.newDeliveryPlace;
+
+  void _update(NewDeliveryPlaceDraft Function(NewDeliveryPlaceDraft) change) {
+    widget.cubit.updateNewDeliveryPlace(change(_draft));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isSubmitting = widget.state.isSubmitting;
+    final CountryModel? country =
+        _draft.country ?? _defaultCountry(MetadataService.instance.countries);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AppTextField(
+          controller: _partyController,
+          label: AppStrings.CART_DELIVERY_PLACE_PARTY_NAME,
+          hint: AppStrings.CART_DELIVERY_PLACE_PARTY_NAME_HINT,
+          isRequired: true,
+          enabled: !isSubmitting,
+          textInputAction: TextInputAction.next,
+          onChanged: (value) =>
+              _update((draft) => draft.copyWith(partyName: value)),
+        ),
+        const SizedBox(height: AppSpacing.SMD12),
+        AppTextField(
+          controller: _villageController,
+          label: AppStrings.CART_DELIVERY_PLACE_VILLAGE,
+          hint: AppStrings.CART_DELIVERY_PLACE_VILLAGE_HINT,
+          isRequired: true,
+          enabled: !isSubmitting,
+          textInputAction: TextInputAction.next,
+          onChanged: (value) =>
+              _update((draft) => draft.copyWith(villageName: value)),
+        ),
+        const SizedBox(height: AppSpacing.SMD12),
+        AppTextField(
+          controller: _line1Controller,
+          label: AppStrings.CLIENT_FIELD_LINE1,
+          hint: AppStrings.CLIENT_FIELD_LINE1_HINT,
+          isRequired: true,
+          enabled: !isSubmitting,
+          textInputAction: TextInputAction.next,
+          onChanged: (value) =>
+              _update((draft) => draft.copyWith(line1: value)),
+        ),
+        const SizedBox(height: AppSpacing.SMD12),
+        AppTextField(
+          controller: _line2Controller,
+          label: AppStrings.CLIENT_FIELD_LINE2,
+          hint: AppStrings.CLIENT_FIELD_LINE2_HINT,
+          enabled: !isSubmitting,
+          textInputAction: TextInputAction.next,
+          onChanged: (value) =>
+              _update((draft) => draft.copyWith(line2: value)),
+        ),
+        const SizedBox(height: AppSpacing.SMD12),
+        GeoPickerField<CountryModel>(
+          label: AppStrings.CLIENT_FIELD_COUNTRY,
+          hint: AppStrings.CLIENT_FIELD_COUNTRY_HINT,
+          value: country,
+          items: MetadataService.instance.countries,
+          itemLabel: (item) => item.name,
+          isSame: (a, b) => a.id == b.id,
+          isRequired: true,
+          enabled: !isSubmitting,
+          onSelected: (value) => _update(
+            (draft) => draft.copyWith(
+              country: value,
+              clearState: draft.country?.id != value.id,
+              clearCity: draft.country?.id != value.id,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.SMD12),
+        GeoPickerField<StateModel>(
+          label: AppStrings.CLIENT_FIELD_STATE,
+          hint: AppStrings.CLIENT_FIELD_STATE_HINT,
+          value: _draft.state,
+          items: MetadataService.instance.statesInCountry(country?.id),
+          itemLabel: (item) => item.name,
+          isSame: (a, b) => a.id == b.id,
+          isRequired: true,
+          enabled: !isSubmitting && country != null,
+          disabledHint: AppStrings.CLIENT_FIELD_STATE_LOCKED,
+          onSelected: (value) => _update(
+            (draft) => draft.copyWith(
+              state: value,
+              clearCity: draft.state?.id != value.id,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.SMD12),
+        GeoPickerField<CityModel>(
+          label: AppStrings.CLIENT_FIELD_CITY,
+          hint: AppStrings.CLIENT_FIELD_CITY_HINT,
+          value: _draft.city,
+          items: MetadataService.instance.citiesInState(_draft.state?.id),
+          itemLabel: (item) => item.name,
+          isSame: (a, b) => a.id == b.id,
+          isRequired: true,
+          enabled: !isSubmitting && _draft.state != null,
+          disabledHint: AppStrings.CLIENT_FIELD_CITY_LOCKED,
+          onSelected: (value) => _update((draft) => draft.copyWith(city: value)),
+        ),
+        const SizedBox(height: AppSpacing.SMD12),
+        AppTextField(
+          controller: _pincodeController,
+          label: AppStrings.CLIENT_FIELD_PINCODE,
+          keyboardType: TextInputType.number,
+          enabled: !isSubmitting,
+          textInputAction: TextInputAction.next,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(AppValidators.PINCODE_LENGTH),
+          ],
+          onChanged: (value) =>
+              _update((draft) => draft.copyWith(pincode: value)),
+        ),
+        const SizedBox(height: AppSpacing.SMD12),
+        AppTextField(
+          controller: _transportController,
+          label: AppStrings.CART_DELIVERY_PLACE_TRANSPORT,
+          hint: AppStrings.CART_DELIVERY_PLACE_TRANSPORT_HINT,
+          enabled: !isSubmitting,
+          textInputAction: TextInputAction.next,
+          onChanged: (value) =>
+              _update((draft) => draft.copyWith(transportName: value)),
+        ),
+        const SizedBox(height: AppSpacing.SMD12),
+        AppTextField(
+          controller: _contactController,
+          label: AppStrings.CART_DELIVERY_PLACE_CONTACT,
+          hint: AppStrings.LOGIN_PHONE_HINT,
+          prefixText: AppStrings.PHONE_COUNTRY_CODE_IN,
+          enabled: !isSubmitting,
+          keyboardType: TextInputType.phone,
+          textInputAction: TextInputAction.done,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(AppValidators.PHONE_LENGTH),
+          ],
+          onChanged: (value) =>
+              _update((draft) => draft.copyWith(contactNumber: value)),
+        ),
+        if (widget.state.deliveryPlaces.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.SM8),
+          GestureDetector(
+            onTap: isSubmitting ? null : widget.cubit.useExistingDeliveryPlace,
+            behavior: HitTestBehavior.opaque,
+            child: Text(
+              AppStrings.CART_DELIVERY_PLACE_USE_EXISTING,
+              style: AppTypography.labelMedium.copyWith(
+                color: AppColors.PRIMARY,
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  static CountryModel? _defaultCountry(List<CountryModel> countries) {
+    if (countries.length == 1) return countries.first;
+    for (final CountryModel country in countries) {
+      if (country.id == AppDefaults.COUNTRY_ID) return country;
+    }
+    return null;
   }
 }
 

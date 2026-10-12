@@ -159,8 +159,11 @@ class _Location extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String bookedFor = order.bookedFor?.label.trim() ?? '';
     final String city = order.cityName.trim();
-    final String text = city.isEmpty ? order.deliveryAddress : city;
+    final String text = bookedFor.isNotEmpty
+        ? bookedFor
+        : (city.isEmpty ? order.deliveryAddress : city);
     if (text.trim().isEmpty) return const SizedBox.shrink();
 
     return Row(

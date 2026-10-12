@@ -70,15 +70,24 @@ class RawMaterialStock extends Equatable {
   List<Object?> get props => [asOf, lines];
 }
 
-/// One material type's on-hand position, in that type's own unit. Negative
-/// when the packet counts outrun the recorded inward lots.
+/// One on-hand line, in the material type's own unit. Negative when the
+/// packet counts outrun the recorded inward lots.
+///
+/// [product]/[packetWeight] are only present when fetched with
+/// ``?group_by=configuration`` (one line per product + packet weight +
+/// material type, the godown app's default); otherwise the line is one per
+/// material type across every product.
 class OtherMaterialStockLine extends Equatable {
   final GodownMaterialTypeRef materialType;
   final String onHand;
+  final GodownProductRef? product;
+  final String packetWeight;
 
   const OtherMaterialStockLine({
     this.materialType = const GodownMaterialTypeRef(),
     this.onHand = '',
+    this.product,
+    this.packetWeight = '',
   });
 
   factory OtherMaterialStockLine.fromJson(Map<String, dynamic> json) {
@@ -90,6 +99,8 @@ class OtherMaterialStockLine extends Equatable {
           ) ??
           const GodownMaterialTypeRef(),
       onHand: JsonParser.asString(json['on_hand']),
+      product: GodownJson.refOf(json['product'], GodownProductRef.fromJson),
+      packetWeight: JsonParser.asString(json['packet_weight']),
     );
   }
 
@@ -97,8 +108,30 @@ class OtherMaterialStockLine extends Equatable {
 
   bool get isShort => onHandValue < 0;
 
+  num? get packetWeightValue => num.tryParse(packetWeight.trim());
+
+  /// "1.5 kg" -- blank when the line carries no packet weight.
+  String get packetWeightSummary {
+    final num? weight = packetWeightValue;
+    return weight == null ? '' : '${_trimWeight(weight)} kg';
+  }
+
+  /// "SAI-30 · 1.5 kg" -- blank when the line carries no product (fetched
+  /// without ``?group_by=configuration``).
+  String get configurationLabel {
+    final String name = product?.name ?? '';
+    if (name.isEmpty) return '';
+    final String weight = packetWeightSummary;
+    return weight.isEmpty ? name : '$name · $weight';
+  }
+
+  static String _trimWeight(num value) {
+    if (value == value.roundToDouble()) return value.toInt().toString();
+    return value.toString();
+  }
+
   @override
-  List<Object?> get props => [materialType, onHand];
+  List<Object?> get props => [materialType, onHand, product, packetWeight];
 }
 
 class OtherMaterialStock extends Equatable {

@@ -55,8 +55,9 @@ class ReturnOrderFormState extends Equatable {
 
   bool get hasError => status == ReturnOrderFormStatus.failure;
 
-  /// The order must be dispatched or delivered, must not already carry a live
-  /// return, and must actually have challan lines to return.
+  /// The order must be dispatched or delivered and must still have something
+  /// returnable -- any number of returns may already be live on it, so that
+  /// alone no longer blocks a new one.
   bool get canCreate => prefill?.canCreate ?? false;
 
   /// Why the screen is read-only, when it is. Null when a return can be raised.
@@ -65,7 +66,7 @@ class ReturnOrderFormState extends Equatable {
     if (data == null) return null;
     if (data.lines.isEmpty) return ReturnOrderFormBlockX.noLines;
     if (!data.isReturnableOrder) return ReturnOrderFormBlockX.notReturnable;
-    if (data.hasLiveReturn) return ReturnOrderFormBlockX.liveReturn;
+    if (!data.hasReturnablePackets) return ReturnOrderFormBlockX.nothingLeft;
     return null;
   }
 
@@ -99,5 +100,5 @@ class ReturnOrderFormBlockX {
 
   static const String noLines = 'block_no_lines';
   static const String notReturnable = 'block_not_returnable';
-  static const String liveReturn = 'block_live_return';
+  static const String nothingLeft = 'block_nothing_left';
 }

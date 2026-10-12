@@ -4,6 +4,7 @@ import '../../../core/network/api_exception.dart';
 import '../../../core/network/endpoints/clients_endpoints.dart';
 import '../../../core/network/endpoints/utilities_endpoints.dart';
 import '../../../core/utils/json_parser.dart';
+import 'models/child_org.dart';
 import 'models/client.dart';
 import 'models/client_address.dart';
 import 'models/clients_query.dart';
@@ -101,6 +102,23 @@ class ClientsRepository {
     );
 
     return JsonParser.asList(response, TransportAgency.fromJson);
+  }
+
+  /// A client's existing "delivery places" ([ChildOrg]s), for the "deliver
+  /// to a different place" picker on checkout. Unpaginated, full shape.
+  Future<List<ChildOrg>> fetchChildOrgs(
+    String clientPublicId, {
+    int? salesPersonId,
+  }) async {
+    final dynamic response = await _apiClient.get(
+      ClientsEndpoints.childOrgs,
+      queryParams: {
+        ClientsEndpoints.CLIENT_PUBLIC_ID_PARAM: clientPublicId,
+        ClientsEndpoints.SALES_PERSON_ID_PARAM: ?salesPersonId,
+      },
+    );
+
+    return JsonParser.asList(response, ChildOrg.fromJson);
   }
 
   Future<Client> createClient(Client client) async {

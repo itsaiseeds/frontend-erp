@@ -23,6 +23,7 @@ class DrawerItems {
   static const int FIELD_TRIPS = 4;
   static const int PROFILE = 5;
   static const int RETURN_ORDERS = 6;
+  static const int FARMERS = 7;
 
   static const List<DrawerItem> primary = [
     DrawerItem(
@@ -54,6 +55,11 @@ class DrawerItems {
       index: FIELD_TRIPS,
       icon: Icons.map_rounded,
       title: AppStrings.DRAWER_FIELD_TRIPS,
+    ),
+    DrawerItem(
+      index: FARMERS,
+      icon: Icons.groups_outlined,
+      title: AppStrings.DRAWER_FARMERS,
     ),
   ];
 

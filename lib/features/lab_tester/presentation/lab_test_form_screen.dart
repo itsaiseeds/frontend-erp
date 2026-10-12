@@ -292,11 +292,12 @@ class _LabTestFormScreenState extends State<LabTestFormScreen> {
                       FilteringTextInputFormatter.digitsOnly,
                     ],
                     textInputAction: TextInputAction.next,
-                    onChanged: (_) {
-                      if (_plantsError != null) {
-                        setState(() => _plantsError = null);
-                      }
-                    },
+                    // Always rebuilds, not just to clear an error: the
+                    // formula preview below reads these controllers live, so
+                    // every keystroke has to repaint it.
+                    onChanged: (_) => setState(() {
+                      if (_plantsError != null) _plantsError = null;
+                    }),
                   ),
                   const SizedBox(height: AppSpacing.MD16),
                   AppTextField(
@@ -310,11 +311,9 @@ class _LabTestFormScreenState extends State<LabTestFormScreen> {
                       FilteringTextInputFormatter.digitsOnly,
                     ],
                     textInputAction: TextInputAction.next,
-                    onChanged: (_) {
-                      if (_femaleError != null) {
-                        setState(() => _femaleError = null);
-                      }
-                    },
+                    onChanged: (_) => setState(() {
+                      if (_femaleError != null) _femaleError = null;
+                    }),
                   ),
                   const SizedBox(height: AppSpacing.MD16),
                   AppTextField(
@@ -328,11 +327,9 @@ class _LabTestFormScreenState extends State<LabTestFormScreen> {
                       FilteringTextInputFormatter.digitsOnly,
                     ],
                     textInputAction: TextInputAction.next,
-                    onChanged: (_) {
-                      if (_otError != null) {
-                        setState(() => _otError = null);
-                      }
-                    },
+                    onChanged: (_) => setState(() {
+                      if (_otError != null) _otError = null;
+                    }),
                   ),
                   const SizedBox(height: AppSpacing.MD16),
                   AppTextField(
@@ -447,7 +444,7 @@ class _FormulaPreview extends StatelessWidget {
     );
   }
 
-  static String _format(double? value) => value == null ? '--' : '${value}%';
+  static String _format(double? value) => value == null ? '--' : '$value%';
 }
 
 class _FormulaRow extends StatelessWidget {

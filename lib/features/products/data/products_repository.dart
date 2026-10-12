@@ -39,6 +39,9 @@ class ProductsRepository {
   /// client/address/agency ids must come from that same sales person's
   /// clients (see `ClientsRepository.fetchClients`'s `salesPersonId`) --
   /// using the admin's own client here is a 400.
+  /// [bookedFor] is the "Delivery To" place: `{"id": ...}` to reuse one the
+  /// client already has, or a full creation object for a new one. Omitted,
+  /// the order delivers to the client's own chosen address as before.
   Future<void> createOrder({
     required String clientPublicId,
     required int clientAddressId,
@@ -46,6 +49,7 @@ class ProductsRepository {
     String specialComments = '',
     required List<CartLine> lines,
     int? createdBy,
+    Map<String, dynamic>? bookedFor,
   }) async {
     await _apiClient.post(
       ProductsEndpoints.createOrder,
@@ -62,6 +66,7 @@ class ProductsRepository {
             },
         ],
         'created_by': ?createdBy,
+        'booked_for': ?bookedFor,
       },
     );
   }

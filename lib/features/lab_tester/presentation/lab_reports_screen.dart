@@ -12,6 +12,9 @@ import '../../clients/data/models/clients_query.dart';
 import '../../clients/presentation/widgets/clients_filter_sheet.dart';
 import '../../godown/presentation/widgets/godown_card.dart';
 import '../../godown/presentation/widgets/godown_card_shimmer.dart';
+import '../../notifications/data/notifications_repository.dart';
+import '../../notifications/presentation/notifications_screen.dart';
+import '../../notifications/presentation/widgets/notification_bell.dart';
 import '../../products/presentation/widgets/products_search_bar.dart';
 import '../data/lab_tester_repository.dart';
 import '../data/models/lab_testing.dart';
@@ -53,10 +56,13 @@ class _LabReportsViewState extends State<_LabReportsView> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
 
+  int _unreadCount = 0;
+
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    _refreshUnreadCount();
   }
 
   @override
@@ -65,6 +71,24 @@ class _LabReportsViewState extends State<_LabReportsView> {
     _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
+  }
+
+  /// The badge is a count, not a live list: it is refetched on open and
+  /// after the inbox is read, same as the sales-person shell.
+  Future<void> _refreshUnreadCount() async {
+    try {
+      final int count = await NotificationsRepository(
+        apiClient: context.read<ApiClient>(),
+      ).fetchUnreadCount();
+      if (mounted) setState(() => _unreadCount = count);
+    } catch (_) {
+      // A badge that cannot be fetched simply stays as it is.
+    }
+  }
+
+  Future<void> _openNotifications() async {
+    await NotificationsScreen.push(context);
+    if (mounted) await _refreshUnreadCount();
   }
 
   void _onScroll() {
@@ -119,6 +143,12 @@ class _LabReportsViewState extends State<_LabReportsView> {
                 AppStrings.LAB_REPORTS_TITLE,
                 style: AppTypography.titleMedium,
               ),
+              actions: [
+                NotificationBell(
+                  unreadCount: _unreadCount,
+                  onPressed: _openNotifications,
+                ),
+              ],
             ),
             body: Column(
               children: [

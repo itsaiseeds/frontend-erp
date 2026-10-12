@@ -12,6 +12,7 @@ class ClientsEndpoints {
   static const String addresses = '$_base/utilities/client-addresses';
   static const String transportAgencies =
       '$_base/utilities/client-transport-agencies';
+  static const String childOrgs = '$_base/utilities/client-children';
 
   /// Both link pickers are scoped to one client by this query param.
   static const String CLIENT_PUBLIC_ID_PARAM = 'client_public_id';

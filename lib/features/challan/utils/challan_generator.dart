@@ -246,38 +246,53 @@ class ChallanGenerator {
 
   // ══════════════ PARTIES ══════════════
 
+  /// A [pw.Table] rather than a [pw.Row]: inside [pw.MultiPage]'s flowing
+  /// body a stretched flex child can be measured against an unbounded
+  /// height and crash ("height Infinity exceeds a page height"), but a
+  /// table row always resolves to the tallest cell, which is exactly the
+  /// equal-height look these two cards need.
   static pw.Widget _partyRow(Challan challan) {
-    return pw.Row(
-      crossAxisAlignment: pw.CrossAxisAlignment.start,
+    return pw.Table(
+      columnWidths: const {0: pw.FlexColumnWidth(), 1: pw.FlexColumnWidth()},
+      defaultVerticalAlignment: pw.TableCellVerticalAlignment.full,
       children: [
-        pw.Expanded(
-          child: _partyCard(
-            title: 'CONSIGNEE (SHIP TO)',
-            name: challan.receiverName,
-            lines: [
-              if (challan.receiverAddress.isNotEmpty) challan.receiverAddress,
-            ],
-            pairs: [
-              if (challan.receiverGst.isNotEmpty)
-                ['GSTIN', challan.receiverGst],
-              if (challan.contactSummary.isNotEmpty)
-                ['Contact', challan.contactSummary],
-            ],
-          ),
-        ),
-        pw.SizedBox(width: 10),
-        pw.Expanded(
-          child: _partyCard(
-            title: 'DISPATCH DETAILS',
-            name: '',
-            lines: const [],
-            pairs: [
-              ['LR No.', challan.dispatch?.lrNumber ?? ''],
-              ['Transport', _transportLabel(challan.dispatch)],
-              ['Vehicle', challan.dispatch?.vehicleNumber ?? ''],
-              ['Driver', challan.driverSummary],
-            ],
-          ),
+        pw.TableRow(
+          children: [
+            pw.Padding(
+              padding: const pw.EdgeInsets.only(right: 5),
+              child: _partyCard(
+                title: 'CONSIGNEE (SHIP TO)',
+                name: challan.receiverName,
+                lines: [
+                  if (challan.receiverAddress.isNotEmpty)
+                    challan.receiverAddress,
+                ],
+                pairs: [
+                  if (challan.receiverGst.isNotEmpty)
+                    ['GSTIN', challan.receiverGst],
+                  if (challan.contactSummary.isNotEmpty)
+                    ['Contact', challan.contactSummary],
+                ],
+              ),
+            ),
+            pw.Padding(
+              padding: const pw.EdgeInsets.only(left: 5),
+              child: _partyCard(
+                title: 'DELIVERY TO',
+                name: challan.deliveryToName,
+                lines: [
+                  if (challan.deliveryToAddress.isNotEmpty)
+                    challan.deliveryToAddress,
+                ],
+                pairs: [
+                  if (challan.deliveryToGst.isNotEmpty)
+                    ['GSTIN', challan.deliveryToGst],
+                  if (challan.deliveryToContact.isNotEmpty)
+                    ['Contact', challan.deliveryToContact],
+                ],
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -351,12 +366,16 @@ class ChallanGenerator {
     );
   }
 
-  static pw.Widget _inlinePair(String label, String value) {
+  static pw.Widget _inlinePair(
+    String label,
+    String value, {
+    double labelWidth = 52,
+  }) {
     return pw.Row(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
         pw.SizedBox(
-          width: 52,
+          width: labelWidth,
           child: pw.Text(
             label,
             style: pw.TextStyle(
@@ -388,15 +407,34 @@ class ChallanGenerator {
         borderRadius: pw.BorderRadius.circular(3),
       ),
       padding: const pw.EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      child: pw.Row(
+      child: pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          _journeyCell('FROM', dispatch?.fromCity ?? ''),
-          pw.Container(width: 1, height: 18, color: _divider),
-          _journeyCell('TO', dispatch?.toCity ?? ''),
-          pw.Container(width: 1, height: 18, color: _divider),
-          _journeyCell('DISPATCHED', _date(dispatch?.dispatchDateTime)),
-          pw.Container(width: 1, height: 18, color: _divider),
-          _journeyCell('HSN / SAC', challan.hsnCode),
+          pw.Row(
+            children: [
+              _journeyCell('FROM', dispatch?.fromCity ?? ''),
+              pw.Container(width: 1, height: 18, color: _divider),
+              _journeyCell('TO', challan.deliveryToPlace),
+              pw.Container(width: 1, height: 18, color: _divider),
+              _journeyCell('DISPATCHED', _date(dispatch?.dispatchDateTime)),
+              pw.Container(width: 1, height: 18, color: _divider),
+              _journeyCell('HSN / SAC', challan.hsnCode),
+            ],
+          ),
+          pw.SizedBox(height: 6),
+          pw.Container(height: _hairline, color: _divider),
+          pw.SizedBox(height: 6),
+          pw.Row(
+            children: [
+              _journeyCell('LR NO.', dispatch?.lrNumber ?? ''),
+              pw.Container(width: 1, height: 18, color: _divider),
+              _journeyCell('TRANSPORT', _transportLabel(dispatch)),
+              pw.Container(width: 1, height: 18, color: _divider),
+              _journeyCell('VEHICLE', dispatch?.vehicleNumber ?? ''),
+              pw.Container(width: 1, height: 18, color: _divider),
+              _journeyCell('DRIVER', challan.driverSummary),
+            ],
+          ),
         ],
       ),
     );
@@ -619,6 +657,8 @@ class ChallanGenerator {
   // ══════════════ DECLARATION ══════════════
 
   static pw.Widget _declaration(Challan challan) {
+    final String licenceNumber = challan.ourDetails?.seedsLicenceNumber ?? '';
+
     return pw.Container(
       width: double.infinity,
       decoration: pw.BoxDecoration(
@@ -650,6 +690,10 @@ class ChallanGenerator {
               lineSpacing: 1.4,
             ),
           ),
+          if (licenceNumber.isNotEmpty) ...[
+            pw.SizedBox(height: 4),
+            _inlinePair('Seeds Licence No', licenceNumber, labelWidth: 86),
+          ],
         ],
       ),
     );
