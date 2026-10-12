@@ -10,6 +10,7 @@ import '../../auth/presentation/bloc/session_cubit.dart';
 import '../../home/presentation/widgets/custom_drawer.dart';
 import '../../home/presentation/widgets/logout_confirmation_dialog.dart';
 import '../../profile/presentation/profile_screen.dart';
+import 'lab_report_export_screen.dart';
 import 'lab_reports_screen.dart';
 import 'pending_lots_screen.dart';
 import 'widgets/lab_tester_drawer_items.dart';
@@ -181,6 +182,8 @@ class _LabTesterHomeScreenState extends State<LabTesterHomeScreen>
         return PendingLotsScreen(onMenuTap: _toggleDrawer);
       case LabTesterDrawerItems.LAB_REPORTS:
         return LabReportsScreen(onMenuTap: _toggleDrawer);
+      case LabTesterDrawerItems.LAB_REPORT_EXPORT:
+        return LabReportExportScreen(onMenuTap: _toggleDrawer);
       case LabTesterDrawerItems.PROFILE:
         return _ProfileWithMenu(onMenuTap: _toggleDrawer);
       default:

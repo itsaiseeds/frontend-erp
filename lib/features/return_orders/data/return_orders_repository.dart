@@ -36,8 +36,8 @@ class ReturnOrdersRepository {
     return PaginatedReturnOrders.fromJson(Map<String, dynamic>.from(response));
   }
 
-  /// The challan lines for one order, what is still returnable on each, and the
-  /// order's live return if it already has one.
+  /// The challan lines for one order, what is still returnable on each (net of
+  /// every live return already raised), and every live return already on it.
   Future<ReturnOrderPrefill> fetchPrefill(String orderPublicId) async {
     final String id = orderPublicId.trim();
     if (id.isEmpty) {

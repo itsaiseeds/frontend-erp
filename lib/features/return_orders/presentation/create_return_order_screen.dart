@@ -220,10 +220,7 @@ class _Body extends StatelessWidget {
 
     final String? blocked = state.blockedReason;
     if (blocked != null) {
-      return _BlockedMessage(
-        reason: blocked,
-        liveReturnPublicId: state.prefill?.returnOrder?.publicId,
-      );
+      return _BlockedMessage(reason: blocked);
     }
 
     final ReturnOrderPrefill prefill = state.prefill!;
@@ -237,6 +234,10 @@ class _Body extends StatelessWidget {
       ),
       children: [
         _OrderStrip(order: prefill.order),
+        if (prefill.liveReturnOrders.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.SMD12),
+          _ExistingReturnsNotice(returns: prefill.liveReturnOrders),
+        ],
         const SizedBox(height: AppSpacing.MD16),
         _ReturnDateField(
           value: state.returnDate,
@@ -571,13 +572,14 @@ class _Metric extends StatelessWidget {
   }
 }
 
-/// Why the screen is read-only: an order that never shipped, or one that
-/// already has a return open. Said plainly rather than left as a dead form.
+/// Why the screen is read-only: an order that never shipped, or one that has
+/// nothing left to return -- every packet the challan sent is already
+/// claimed by the returns already raised on it. Said plainly rather than
+/// left as a dead form.
 class _BlockedMessage extends StatelessWidget {
   final String reason;
-  final String? liveReturnPublicId;
 
-  const _BlockedMessage({required this.reason, this.liveReturnPublicId});
+  const _BlockedMessage({required this.reason});
 
   @override
   Widget build(BuildContext context) {
@@ -590,17 +592,10 @@ class _BlockedMessage extends StatelessWidget {
         icon = Icons.block_outlined;
         title = AppStrings.RETURN_ORDER_BLOCK_NOT_RETURNABLE_TITLE;
         body = AppStrings.RETURN_ORDER_BLOCK_NOT_RETURNABLE_BODY;
-      case ReturnOrderFormBlockX.liveReturn:
-        icon = Icons.assignment_return_outlined;
-        title = AppStrings.RETURN_ORDER_BLOCK_LIVE_RETURN_TITLE;
-        // Naming the return is the point: the salesperson has to go and reject
-        // or wait on that specific one.
-        body = liveReturnPublicId == null || liveReturnPublicId!.isEmpty
-            ? AppStrings.RETURN_ORDER_BLOCK_LIVE_RETURN_BODY
-            : AppStrings.RETURN_ORDER_BLOCK_LIVE_RETURN_BODY.replaceAll(
-                '%s',
-                liveReturnPublicId!,
-              );
+      case ReturnOrderFormBlockX.nothingLeft:
+        icon = Icons.assignment_turned_in_outlined;
+        title = AppStrings.RETURN_ORDER_BLOCK_NOTHING_LEFT_TITLE;
+        body = AppStrings.RETURN_ORDER_BLOCK_NOTHING_LEFT_BODY;
       default:
         icon = Icons.inventory_2_outlined;
         title = AppStrings.RETURN_ORDER_BLOCK_NO_LINES_TITLE;
@@ -608,6 +603,54 @@ class _BlockedMessage extends StatelessWidget {
     }
 
     return _Message(icon: icon, title: title, body: body);
+  }
+}
+
+/// A quiet banner naming every return already raised on this order, shown
+/// above the form rather than hidden -- v2 lets a new one be added alongside
+/// them, but the salesperson should still see what is already in flight.
+class _ExistingReturnsNotice extends StatelessWidget {
+  final List<ReturnOrder> returns;
+
+  const _ExistingReturnsNotice({required this.returns});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.SMD12),
+      decoration: BoxDecoration(
+        color: AppColors.SURFACE_VARIANT,
+        borderRadius: BorderRadius.circular(AppRadius.LG),
+        border: Border.all(color: AppColors.BORDER),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(
+            Icons.info_outline_rounded,
+            size: AppSizes.ICON_MD,
+            color: AppColors.TEXT_SECONDARY,
+          ),
+          const SizedBox(width: AppSpacing.SM8),
+          Expanded(
+            child: Text(
+              returns.length == 1
+                  ? AppStrings.RETURN_ORDER_EXISTING_ONE.replaceAll(
+                      '%s',
+                      returns.first.publicId,
+                    )
+                  : AppStrings.RETURN_ORDER_EXISTING_MANY.replaceAll(
+                      '%d',
+                      '${returns.length}',
+                    ),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.TEXT_SECONDARY,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

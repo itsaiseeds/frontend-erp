@@ -16,7 +16,8 @@ class GodownDrawerItems {
   static const int RECIPES = 4;
   static const int BAG_STOCK = 5;
   static const int PACKET_STOCK = 6;
-  static const int PROFILE = 7;
+  static const int WASTE_MANAGEMENT = 7;
+  static const int PROFILE = 8;
 
   static const List<DrawerItem> primary = [
     DrawerItem(
@@ -53,6 +54,11 @@ class GodownDrawerItems {
       index: PACKET_STOCK,
       icon: Icons.scale_outlined,
       title: AppStrings.DRAWER_PACKET_STOCK,
+    ),
+    DrawerItem(
+      index: WASTE_MANAGEMENT,
+      icon: Icons.delete_sweep_outlined,
+      title: AppStrings.DRAWER_WASTE_MANAGEMENT,
     ),
   ];
 

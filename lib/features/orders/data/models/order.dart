@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import '../../../../core/utils/json_parser.dart';
+import '../../../clients/data/models/child_org.dart';
 import 'order_status.dart';
 
 /// One ordered line: the **bag** that was bought, how many of it, and the
@@ -134,6 +135,11 @@ class Order extends Equatable {
   final OrderClient client;
   final String deliveryAddress;
   final OrderCity? city;
+
+  /// The "Delivery To" place, when this order delivers somewhere other than
+  /// the client's own address. List rows carry only id/party/village; null
+  /// when delivering to the client as normal.
+  final ChildOrg? bookedFor;
   final DateTime? expectedDeliveryDate;
   final String dispatchMode;
   final num totalAmount;
@@ -158,6 +164,7 @@ class Order extends Equatable {
     this.client = const OrderClient(),
     this.deliveryAddress = '',
     this.city,
+    this.bookedFor,
     this.expectedDeliveryDate,
     this.dispatchMode = '',
     this.totalAmount = 0,
@@ -171,6 +178,7 @@ class Order extends Equatable {
 
   factory Order.fromJson(Map<String, dynamic> json) {
     final dynamic city = json['city'];
+    final dynamic bookedFor = json['booked_for'];
 
     return Order(
       publicId: JsonParser.asString(json['public_id']),
@@ -184,6 +192,9 @@ class Order extends Equatable {
       deliveryAddress: JsonParser.asString(json['delivery_address']),
       city: city is Map
           ? OrderCity.fromJson(Map<String, dynamic>.from(city))
+          : null,
+      bookedFor: bookedFor is Map
+          ? ChildOrg.fromJson(Map<String, dynamic>.from(bookedFor))
           : null,
       expectedDeliveryDate: _parseDateOnly(json['expected_delivery_date']),
       dispatchMode: JsonParser.asString(json['dispatch_mode']),
@@ -233,6 +244,13 @@ class Order extends Equatable {
 
   String get cityName => city?.name ?? '';
 
+  /// What to call the destination everywhere in the UI: the "Delivery To"
+  /// place when one was booked, else the client's own delivery address --
+  /// never both, so this never duplicates what [deliveryAddress] already
+  /// says.
+  String get deliveryToLabel =>
+      bookedFor != null ? bookedFor!.label : deliveryAddress;
+
   /// Bags ordered across every line.
   int get bagCount =>
       packagings.fold(0, (total, line) => total + line.quantity);
@@ -245,6 +263,7 @@ class Order extends Equatable {
     client,
     deliveryAddress,
     city,
+    bookedFor,
     expectedDeliveryDate,
     dispatchMode,
     totalAmount,

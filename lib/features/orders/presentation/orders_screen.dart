@@ -84,10 +84,15 @@ class _OrdersViewState extends State<_OrdersView> {
     await cubit.applyQuery(applied);
   }
 
-  void _openDetail(Order order) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => OrderDetailScreen(order: order)),
+  Future<void> _openDetail(Order order) async {
+    final bool? changed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute<bool>(
+        builder: (_) => OrderDetailScreen(order: order),
+      ),
     );
+    if (changed == true && mounted) {
+      context.read<OrdersCubit>().refresh();
+    }
   }
 
   @override

@@ -1,9 +1,94 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../../core/models/city_model.dart';
+import '../../../../core/models/country_model.dart';
+import '../../../../core/models/state_model.dart';
+import '../../../clients/data/models/child_org.dart';
 import '../../../clients/data/models/client.dart';
 import '../../../clients/data/models/client_address.dart';
 import '../../../clients/data/models/sales_person_option.dart';
 import '../../../clients/data/models/transport_agency.dart';
+
+/// The in-progress fields for a brand-new "Delivery To" place -- only used
+/// while [CheckoutState.isAddingNewDeliveryPlace] is true. Kept as one value
+/// object so the cubit can replace it wholesale per keystroke/pick without a
+/// long list of individual state fields.
+class NewDeliveryPlaceDraft extends Equatable {
+  final String partyName;
+  final String villageName;
+  final String line1;
+  final String line2;
+  final String pincode;
+  final CountryModel? country;
+  final StateModel? state;
+  final CityModel? city;
+  final String transportName;
+  final String contactNumber;
+
+  const NewDeliveryPlaceDraft({
+    this.partyName = '',
+    this.villageName = '',
+    this.line1 = '',
+    this.line2 = '',
+    this.pincode = '',
+    this.country,
+    this.state,
+    this.city,
+    this.transportName = '',
+    this.contactNumber = '',
+  });
+
+  NewDeliveryPlaceDraft copyWith({
+    String? partyName,
+    String? villageName,
+    String? line1,
+    String? line2,
+    String? pincode,
+    CountryModel? country,
+    bool clearCountry = false,
+    StateModel? state,
+    bool clearState = false,
+    CityModel? city,
+    bool clearCity = false,
+    String? transportName,
+    String? contactNumber,
+  }) {
+    return NewDeliveryPlaceDraft(
+      partyName: partyName ?? this.partyName,
+      villageName: villageName ?? this.villageName,
+      line1: line1 ?? this.line1,
+      line2: line2 ?? this.line2,
+      pincode: pincode ?? this.pincode,
+      country: clearCountry ? null : country ?? this.country,
+      state: clearState ? null : state ?? this.state,
+      city: clearCity ? null : city ?? this.city,
+      transportName: transportName ?? this.transportName,
+      contactNumber: contactNumber ?? this.contactNumber,
+    );
+  }
+
+  bool get isComplete =>
+      partyName.trim().isNotEmpty &&
+      villageName.trim().isNotEmpty &&
+      line1.trim().isNotEmpty &&
+      country != null &&
+      state != null &&
+      city != null;
+
+  @override
+  List<Object?> get props => [
+    partyName,
+    villageName,
+    line1,
+    line2,
+    pincode,
+    country,
+    state,
+    city,
+    transportName,
+    contactNumber,
+  ];
+}
 
 enum CheckoutStatus { initial, loading, ready, failure }
 
@@ -36,6 +121,25 @@ class CheckoutState extends Equatable {
   final ClientAddress? address;
   final TransportAgency? agency;
   final String comments;
+
+  /// Whether the "Deliver to a different place" section is open at all.
+  /// Off by default: the order delivers to the client's own address.
+  final bool deliversElsewhere;
+
+  /// The client's existing "Delivery To" places, fetched lazily once
+  /// [deliversElsewhere] is turned on. Empty until then.
+  final List<ChildOrg> deliveryPlaces;
+  final bool isLoadingDeliveryPlaces;
+
+  /// Picked from [deliveryPlaces], or null while adding a brand-new one.
+  final ChildOrg? deliveryPlace;
+
+  /// True while the inline "add a new delivery place" form is open, instead
+  /// of (or before) picking an existing [deliveryPlace].
+  final bool isAddingNewDeliveryPlace;
+  final NewDeliveryPlaceDraft newDeliveryPlace;
+  final String? deliveryPlaceError;
+
   final bool isSubmitting;
   final String? errorMessage;
   final String? validationMessage;
@@ -55,6 +159,13 @@ class CheckoutState extends Equatable {
     this.address,
     this.agency,
     this.comments = '',
+    this.deliversElsewhere = false,
+    this.deliveryPlaces = const [],
+    this.isLoadingDeliveryPlaces = false,
+    this.deliveryPlace,
+    this.isAddingNewDeliveryPlace = false,
+    this.newDeliveryPlace = const NewDeliveryPlaceDraft(),
+    this.deliveryPlaceError,
     this.isSubmitting = false,
     this.errorMessage,
     this.validationMessage,
@@ -79,6 +190,15 @@ class CheckoutState extends Equatable {
     TransportAgency? agency,
     bool clearAgency = false,
     String? comments,
+    bool? deliversElsewhere,
+    List<ChildOrg>? deliveryPlaces,
+    bool? isLoadingDeliveryPlaces,
+    ChildOrg? deliveryPlace,
+    bool clearDeliveryPlace = false,
+    bool? isAddingNewDeliveryPlace,
+    NewDeliveryPlaceDraft? newDeliveryPlace,
+    String? deliveryPlaceError,
+    bool clearDeliveryPlaceError = false,
     bool? isSubmitting,
     String? errorMessage,
     bool clearError = false,
@@ -101,6 +221,19 @@ class CheckoutState extends Equatable {
       address: clearAddress ? null : address ?? this.address,
       agency: clearAgency ? null : agency ?? this.agency,
       comments: comments ?? this.comments,
+      deliversElsewhere: deliversElsewhere ?? this.deliversElsewhere,
+      deliveryPlaces: deliveryPlaces ?? this.deliveryPlaces,
+      isLoadingDeliveryPlaces:
+          isLoadingDeliveryPlaces ?? this.isLoadingDeliveryPlaces,
+      deliveryPlace: clearDeliveryPlace
+          ? null
+          : deliveryPlace ?? this.deliveryPlace,
+      isAddingNewDeliveryPlace:
+          isAddingNewDeliveryPlace ?? this.isAddingNewDeliveryPlace,
+      newDeliveryPlace: newDeliveryPlace ?? this.newDeliveryPlace,
+      deliveryPlaceError: clearDeliveryPlaceError
+          ? null
+          : deliveryPlaceError ?? this.deliveryPlaceError,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
       validationMessage: clearValidation
@@ -111,8 +244,20 @@ class CheckoutState extends Equatable {
 
   bool get isLoading => status == CheckoutStatus.loading;
 
+  /// Whether the "deliver elsewhere" section is itself satisfied: off
+  /// entirely, an existing place picked, or a new one fully filled in.
+  bool get isDeliveryPlaceResolved {
+    if (!deliversElsewhere) return true;
+    if (isAddingNewDeliveryPlace) return newDeliveryPlace.isComplete;
+    return deliveryPlace != null;
+  }
+
   bool get canSubmit =>
-      client != null && address != null && address!.id != 0 && !isSubmitting;
+      client != null &&
+      address != null &&
+      address!.id != 0 &&
+      isDeliveryPlaceResolved &&
+      !isSubmitting;
 
   /// The order summary and Place order button appear only once delivery is
   /// answered, so the sheet does not show a total nobody can act on yet.
@@ -135,6 +280,13 @@ class CheckoutState extends Equatable {
     address,
     agency,
     comments,
+    deliversElsewhere,
+    deliveryPlaces,
+    isLoadingDeliveryPlaces,
+    deliveryPlace,
+    isAddingNewDeliveryPlace,
+    newDeliveryPlace,
+    deliveryPlaceError,
     isSubmitting,
     errorMessage,
     validationMessage,

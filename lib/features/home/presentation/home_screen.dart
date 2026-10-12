@@ -17,6 +17,7 @@ import '../../notifications/data/notifications_repository.dart';
 import '../../notifications/presentation/notifications_screen.dart';
 import '../../notifications/presentation/widgets/notification_bell.dart';
 import '../../analytics/presentation/analytics_dashboard.dart';
+import '../../farmers/presentation/farmers_list_screen.dart';
 import '../../field_trips/presentation/field_trips_screen.dart';
 import '../../orders/presentation/orders_screen.dart';
 import '../../profile/presentation/profile_screen.dart';
@@ -281,6 +282,10 @@ class _HomeScreenState extends State<HomeScreen>
 
     if (_selectedDrawerIndex == DrawerItems.FIELD_TRIPS) {
       return const FieldTripsScreen();
+    }
+
+    if (_selectedDrawerIndex == DrawerItems.FARMERS) {
+      return const FarmersListScreen();
     }
 
     if (_selectedDrawerIndex == DrawerItems.PROFILE) {

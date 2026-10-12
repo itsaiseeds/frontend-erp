@@ -3,6 +3,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/utils/app_logger.dart';
 import '../../../clients/data/clients_repository.dart';
+import '../../../clients/data/models/child_org.dart';
 import '../../../clients/data/models/client.dart';
 import '../../../clients/data/models/client_address.dart';
 import '../../../clients/data/models/client_status.dart';
@@ -116,6 +117,14 @@ class CheckoutCubit extends SafeCubit<CheckoutState> {
         clearAgency: true,
         clearValidation: true,
         clearError: true,
+        // A "Delivery To" place is scoped to the previous client, same as
+        // the address/agency options it sits next to.
+        deliversElsewhere: false,
+        deliveryPlaces: const [],
+        clearDeliveryPlace: true,
+        isAddingNewDeliveryPlace: false,
+        newDeliveryPlace: const NewDeliveryPlaceDraft(),
+        clearDeliveryPlaceError: true,
       ),
     );
 
@@ -175,6 +184,88 @@ class CheckoutCubit extends SafeCubit<CheckoutState> {
 
   void clearAgency() => emit(state.copyWith(clearAgency: true));
 
+  /// Turns the "Deliver to a different place" section on or off. Turning it
+  /// on for the first time fetches the client's existing places; turning it
+  /// off drops anything picked or half-filled, so switching it back on
+  /// starts clean.
+  Future<void> setDeliversElsewhere(bool value) async {
+    if (state.deliversElsewhere == value) return;
+
+    emit(
+      state.copyWith(
+        deliversElsewhere: value,
+        clearDeliveryPlace: true,
+        isAddingNewDeliveryPlace: false,
+        newDeliveryPlace: const NewDeliveryPlaceDraft(),
+        clearDeliveryPlaceError: true,
+        clearValidation: true,
+      ),
+    );
+
+    if (value && state.deliveryPlaces.isEmpty && state.client != null) {
+      await _loadDeliveryPlaces();
+    }
+  }
+
+  Future<void> _loadDeliveryPlaces() async {
+    final Client? client = state.client;
+    if (client == null) return;
+
+    emit(state.copyWith(isLoadingDeliveryPlaces: true));
+    try {
+      final List<ChildOrg> places = await _clientsRepository.fetchChildOrgs(
+        client.publicId,
+        salesPersonId: state.bookingFor?.id,
+      );
+      if (state.client?.publicId != client.publicId) return;
+      emit(
+        state.copyWith(
+          deliveryPlaces: places,
+          isLoadingDeliveryPlaces: false,
+        ),
+      );
+    } catch (e) {
+      AppLogger.session('failed to load delivery places: $e');
+      if (state.client?.publicId != client.publicId) return;
+      emit(state.copyWith(isLoadingDeliveryPlaces: false));
+    }
+  }
+
+  void selectDeliveryPlace(ChildOrg place) => emit(
+    state.copyWith(
+      deliveryPlace: place,
+      isAddingNewDeliveryPlace: false,
+      clearDeliveryPlaceError: true,
+      clearValidation: true,
+    ),
+  );
+
+  /// Opens the inline "add a new delivery place" form instead of picking an
+  /// existing one.
+  void startNewDeliveryPlace() => emit(
+    state.copyWith(
+      isAddingNewDeliveryPlace: true,
+      clearDeliveryPlace: true,
+      clearDeliveryPlaceError: true,
+      clearValidation: true,
+    ),
+  );
+
+  void updateNewDeliveryPlace(NewDeliveryPlaceDraft draft) =>
+      emit(state.copyWith(newDeliveryPlace: draft, clearValidation: true));
+
+  /// Leaves the "add a new one" form to pick from the client's existing
+  /// delivery places instead -- the other direction from
+  /// [startNewDeliveryPlace], without touching [deliversElsewhere] itself.
+  void useExistingDeliveryPlace() => emit(
+    state.copyWith(
+      isAddingNewDeliveryPlace: false,
+      newDeliveryPlace: const NewDeliveryPlaceDraft(),
+      clearDeliveryPlaceError: true,
+      clearValidation: true,
+    ),
+  );
+
   void updateComments(String value) => emit(state.copyWith(comments: value));
 
   void goToDelivery() => emit(state.copyWith(step: CheckoutStep.delivery));
@@ -201,6 +292,26 @@ class CheckoutCubit extends SafeCubit<CheckoutState> {
       );
       return false;
     }
+    if (state.deliversElsewhere) {
+      if (!state.isAddingNewDeliveryPlace && state.deliveryPlace == null) {
+        emit(
+          state.copyWith(
+            validationMessage: AppStrings.VALIDATION_DELIVERY_PLACE_REQUIRED,
+          ),
+        );
+        return false;
+      }
+      if (state.isAddingNewDeliveryPlace &&
+          !state.newDeliveryPlace.isComplete) {
+        emit(
+          state.copyWith(
+            validationMessage:
+                AppStrings.VALIDATION_DELIVERY_PLACE_INCOMPLETE,
+          ),
+        );
+        return false;
+      }
+    }
     if (lines.isEmpty) return false;
 
     emit(state.copyWith(isSubmitting: true, clearError: true));
@@ -217,6 +328,7 @@ class CheckoutCubit extends SafeCubit<CheckoutState> {
         specialComments: state.comments,
         lines: lines,
         createdBy: state.bookingFor?.id,
+        bookedFor: _bookedForPayload(),
       );
 
       emit(state.copyWith(isSubmitting: false));
@@ -234,6 +346,37 @@ class CheckoutCubit extends SafeCubit<CheckoutState> {
       );
       return false;
     }
+  }
+
+  /// The `booked_for` request body: null when delivering to the client as
+  /// normal, `{"id": ...}` for a picked existing place (never resending its
+  /// other fields, which the backend would then insist still match exactly),
+  /// or the full creation object for a brand-new one.
+  Map<String, dynamic>? _bookedForPayload() {
+    if (!state.deliversElsewhere) return null;
+
+    final ChildOrg? picked = state.deliveryPlace;
+    if (picked != null) return {'id': picked.id};
+
+    final NewDeliveryPlaceDraft draft = state.newDeliveryPlace;
+    if (!draft.isComplete) return null;
+
+    return {
+      'party_name': draft.partyName.trim(),
+      'village_name': draft.villageName.trim(),
+      'address': {
+        'line_1': draft.line1.trim(),
+        'line_2': draft.line2.trim(),
+        'pincode': draft.pincode.trim(),
+        'city': draft.city!.id,
+        'state': draft.state!.id,
+        'country': draft.country!.id,
+      },
+      if (draft.transportName.trim().isNotEmpty)
+        'transport_name': draft.transportName.trim(),
+      if (draft.contactNumber.trim().isNotEmpty)
+        'contact_number': draft.contactNumber.trim(),
+    };
   }
 
   static T? _primaryOf<T>(List<T> items, bool Function(T) isPrimary) {

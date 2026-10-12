@@ -12,8 +12,23 @@ import '../../../core/widgets/layout/dismiss_keyboard.dart';
 import '../../products/presentation/widgets/products_search_bar.dart';
 import '../data/godown_repository.dart';
 import '../data/models/godown_stock.dart';
-import 'widgets/godown_card.dart';
 import 'widgets/godown_card_shimmer.dart';
+import 'widgets/other_material_product_card.dart';
+
+/// Every line for one product + packet weight -- one card on screen. A
+/// product with more than one packaging (e.g. two packet weights) gets one
+/// group per configuration, same as the admin table's "Packaging" column.
+class _ProductGroup {
+  final String productName;
+  final String packetWeightLabel;
+  final List<OtherMaterialStockLine> lines;
+
+  const _ProductGroup({
+    required this.productName,
+    required this.packetWeightLabel,
+    required this.lines,
+  });
+}
 
 class OtherMaterialStockScreen extends StatefulWidget {
   final VoidCallback? onMenuTap;
@@ -71,19 +86,43 @@ class _OtherMaterialStockScreenState extends State<OtherMaterialStockScreen> {
     }
   }
 
-  List<OtherMaterialStockLine> get _visibleLines {
+  /// Lines carry their own product + packet weight (the API answers
+  /// ``?group_by=configuration``), so grouping only needs to walk the list
+  /// once and bucket by that pair -- insertion order is kept, which is
+  /// already the API's own order.
+  List<_ProductGroup> get _groups {
     final List<OtherMaterialStockLine> lines = _stock?.lines ?? const [];
-    final String needle = _search.trim().toLowerCase();
-    if (needle.isEmpty) return lines;
+    final Map<String, List<OtherMaterialStockLine>> buckets = {};
+
+    for (final line in lines) {
+      final String key =
+          '${line.product?.publicId ?? ''}#${line.packetWeight}';
+      (buckets[key] ??= []).add(line);
+    }
+
     return [
-      for (final line in lines)
-        if (line.materialType.name.toLowerCase().contains(needle)) line,
+      for (final entry in buckets.entries)
+        _ProductGroup(
+          productName: entry.value.first.product?.name ?? '',
+          packetWeightLabel: entry.value.first.packetWeightSummary,
+          lines: entry.value,
+        ),
+    ];
+  }
+
+  List<_ProductGroup> get _visibleGroups {
+    final List<_ProductGroup> groups = _groups;
+    final String needle = _search.trim().toLowerCase();
+    if (needle.isEmpty) return groups;
+    return [
+      for (final group in groups)
+        if (group.productName.toLowerCase().contains(needle)) group,
     ];
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<OtherMaterialStockLine> visible = _visibleLines;
+    final List<_ProductGroup> visible = _visibleGroups;
 
     return DismissKeyboard(
       child: Scaffold(
@@ -191,25 +230,13 @@ class _OtherMaterialStockScreenState extends State<OtherMaterialStockScreen> {
                                           height: AppSpacing.SMD12,
                                         ),
                                     itemBuilder: (context, index) {
-                                      final OtherMaterialStockLine line =
+                                      final _ProductGroup group =
                                           visible[index];
-                                      return GodownCard(
-                                        icon: Icons.category_outlined,
-                                        title: line.materialType.name,
-                                        tagLabel: line.isShort
-                                            ? AppStrings.STOCK_SHORTFALL
-                                            : null,
-                                        tagColor: AppColors.ERROR,
-                                        stats: [
-                                          GodownCardStat(
-                                            label: AppStrings.STOCK_ON_HAND,
-                                            value:
-                                                '${line.onHand} ${line.materialType.unitType}',
-                                            valueColor: line.isShort
-                                                ? AppColors.ERROR
-                                                : AppColors.PRIMARY,
-                                          ),
-                                        ],
+                                      return OtherMaterialProductCard(
+                                        productName: group.productName,
+                                        packetWeightLabel:
+                                            group.packetWeightLabel,
+                                        lines: group.lines,
                                       );
                                     },
                                   ),

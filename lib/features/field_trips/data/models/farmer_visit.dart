@@ -50,6 +50,13 @@ class FarmerVisit extends Equatable {
   final List<FarmerProduct> products;
   final DateTime? createdAt;
 
+  /// Flags a sales lead. Settable whether or not the farmer came from a trip.
+  final bool isLead;
+
+  /// Set only when this farmer was recorded on a trip; empty for one added
+  /// directly from the standalone Farmers screen.
+  final String fieldTripPublicId;
+
   const FarmerVisit({
     required this.publicId,
     this.farmerName = '',
@@ -60,6 +67,8 @@ class FarmerVisit extends Equatable {
     this.usesOurProducts = false,
     this.products = const [],
     this.createdAt,
+    this.isLead = false,
+    this.fieldTripPublicId = '',
   });
 
   factory FarmerVisit.fromJson(Map<String, dynamic> json) {
@@ -73,6 +82,8 @@ class FarmerVisit extends Equatable {
       usesOurProducts: JsonParser.asBool(json['uses_our_products']),
       products: JsonParser.asList(json['products'], FarmerProduct.fromJson),
       createdAt: FieldTrip.parseInstant(json['created_at']),
+      isLead: JsonParser.asBool(json['is_lead']),
+      fieldTripPublicId: JsonParser.asString(json['field_trip_public_id']),
     );
   }
 
@@ -105,5 +116,7 @@ class FarmerVisit extends Equatable {
     usesOurProducts,
     products,
     createdAt,
+    isLead,
+    fieldTripPublicId,
   ];
 }

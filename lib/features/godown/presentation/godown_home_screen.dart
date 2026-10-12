@@ -17,6 +17,7 @@ import 'other_material_recipes_screen.dart';
 import 'other_material_stock_screen.dart';
 import 'packet_stock_screen.dart';
 import 'raw_material_stock_screen.dart';
+import 'raw_material_waste_list_screen.dart';
 import 'widgets/godown_drawer.dart';
 
 /// The godown-manager shell. The slide-out drawer, drag gestures and
@@ -196,6 +197,8 @@ class _GodownHomeScreenState extends State<GodownHomeScreen>
         return BagStockScreen(onMenuTap: _toggleDrawer);
       case GodownDrawerItems.PACKET_STOCK:
         return PacketStockScreen(onMenuTap: _toggleDrawer);
+      case GodownDrawerItems.WASTE_MANAGEMENT:
+        return RawMaterialWasteListScreen(onMenuTap: _toggleDrawer);
       case GodownDrawerItems.PROFILE:
         return _ProfileWithMenu(onMenuTap: _toggleDrawer);
       default:

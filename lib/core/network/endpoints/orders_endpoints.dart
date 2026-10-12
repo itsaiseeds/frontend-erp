@@ -7,4 +7,6 @@ class OrdersEndpoints {
 
   static String challan(String orderPublicId) =>
       '$_base/get-challan/$orderPublicId';
+
+  static String editOrder(String publicId) => '$_base/edit-order/$publicId';
 }

@@ -93,6 +93,7 @@ class AppStrings {
   static const String DRAWER_RETURN_ORDERS = 'Return Orders';
   static const String DRAWER_CLIENTS = 'Clients';
   static const String DRAWER_FIELD_TRIPS = 'Farmer Meetings';
+  static const String DRAWER_FARMERS = 'Farmers';
   static const String DRAWER_PROFILE = 'Profile';
 
   static const String CLIENTS_TITLE = 'Clients';
@@ -275,6 +276,7 @@ class AppStrings {
       'You will need your authentication code to sign back in.';
   static const String CANCEL = 'Cancel';
   static const String DELETE = 'Delete';
+  static const String EDIT = 'Edit';
 
   static const String SOMETHING_WENT_WRONG_TITLE = 'Something went wrong';
   static const String SOMETHING_WENT_WRONG =
@@ -348,12 +350,37 @@ class AppStrings {
   static const String CART_BOOK_FOR_HINT = 'Select who this order is for';
   static const String CART_BOOK_FOR_SELF = 'Myself';
   static const String CART_NO_ADDRESSES = 'No saved address for this client';
+
+  static const String CART_DELIVER_ELSEWHERE = 'Deliver to a different place';
+  static const String CART_DELIVER_ELSEWHERE_HINT =
+      'For a party the client is routing this order through';
+  static const String CART_DELIVER_ELSEWHERE_LOCKED = 'Select a client first';
+  static const String CART_DELIVERY_PLACE = 'Delivery place';
+  static const String CART_DELIVERY_PLACE_HINT = 'Select a delivery place';
+  static const String CART_DELIVERY_PLACE_ADD_NEW = 'Add a new delivery place';
+  static const String CART_DELIVERY_PLACE_USE_EXISTING =
+      'Pick an existing one instead';
+  static const String CART_DELIVERY_PLACE_PARTY_NAME = 'Party name';
+  static const String CART_DELIVERY_PLACE_PARTY_NAME_HINT = 'Who receives it';
+  static const String CART_DELIVERY_PLACE_VILLAGE = 'Village';
+  static const String CART_DELIVERY_PLACE_VILLAGE_HINT = 'Village name';
+  static const String CART_DELIVERY_PLACE_TRANSPORT = 'Transport (optional)';
+  static const String CART_DELIVERY_PLACE_TRANSPORT_HINT =
+      'Transport name, if any';
+  static const String CART_DELIVERY_PLACE_CONTACT = 'Contact (optional)';
+
   static const String CART_COMMENTS = 'Special comments';
   static const String CART_COMMENTS_HINT = 'Anything the team should know';
   static const String CART_ORDER_PLACED = 'Order placed';
   static const String VALIDATION_CLIENT_REQUIRED = 'Select a client.';
+  static const String VALIDATION_LINES_REQUIRED =
+      'Add at least one item to the order.';
   static const String VALIDATION_ADDRESS_REQUIRED =
       'Select a delivery address.';
+  static const String VALIDATION_DELIVERY_PLACE_REQUIRED =
+      'Select or add a delivery place.';
+  static const String VALIDATION_DELIVERY_PLACE_INCOMPLETE =
+      'Finish the new delivery place, or pick an existing one.';
   static const String PRIMARY_BADGE = 'Main';
   static const String PRODUCT_PER_BAG = 'per bag';
   static const String IMAGE_ZOOM_HINT = 'Double tap or pinch to zoom';
@@ -402,12 +429,31 @@ class AppStrings {
   static const String ORDER_MORE_PRODUCTS_PREFIX = '+';
   static const String ORDER_MORE_PRODUCTS_SUFFIX = 'more';
   static const String ORDER_DELIVERY_ADDRESS = 'Delivery address';
+  static const String ORDER_DELIVERY_TO = 'Delivery To';
+  static const String ORDER_DELIVERY_TO_TRANSPORT = 'Transport';
+  static const String ORDER_DELIVERY_TO_CONTACT = 'Contact';
   static const String ORDER_NO_DATE = '--';
   static const String TIMEZONE_IST = 'IST';
   static const String ORDERS_SEARCH_HINT = 'Search client or product';
   static const String ORDERS_NO_MATCH_TITLE = 'No match';
   static const String ORDERS_NO_MATCH_BODY =
       'No client or product matches that name.';
+
+  static const String EDIT_ORDER_TOOLTIP = 'Edit order';
+  static const String EDIT_ORDER_NOT_BOOKED =
+      'Only a BOOKED order can be edited -- this one has moved on.';
+  static const String EDIT_ORDER_TITLE = 'Edit order';
+  static const String EDIT_ORDER_DELIVERY_TITLE = 'Edit delivery';
+  static const String EDIT_ORDER_SAVE = 'Save changes';
+  static const String EDIT_ORDER_SAVED = 'Order updated';
+  static const String EDIT_ORDER_COMMENT_LABEL = 'Add a note';
+  static const String EDIT_ORDER_COMMENT_HINT =
+      'Added to the order\'s comments, kept alongside what is already there';
+  static const String EDIT_ORDER_ADD_PRODUCTS = 'Add products';
+
+  static const String ADD_PRODUCTS_TITLE = 'Add products';
+  static const String ADD_PRODUCTS_SELECTED = 'selected';
+  static const String DONE = 'Done';
 
   static const String RETURN_ORDERS_EMPTY_TITLE = 'No returns yet';
   static const String RETURN_ORDERS_EMPTY_BODY =
@@ -465,6 +511,15 @@ class AppStrings {
   static const String RETURN_ORDER_MATERIALS_NOT_BOOKED = 'Not booked';
   static const String RETURN_ORDER_INWARD_RAW_TITLE = 'Raw material lots';
   static const String RETURN_ORDER_INWARD_OTHER_TITLE = 'Other material lots';
+  static const String RETURN_SLIP_TITLE = 'Return order slip';
+  static const String RETURN_SLIP_LOAD_FAILED = 'Could not load the return slip.';
+  static const String RETURN_SLIP_DOWNLOAD = 'Download';
+  static const String RETURN_SLIP_DOWNLOAD_FAILED = 'Could not save the slip.';
+  static const String RETURN_SLIP_DOWNLOADED = 'Slip downloaded to Downloads.';
+  static const String RETURN_SLIP_SHARE = 'Share PDF';
+  static const String RETURN_SLIP_SHARE_FAILED = 'Could not share the slip.';
+  static const String RETURN_SLIP_FILE_PREFIX = 'return-slip-';
+  static const String RETURN_ORDER_VIEW_SLIP = 'View return order slip';
 
   static const String RETURN_ORDER_DRAFT_EMPTY_TITLE = 'Nothing added yet';
   static const String RETURN_ORDER_DRAFT_EMPTY_BODY =
@@ -492,10 +547,14 @@ class AppStrings {
       'Order cannot be returned';
   static const String RETURN_ORDER_BLOCK_NOT_RETURNABLE_BODY =
       'Only a dispatched or delivered order can take a return.';
-  static const String RETURN_ORDER_BLOCK_LIVE_RETURN_TITLE =
-      'A return is already open';
-  static const String RETURN_ORDER_BLOCK_LIVE_RETURN_BODY =
-      'Return %s is already pending or accepted on this order.';
+  static const String RETURN_ORDER_BLOCK_NOTHING_LEFT_TITLE =
+      'Nothing left to return';
+  static const String RETURN_ORDER_BLOCK_NOTHING_LEFT_BODY =
+      'Every packet this order dispatched is already covered by a return.';
+  static const String RETURN_ORDER_EXISTING_ONE =
+      'Return %s is already raised on this order.';
+  static const String RETURN_ORDER_EXISTING_MANY =
+      '%d returns are already raised on this order.';
 
   static const String VALIDATION_RETURN_PACKETS = 'Enter 1 to %s packets';
   static const String VALIDATION_RETURN_PACKETS_REQUIRED = 'Enter the count';
@@ -672,6 +731,34 @@ class AppStrings {
   static const String FARMER_VISIT_DUPLICATE =
       'This farmer is already recorded on this meeting.';
 
+  static const String FARMER_LEAD_BADGE = 'Lead';
+
+  // Farmers recorded directly, without a farmer meeting.
+  static const String FARMERS_TITLE = 'Farmers';
+  static const String FARMERS_SEARCH_HINT = 'Search by name or contact';
+  static const String FARMERS_EMPTY_TITLE = 'No farmers yet';
+  static const String FARMERS_EMPTY_BODY =
+      'Add a farmer to keep their details here, even without a meeting.';
+  static const String FARMERS_FILTER_NONE_MATCH =
+      'No farmers match these filters.';
+  static const String FARMERS_LOAD_ERROR = 'Could not load farmers';
+
+  static const String FARMER_RECORD_ADD_TITLE = 'Add farmer';
+  static const String FARMER_RECORD_EDIT_TITLE = 'Edit farmer';
+  static const String FARMER_RECORD_SUBTITLE =
+      'Record a farmer you know, any time';
+  static const String FARMER_RECORD_SAVE = 'Save farmer';
+  static const String FARMER_RECORD_SAVED = 'Farmer added';
+  static const String FARMER_RECORD_UPDATED = 'Farmer updated';
+  static const String FARMER_RECORD_IS_LEAD = 'Mark as a sales lead';
+  static const String FARMER_RECORD_DELETE = 'Delete farmer';
+  static const String FARMER_RECORD_DELETE_CONFIRM_TITLE = 'Delete farmer?';
+  static const String FARMER_RECORD_DELETE_CONFIRM_BODY =
+      'This removes the farmer you recorded. This cannot be undone.';
+  static const String FARMER_RECORD_DELETED = 'Farmer deleted';
+  static const String FARMER_RECORD_DUPLICATE =
+      'This contact number is already recorded.';
+
   // Godown manager shell.
   static const String GODOWN_HOME_TITLE = 'Godown';
   static const String DRAWER_RAW_MATERIAL_STOCK = 'Raw Material Stock';
@@ -709,6 +796,37 @@ class AppStrings {
 
   static const String DRAWER_BAG_STOCK = 'Bag Stock';
   static const String DRAWER_PACKET_STOCK = 'Packet Stock';
+  static const String DRAWER_WASTE_MANAGEMENT = 'Waste Management';
+
+  static const String WASTE_LIST_TITLE = 'Waste Management';
+  static const String WASTE_SEARCH_HINT = 'Search waste records...';
+  static const String WASTE_EMPTY_TITLE = 'No waste recorded';
+  static const String WASTE_EMPTY_BODY =
+      'Waste you record for raw materials will appear here.';
+  static const String WASTE_RECORD_COUNT_ONE = 'record';
+  static const String WASTE_RECORD_COUNT_MANY = 'records';
+  static const String WASTE_ADD_TITLE = 'Record Waste';
+  static const String WASTE_FIELD_PRODUCT = 'Product';
+  static const String WASTE_FIELD_PRODUCT_HINT = 'Select a product';
+  static const String WASTE_FIELD_QUANTITY_KG = 'Quantity (kg)';
+  static const String WASTE_FIELD_QUANTITY_KG_HINT = 'e.g. 12.500';
+  static const String WASTE_FIELD_REASON = 'Reason';
+  static const String WASTE_FIELD_REASON_HINT = 'Optional';
+  static const String WASTE_VALIDATION_PRODUCT = 'Select a product.';
+  static const String WASTE_VALIDATION_QUANTITY = 'Enter a quantity.';
+  static const String WASTE_VALIDATION_QUANTITY_POSITIVE =
+      'Quantity must be greater than zero.';
+  static const String WASTE_RECORDED = 'Waste recorded.';
+  static const String WASTE_UPDATED = 'Waste updated.';
+  static const String WASTE_DELETED = 'Waste deleted.';
+  static const String WASTE_DETAIL_TITLE = 'Waste Record';
+  static const String WASTE_FIELD_CREATED_BY = 'Recorded by';
+  static const String WASTE_FIELD_CREATED_AT = 'Recorded on';
+  static const String WASTE_DELETE_TITLE = 'Delete this waste record?';
+  static const String WASTE_DELETE_BODY =
+      'This cannot be undone. The written-off quantity will no longer count '
+      'against this product.';
+  static const String WASTE_EDIT_TITLE = 'Edit Waste';
 
   static const String BAG_STOCK_TITLE = 'Bag Stock';
   static const String PACKET_STOCK_TITLE = 'Packet Stock';
@@ -901,4 +1019,24 @@ class AppStrings {
   static const String LAB_TEST_EDIT = 'Edit';
 
   static const String LAB_NO_SEARCH_MATCH = "No product matches that name.";
+
+  // Lab report export.
+  static const String DRAWER_LAB_REPORT_EXPORT = 'Report Export';
+  static const String LAB_EXPORT_TITLE = 'Report Export';
+  static const String LAB_EXPORT_COMPANY_NAME = 'Saiseeds Company';
+  static const String LAB_EXPORT_START_DATE = 'Start date';
+  static const String LAB_EXPORT_END_DATE = 'End date';
+  static const String LAB_EXPORT_PICK_DATE = 'Pick a date';
+  static const String LAB_EXPORT_GENERATE = 'Generate Report';
+  static const String LAB_EXPORT_EMPTY_TITLE = 'Pick a date range';
+  static const String LAB_EXPORT_EMPTY_BODY =
+      'Choose a start and end date, then generate the report.';
+  static const String LAB_EXPORT_FAILED = 'Could not generate the report.';
+  static const String LAB_EXPORT_DOWNLOAD = 'Download PDF';
+  static const String LAB_EXPORT_DOWNLOAD_FAILED =
+      'Could not download the report.';
+  static const String LAB_EXPORT_DOWNLOADED = 'PDF downloaded to Downloads.';
+  static const String LAB_EXPORT_FILE_PREFIX = 'lab-report-';
+  static const String LAB_EXPORT_SHARE = 'Share PDF';
+  static const String LAB_EXPORT_SHARE_FAILED = 'Could not share the report.';
 }

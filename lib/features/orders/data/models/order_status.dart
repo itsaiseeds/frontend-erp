@@ -49,6 +49,10 @@ class OrderStatusX {
   static bool hasChallan(OrderStatus status) =>
       status == OrderStatus.dispatched || status == OrderStatus.delivered;
 
+  /// Whether the sales person who booked it may still edit it -- the office
+  /// has not reviewed it yet.
+  static bool isEditable(OrderStatus status) => status == OrderStatus.booked;
+
   static String labelOf(OrderStatus status) {
     switch (status) {
       case OrderStatus.booked:

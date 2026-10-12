@@ -204,21 +204,26 @@ void main() {
       expect(find.text(AppStrings.RETURN_ORDER_ADD_PRODUCT), findsNothing);
     });
 
-    testWidgets('a live return already on the order is named', (tester) async {
-      final adapter = _FormAdapter()..prefill = _alreadyReturned;
+    testWidgets(
+      'a live return already on the order is named, not blocked',
+      (tester) async {
+        final adapter = _FormAdapter()..prefill = _alreadyReturned;
 
-      await _pumpForm(tester, adapter);
+        await _pumpForm(tester, adapter);
 
-      expect(
-        find.text(AppStrings.RETURN_ORDER_BLOCK_LIVE_RETURN_TITLE),
-        findsOneWidget,
-      );
-      expect(
-        find.textContaining('RET-OLD'),
-        findsWidgets,
-        reason: 'the user needs the id of the return that is in the way',
-      );
-    });
+        // v2 allows another return alongside a live one, so the form stays
+        // usable -- the existing return is only called out, never blocking.
+        expect(
+          find.text(AppStrings.RETURN_ORDER_DRAFT_EMPTY_TITLE),
+          findsOneWidget,
+        );
+        expect(
+          find.textContaining('RET-OLD'),
+          findsWidgets,
+          reason: 'the user needs the id of the return already raised',
+        );
+      },
+    );
 
     testWidgets('an order with nothing on the challan says so', (tester) async {
       final adapter = _FormAdapter()..prefill = _noLines;
