@@ -76,13 +76,19 @@ class _PacketStockViewState extends State<_PacketStockView> {
           ),
       ],
       onCountChanged: cubit.setDraftCount,
-      onSubmit: () => _submit(cubit),
+      onSubmit: ({required bool reuseOtherMaterial}) =>
+          _submit(cubit, reuseOtherMaterial: reuseOtherMaterial),
     );
     if (mounted) setState(() {});
   }
 
-  Future<bool> _submit(PacketStockCubit cubit) async {
-    final bool ok = await cubit.submitDraft();
+  Future<bool> _submit(
+    PacketStockCubit cubit, {
+    required bool reuseOtherMaterial,
+  }) async {
+    final bool ok = await cubit.submitDraft(
+      reuseOtherMaterial: reuseOtherMaterial,
+    );
     if (!mounted) return ok;
     if (ok) {
       ToastUtils.showSuccess(context, AppStrings.STOCK_SUBMIT_SUCCESS);

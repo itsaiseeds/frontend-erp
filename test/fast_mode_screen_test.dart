@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:frontend_erp/core/constants/app_strings.dart';
-import 'package:frontend_erp/core/widgets/dialogs/confirmation_dialog.dart';
+import 'package:frontend_erp/core/widgets/dialogs/stock_update_confirm_dialog.dart';
 import 'package:frontend_erp/features/godown/presentation/fast_mode_screen.dart';
 import 'package:frontend_erp/features/godown/presentation/widgets/fast_mode_row.dart';
 
@@ -41,7 +41,7 @@ Future<_Counts> _pump(WidgetTester tester, List<FastModeRow> rows) async {
         unitLabel: AppStrings.STOCK_BAGS_UNIT,
         rows: rows,
         onCountChanged: (key, count) => counts.values[key] = count,
-        onSubmit: () async {
+        onSubmit: ({required bool reuseOtherMaterial}) async {
           counts.submitCalls++;
           return counts.submitResult;
         },
@@ -59,12 +59,12 @@ Future<void> _openSummary(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
-/// Confirms the dialog. Scoped to [ConfirmationDialog] because the app bar and
-/// the dialog both carry an "Update" label once the summary is open.
+/// Confirms the dialog. Scoped to [StockUpdateConfirmDialog] because the app
+/// bar and the dialog both carry an "Update" label once the summary is open.
 Future<void> _confirmDialog(WidgetTester tester) async {
   await tester.tap(
     find.descendant(
-      of: find.byType(ConfirmationDialog),
+      of: find.byType(StockUpdateConfirmDialog),
       matching: find.widgetWithText(TextButton, AppStrings.STOCK_UPDATE),
     ),
   );
@@ -397,7 +397,7 @@ void main() {
       // itself is deliberately not asserted: it renders through the global
       // toastification overlay, which is not part of this widget's contract.
       expect(find.text(AppStrings.STOCK_UPDATE_CONFIRM_TITLE), findsNothing);
-      expect(find.byType(ConfirmationDialog), findsNothing);
+      expect(find.byType(StockUpdateConfirmDialog), findsNothing);
       expect(counts.submitCalls, 0);
     });
   });

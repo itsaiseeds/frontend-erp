@@ -22,6 +22,7 @@ class GodownEndpoints {
   static const String bagStock = '$_base/bag-stock';
   static const String samplePacketStock = '$_base/sample-packet-stock';
   static const String rawMaterialWastes = '$_base/raw-material-wastes';
+  static const String transferProduct = '$_base/transfer-product';
 
   static String inwardRawMaterial(String publicId) =>
       '$_base/inward-raw-material/$publicId';

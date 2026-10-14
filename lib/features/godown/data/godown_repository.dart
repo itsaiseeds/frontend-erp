@@ -203,26 +203,41 @@ class GodownRepository {
   }
 
   /// Whole-day replace: packagings absent from [counts] are zeroed.
-  Future<void> replaceBagStock(Map<String, int> counts) =>
-      _apiClient.post(GodownEndpoints.updateBagStock, body: {'counts': counts});
+  Future<void> replaceBagStock(
+    Map<String, int> counts, {
+    bool reuseOtherMaterial = false,
+  }) => _apiClient.post(
+    GodownEndpoints.updateBagStock,
+    body: {'counts': counts, 'reuse_other_material': reuseOtherMaterial},
+  );
 
   /// Only the named packagings are written; the rest of today's rows stand.
-  Future<void> patchBagStock(Map<String, int> counts) => _apiClient.patch(
+  Future<void> patchBagStock(
+    Map<String, int> counts, {
+    bool reuseOtherMaterial = false,
+  }) => _apiClient.patch(
     GodownEndpoints.updateBagStock,
-    body: {'counts': counts},
+    body: {'counts': counts, 'reuse_other_material': reuseOtherMaterial},
   );
 
   /// Whole-day replace: `(product, packet_weight)` pairs absent from [lines]
   /// are zeroed.
-  Future<void> replacePacketStock(List<Map<String, dynamic>> lines) =>
-      _apiClient.post(
-        GodownEndpoints.updateSamplePacketStock,
-        body: {'counts': lines},
-      );
+  Future<void> replacePacketStock(
+    List<Map<String, dynamic>> lines, {
+    bool reuseOtherMaterial = false,
+  }) => _apiClient.post(
+    GodownEndpoints.updateSamplePacketStock,
+    body: {'counts': lines, 'reuse_other_material': reuseOtherMaterial},
+  );
 
   /// Only the named `(product, packet_weight)` pairs are written.
-  Future<void> patchPacketStock(List<Map<String, dynamic>> lines) => _apiClient
-      .patch(GodownEndpoints.updateSamplePacketStock, body: {'counts': lines});
+  Future<void> patchPacketStock(
+    List<Map<String, dynamic>> lines, {
+    bool reuseOtherMaterial = false,
+  }) => _apiClient.patch(
+    GodownEndpoints.updateSamplePacketStock,
+    body: {'counts': lines, 'reuse_other_material': reuseOtherMaterial},
+  );
 
   /// The live bag position for every packaging counted at least once --
   /// absent entirely for one never counted, since the figures are derived
@@ -279,6 +294,24 @@ class GodownRepository {
         'product': productPublicId,
         'quantity_kg': quantityKg.trim(),
         'reason': reason?.trim() ?? '',
+      },
+    );
+  }
+
+  /// Moves raw-material stock from one product to another of the same crop
+  /// (the server is the one that enforces "same crop" and "different
+  /// products" -- this call just carries the two product ids and the kg).
+  Future<void> transferProductStock({
+    required String sourceProductPublicId,
+    required String targetProductPublicId,
+    required String quantityKg,
+  }) {
+    return _apiClient.post(
+      GodownEndpoints.transferProduct,
+      body: {
+        'source_product': sourceProductPublicId,
+        'target_product': targetProductPublicId,
+        'quantity_kg': quantityKg.trim(),
       },
     );
   }
