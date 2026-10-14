@@ -8,7 +8,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/image_url_resolver.dart';
 import '../../../core/utils/toast_utils.dart';
-import '../../../core/widgets/dialogs/confirmation_dialog.dart';
+import '../../../core/widgets/dialogs/stock_update_confirm_dialog.dart';
 import 'widgets/fast_mode_row.dart';
 
 /// A full-screen, one-row-at-a-time counting flow -- Tinder-card `PageView`
@@ -28,7 +28,7 @@ class FastModeScreen extends StatefulWidget {
 
   /// Commits the counts. Returning `false` leaves the user on the review page
   /// with their entries intact so a failed save is never a lost run.
-  final Future<bool> Function() onSubmit;
+  final Future<bool> Function({required bool reuseOtherMaterial}) onSubmit;
 
   const FastModeScreen({
     super.key,
@@ -45,7 +45,8 @@ class FastModeScreen extends StatefulWidget {
     required String unitLabel,
     required List<FastModeRow> rows,
     required void Function(String key, int? count) onCountChanged,
-    required Future<bool> Function() onSubmit,
+    required Future<bool> Function({required bool reuseOtherMaterial})
+    onSubmit,
   }) {
     return Navigator.of(context).push(
       PageRouteBuilder(
@@ -166,16 +167,18 @@ class _FastModeScreenState extends State<FastModeScreen> {
               '${widget.unitLabel}. $skipped '
               '${AppStrings.STOCK_UPDATE_CONFIRM_BODY_SKIPPED}';
 
-    final bool confirmed = await ConfirmationDialog.show(
+    final bool? reuseOtherMaterial = await StockUpdateConfirmDialog.show(
       context,
       title: AppStrings.STOCK_UPDATE_CONFIRM_TITLE,
       body: body,
       confirmLabel: AppStrings.STOCK_UPDATE,
     );
-    if (!confirmed || !mounted) return;
+    if (reuseOtherMaterial == null || !mounted) return;
 
     setState(() => _isSubmitting = true);
-    final bool saved = await widget.onSubmit();
+    final bool saved = await widget.onSubmit(
+      reuseOtherMaterial: reuseOtherMaterial,
+    );
     if (!mounted) return;
 
     // A failed save must not close the review page -- the entries are the only

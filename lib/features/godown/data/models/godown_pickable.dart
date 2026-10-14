@@ -15,15 +15,24 @@ class GodownPartyType {
 /// A product as the booking pickers need it. A product that is not usable
 /// (the admin's `is_usable` flag) is filtered out by the repository before
 /// this is ever built -- booking against one would be refused server-side.
+///
+/// [cropId]/[cropName] are carried for the product-transfer picker, which
+/// narrows a target product down to the same crop as the chosen source --
+/// the server enforces that rule regardless, this is only a client-side
+/// head start so a mismatched pick never reaches the request.
 class GodownPickableProduct extends Equatable {
   final String publicId;
   final String name;
   final bool isUsable;
+  final int cropId;
+  final String cropName;
 
   const GodownPickableProduct({
     this.publicId = '',
     this.name = '',
     this.isUsable = true,
+    this.cropId = 0,
+    this.cropName = '',
   });
 
   factory GodownPickableProduct.fromJson(Map<String, dynamic> json) {
@@ -31,11 +40,13 @@ class GodownPickableProduct extends Equatable {
       publicId: JsonParser.asString(json['public_id']),
       name: JsonParser.asString(json['name']),
       isUsable: JsonParser.asBool(json['is_usable']),
+      cropId: JsonParser.asInt(json['crop_id']),
+      cropName: JsonParser.asString(json['crop']),
     );
   }
 
   @override
-  List<Object?> get props => [publicId, name, isUsable];
+  List<Object?> get props => [publicId, name, isUsable, cropId, cropName];
 }
 
 /// A party as the booking pickers need it: the id is what the API wants,

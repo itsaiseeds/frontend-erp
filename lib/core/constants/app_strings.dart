@@ -765,6 +765,7 @@ class AppStrings {
   static const String DRAWER_OTHER_MATERIAL_STOCK = 'Other Material Stock';
   static const String DRAWER_INWARD_RAW_MATERIALS = 'Inward Raw Materials';
   static const String DRAWER_INWARD_OTHER_MATERIALS = 'Inward Other Materials';
+  static const String DRAWER_PRODUCT_STOCK_TRANSFER = 'Product Stock Transfer';
   static const String DRAWER_RECIPES = 'Recipes';
   static const String SWITCH_TO_SALES_PERSON = 'Switch to Sales Person';
   static const String SWITCH_TO_GODOWN_MANAGER = 'Switch to Godown Manager';
@@ -819,6 +820,29 @@ class AppStrings {
   static const String WASTE_RECORDED = 'Waste recorded.';
   static const String WASTE_UPDATED = 'Waste updated.';
   static const String WASTE_DELETED = 'Waste deleted.';
+
+  static const String TRANSFER_TITLE = 'Product Stock Transfer';
+  static const String TRANSFER_SUBTITLE =
+      'Move raw-material stock from one product to another of the same crop.';
+  static const String TRANSFER_FIELD_SOURCE = 'From product';
+  static const String TRANSFER_FIELD_SOURCE_HINT = 'Select a product';
+  static const String TRANSFER_FIELD_TARGET = 'To product';
+  static const String TRANSFER_FIELD_TARGET_HINT = 'Select a product';
+  static const String TRANSFER_FIELD_TARGET_PICK_SOURCE_FIRST =
+      'Select the source product first';
+  static const String TRANSFER_FIELD_TARGET_NONE_IN_CROP =
+      'No other product shares this crop';
+  static const String TRANSFER_FIELD_QUANTITY_KG = 'Quantity (kg)';
+  static const String TRANSFER_FIELD_QUANTITY_KG_HINT = 'e.g. 200.000';
+  static const String TRANSFER_VALIDATION_SOURCE = 'Select the source product.';
+  static const String TRANSFER_VALIDATION_TARGET = 'Select the target product.';
+  static const String TRANSFER_VALIDATION_SAME_PRODUCT =
+      'Source and target must be different products.';
+  static const String TRANSFER_VALIDATION_QUANTITY = 'Enter a quantity.';
+  static const String TRANSFER_VALIDATION_QUANTITY_POSITIVE =
+      'Quantity must be greater than zero.';
+  static const String TRANSFER_ACTION = 'Transfer stock';
+  static const String TRANSFER_DONE = 'Stock transferred.';
   static const String WASTE_DETAIL_TITLE = 'Waste Record';
   static const String WASTE_FIELD_CREATED_BY = 'Recorded by';
   static const String WASTE_FIELD_CREATED_AT = 'Recorded on';
@@ -882,6 +906,11 @@ class AppStrings {
       'Nothing has been counted yet, so there is nothing to save.';
   static const String STOCK_UPDATE_CONFIRM_BODY_ALL =
       'Every row has a count. This will save';
+  static const String STOCK_UPDATE_CONFIRM_DECREASE_HINT =
+      'If any product\'s count is decreasing, please uncheck the flag '
+      'below. It is checked by default and sends true to the backend, so '
+      'be careful while doing this.';
+  static const String STOCK_REUSE_OTHER_MATERIAL = 'Reuse other material';
 
   static const String INWARD_RAW_MATERIALS_TITLE = 'Inward Raw Materials';
   static const String INWARD_OTHER_MATERIALS_TITLE = 'Inward Other Materials';

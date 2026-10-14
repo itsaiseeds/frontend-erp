@@ -13,11 +13,12 @@ class GodownDrawerItems {
   static const int OTHER_MATERIAL_STOCK = 1;
   static const int INWARD_RAW_MATERIALS = 2;
   static const int INWARD_OTHER_MATERIALS = 3;
-  static const int RECIPES = 4;
-  static const int BAG_STOCK = 5;
-  static const int PACKET_STOCK = 6;
-  static const int WASTE_MANAGEMENT = 7;
-  static const int PROFILE = 8;
+  static const int PRODUCT_STOCK_TRANSFER = 4;
+  static const int RECIPES = 5;
+  static const int BAG_STOCK = 6;
+  static const int PACKET_STOCK = 7;
+  static const int WASTE_MANAGEMENT = 8;
+  static const int PROFILE = 9;
 
   static const List<DrawerItem> primary = [
     DrawerItem(
@@ -39,6 +40,11 @@ class GodownDrawerItems {
       index: INWARD_OTHER_MATERIALS,
       icon: Icons.move_to_inbox_outlined,
       title: AppStrings.DRAWER_INWARD_OTHER_MATERIALS,
+    ),
+    DrawerItem(
+      index: PRODUCT_STOCK_TRANSFER,
+      icon: Icons.swap_horiz_rounded,
+      title: AppStrings.DRAWER_PRODUCT_STOCK_TRANSFER,
     ),
     DrawerItem(
       index: RECIPES,

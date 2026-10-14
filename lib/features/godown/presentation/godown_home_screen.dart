@@ -16,6 +16,7 @@ import 'inward_raw_list_screen.dart';
 import 'other_material_recipes_screen.dart';
 import 'other_material_stock_screen.dart';
 import 'packet_stock_screen.dart';
+import 'product_stock_transfer_screen.dart';
 import 'raw_material_stock_screen.dart';
 import 'raw_material_waste_list_screen.dart';
 import 'widgets/godown_drawer.dart';
@@ -191,6 +192,8 @@ class _GodownHomeScreenState extends State<GodownHomeScreen>
         return InwardRawListScreen(onMenuTap: _toggleDrawer);
       case GodownDrawerItems.INWARD_OTHER_MATERIALS:
         return InwardOtherListScreen(onMenuTap: _toggleDrawer);
+      case GodownDrawerItems.PRODUCT_STOCK_TRANSFER:
+        return ProductStockTransferScreen(onMenuTap: _toggleDrawer);
       case GodownDrawerItems.RECIPES:
         return OtherMaterialRecipesScreen(onMenuTap: _toggleDrawer);
       case GodownDrawerItems.BAG_STOCK:

@@ -90,7 +90,7 @@ class PacketStockCubit extends SafeCubit<PacketStockState> {
     emit(state.copyWith(draftCounts: draft));
   }
 
-  Future<bool> submitDraft() async {
+  Future<bool> submitDraft({bool reuseOtherMaterial = false}) async {
     final List<PacketStockDraftLine> toSubmit = [
       for (final PacketStockDraftLine line in state.lines)
         if (line.draftCount != null) line,
@@ -109,9 +109,15 @@ class PacketStockCubit extends SafeCubit<PacketStockState> {
       ];
 
       if (_hasSubmittedToday) {
-        await _repository.patchPacketStock(lines);
+        await _repository.patchPacketStock(
+          lines,
+          reuseOtherMaterial: reuseOtherMaterial,
+        );
       } else {
-        await _repository.replacePacketStock(lines);
+        await _repository.replacePacketStock(
+          lines,
+          reuseOtherMaterial: reuseOtherMaterial,
+        );
         _hasSubmittedToday = true;
       }
       emit(state.copyWith(isSubmitting: false, draftCounts: const {}));
