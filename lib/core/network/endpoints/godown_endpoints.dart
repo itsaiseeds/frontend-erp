@@ -27,6 +27,9 @@ class GodownEndpoints {
   static String inwardRawMaterial(String publicId) =>
       '$_base/inward-raw-material/$publicId';
 
+  static String inwardRawMaterialConvertToWaste(String publicId) =>
+      '$_base/inward-raw-material/$publicId/convert-to-waste';
+
   static String inwardOtherMaterial(String publicId) =>
       '$_base/inward-other-material/$publicId';
 

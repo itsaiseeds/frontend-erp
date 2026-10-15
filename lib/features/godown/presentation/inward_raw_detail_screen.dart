@@ -10,8 +10,10 @@ import '../../../core/utils/toast_utils.dart';
 import '../../../core/widgets/dialogs/confirmation_dialog.dart';
 import '../data/models/inward_raw_material.dart';
 import '../data/models/inward_raw_status.dart';
+import '../data/models/raw_material_waste.dart';
 import 'bloc/inward_raw_cubit.dart';
 import 'bloc/inward_raw_state.dart';
+import 'widgets/convert_to_waste_dialog.dart';
 import 'widgets/inward_raw_status_badge.dart';
 
 /// One raw-material lot: its plan, dates and current status.
@@ -71,6 +73,18 @@ class InwardRawDetailScreen extends StatelessWidget {
               style: AppTypography.titleMedium,
             ),
             actions: [
+              if (current.canConvertToWaste)
+                IconButton(
+                  tooltip: AppStrings.INWARD_CONVERT_TO_WASTE,
+                  onPressed: state.isMutating
+                      ? null
+                      : () => _confirmConvertToWaste(context, current),
+                  icon: const Icon(
+                    Icons.delete_sweep_outlined,
+                    size: AppSizes.ICON_LG,
+                    color: AppColors.WARNING,
+                  ),
+                ),
               if (current.canDelete)
                 IconButton(
                   tooltip: AppStrings.DELETE,
@@ -126,6 +140,37 @@ class InwardRawDetailScreen extends StatelessWidget {
 
     if (succeeded) {
       ToastUtils.showSuccess(context, AppStrings.INWARD_LOT_DELETED);
+      Navigator.of(context).pop();
+      return;
+    }
+    ToastUtils.showServerError(
+      context,
+      cubit.state.errorMessage ?? AppStrings.SOMETHING_WENT_WRONG,
+    );
+  }
+
+  Future<void> _confirmConvertToWaste(
+    BuildContext context,
+    InwardRawMaterial current,
+  ) async {
+    final InwardRawCubit cubit = context.read<InwardRawCubit>();
+
+    final String? reason = await ConvertToWasteDialog.show(
+      context,
+      title: AppStrings.INWARD_CONVERT_TO_WASTE_TITLE,
+      body: AppStrings.INWARD_CONVERT_TO_WASTE_BODY,
+      confirmLabel: AppStrings.INWARD_CONVERT_TO_WASTE,
+    );
+    if (reason == null || !context.mounted) return;
+
+    final RawMaterialWaste? waste = await cubit.convertToWaste(
+      current.publicId,
+      reason: reason,
+    );
+    if (!context.mounted) return;
+
+    if (waste != null) {
+      ToastUtils.showSuccess(context, AppStrings.INWARD_CONVERTED_TO_WASTE);
       Navigator.of(context).pop();
       return;
     }

@@ -846,6 +846,8 @@ class AppStrings {
   static const String WASTE_DETAIL_TITLE = 'Waste Record';
   static const String WASTE_FIELD_CREATED_BY = 'Recorded by';
   static const String WASTE_FIELD_CREATED_AT = 'Recorded on';
+  static const String WASTE_FROM_REJECTED_LOT_LABEL = 'From lot %s';
+  static const String WASTE_FROM_REJECTED_LOT_FIELD = 'From rejected lot';
   static const String WASTE_DELETE_TITLE = 'Delete this waste record?';
   static const String WASTE_DELETE_BODY =
       'This cannot be undone. The written-off quantity will no longer count '
@@ -955,6 +957,14 @@ class AppStrings {
       'Booked by an accepted return — only reverting that return changes it.';
   static const String INWARD_CHANGE_STATUS = 'Change status';
   static const String INWARD_SELECT_STATUS_HINT = 'Select new status';
+  static const String INWARD_CONVERT_TO_WASTE = 'Reject To Waste';
+  static const String INWARD_CONVERT_TO_WASTE_TITLE = 'Write this lot off as waste?';
+  static const String INWARD_CONVERT_TO_WASTE_BODY =
+      'The whole lot is written off as waste and leaves the rejected pool. '
+      'To undo this, delete the resulting row from Raw Material Waste.';
+  static const String INWARD_CONVERT_TO_WASTE_REASON_HINT =
+      'Defaults to naming the lot and farmer';
+  static const String INWARD_CONVERTED_TO_WASTE = 'Lot written off as waste';
   static const String INWARD_STATUS_CONFIRM_TITLE = 'Change status?';
   static const String INWARD_STATUS_CONFIRM_BODY_PREFIX = 'Mark this lot as ';
   static const String INWARD_STATUS_CONFIRM_BODY_SUFFIX =

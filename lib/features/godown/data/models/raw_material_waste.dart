@@ -15,6 +15,7 @@ class RawMaterialWaste extends Equatable {
   final String reason;
   final DateTime? createdAt;
   final GodownActorRef? createdBy;
+  final GodownInwardRawMaterialRef? inwardRawMaterial;
 
   const RawMaterialWaste({
     this.publicId = '',
@@ -23,6 +24,7 @@ class RawMaterialWaste extends Equatable {
     this.reason = '',
     this.createdAt,
     this.createdBy,
+    this.inwardRawMaterial,
   });
 
   factory RawMaterialWaste.fromJson(Map<String, dynamic> json) {
@@ -35,8 +37,16 @@ class RawMaterialWaste extends Equatable {
       reason: JsonParser.asString(json['reason']),
       createdAt: DateTime.tryParse(JsonParser.asString(json['created_at'])),
       createdBy: GodownJson.refOf(json['created_by'], GodownActorRef.fromJson),
+      inwardRawMaterial: GodownJson.refOf(
+        json['inward_raw_material'],
+        GodownInwardRawMaterialRef.fromJson,
+      ),
     );
   }
+
+  /// `true` when this row was created by converting a rejected lot, rather
+  /// than recorded as ordinary waste.
+  bool get isFromRejectedLot => inwardRawMaterial != null;
 
   bool matchesSearch(String query) {
     final String needle = query.trim().toLowerCase();
@@ -54,5 +64,6 @@ class RawMaterialWaste extends Equatable {
     reason,
     createdAt,
     createdBy,
+    inwardRawMaterial,
   ];
 }

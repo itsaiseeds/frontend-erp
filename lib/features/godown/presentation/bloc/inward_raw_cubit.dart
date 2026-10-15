@@ -6,6 +6,7 @@ import '../../data/godown_repository.dart';
 import '../../data/models/godown_page.dart';
 import '../../data/models/inward_raw_material.dart';
 import '../../data/models/inward_raw_status.dart';
+import '../../data/models/raw_material_waste.dart';
 import 'inward_raw_state.dart';
 
 class InwardRawCubit extends SafeCubit<InwardRawState> {
@@ -197,6 +198,26 @@ class InwardRawCubit extends SafeCubit<InwardRawState> {
     } on ApiException catch (error) {
       emit(state.copyWith(isMutating: false, errorMessage: error.message));
       return false;
+    }
+  }
+
+  /// Writes a rejected lot off as waste. Returns the new waste row so the
+  /// caller can name it in a success toast; `null` on failure, with
+  /// [InwardRawState.errorMessage] already set.
+  Future<RawMaterialWaste?> convertToWaste(
+    String publicId, {
+    String? reason,
+  }) async {
+    emit(state.copyWith(isMutating: true, clearError: true));
+    try {
+      final RawMaterialWaste waste = await _repository
+          .convertInwardRawMaterialToWaste(publicId, reason: reason);
+      emit(state.copyWith(isMutating: false));
+      await refresh();
+      return waste;
+    } on ApiException catch (error) {
+      emit(state.copyWith(isMutating: false, errorMessage: error.message));
+      return null;
     }
   }
 }

@@ -99,6 +99,32 @@ class GodownReturnOrderRef extends Equatable {
   List<Object?> get props => [publicId, orderPublicId];
 }
 
+/// Only present on a waste row created by converting a rejected inward
+/// raw-material lot -- links the two so the lot it came from can be shown
+/// (and, by deleting this waste row, restored).
+class GodownInwardRawMaterialRef extends Equatable {
+  final String publicId;
+  final String lotNo;
+  final String farmerName;
+
+  const GodownInwardRawMaterialRef({
+    this.publicId = '',
+    this.lotNo = '',
+    this.farmerName = '',
+  });
+
+  factory GodownInwardRawMaterialRef.fromJson(Map<String, dynamic> json) {
+    return GodownInwardRawMaterialRef(
+      publicId: JsonParser.asString(json['public_id']),
+      lotNo: JsonParser.asString(json['lot_no']),
+      farmerName: JsonParser.asString(json['farmer_name']),
+    );
+  }
+
+  @override
+  List<Object?> get props => [publicId, lotNo, farmerName];
+}
+
 /// Who booked the lot.
 class GodownActorRef extends Equatable {
   final int id;

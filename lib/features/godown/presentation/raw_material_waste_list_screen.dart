@@ -383,6 +383,13 @@ class _Body extends StatelessWidget {
             icon: Icons.delete_sweep_outlined,
             title: waste.product.name,
             codeLabel: waste.publicId,
+            tagLabel: waste.isFromRejectedLot
+                ? AppStrings.WASTE_FROM_REJECTED_LOT_LABEL.replaceAll(
+                    '%s',
+                    waste.inwardRawMaterial!.lotNo,
+                  )
+                : null,
+            tagColor: waste.isFromRejectedLot ? AppColors.WARNING : null,
             onTap: () => onTap(waste),
             stats: [
               GodownCardStat(
