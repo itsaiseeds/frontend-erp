@@ -92,6 +92,19 @@ class GodownRepository {
   Future<void> deleteInwardRawMaterial(String publicId) =>
       _apiClient.delete(GodownEndpoints.inwardRawMaterial(publicId));
 
+  /// Writes a rejected lot off as waste. `reason` left blank lets the server
+  /// fill in its own default ("Rejected lot {lot_no} ({farmer})").
+  Future<RawMaterialWaste> convertInwardRawMaterialToWaste(
+    String publicId, {
+    String? reason,
+  }) async {
+    final dynamic response = await _apiClient.post(
+      GodownEndpoints.inwardRawMaterialConvertToWaste(publicId),
+      body: {'reason': reason?.trim() ?? ''},
+    );
+    return RawMaterialWaste.fromJson(_asMap(response));
+  }
+
   Future<GodownPage<InwardOtherMaterial>> fetchInwardOtherMaterials({
     required Map<String, dynamic> queryParams,
   }) async {

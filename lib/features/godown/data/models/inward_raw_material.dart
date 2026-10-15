@@ -93,6 +93,14 @@ class InwardRawMaterial extends Equatable {
 
   bool get canDelete => !isReturnLot;
 
+  bool get isRejected => status == InwardRawStatus.rejected;
+
+  /// A rejected lot not already converted can be written off as waste. The
+  /// server also refuses it once its kg is booked on a live rejected order
+  /// -- this is only the status-level gate, the same head start the other
+  /// status actions on this model already give the UI.
+  bool get canConvertToWaste => isRejected;
+
   num? get quantityValue => num.tryParse(quantityKg.trim());
 
   /// True for a lot sent back to Lab Testing that has not been re-tested yet.

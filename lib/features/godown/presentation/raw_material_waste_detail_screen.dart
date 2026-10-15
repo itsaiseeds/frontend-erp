@@ -207,6 +207,16 @@ class _RawMaterialWasteDetailScreenState
                 label: AppStrings.WASTE_FIELD_PRODUCT,
                 enabled: false,
               ),
+              if (_waste.isFromRejectedLot) ...[
+                const SizedBox(height: AppSpacing.MD16),
+                AppTextField(
+                  controller: TextEditingController(
+                    text: _waste.inwardRawMaterial!.lotNo,
+                  ),
+                  label: AppStrings.WASTE_FROM_REJECTED_LOT_FIELD,
+                  enabled: false,
+                ),
+              ],
               const SizedBox(height: AppSpacing.MD16),
               AppTextField(
                 controller: _quantityController,
