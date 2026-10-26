@@ -93,6 +93,7 @@ class FormScreenScaffold extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: AppColors.SURFACE,
           surfaceTintColor: AppColors.TRANSPARENT,
+          titleSpacing: 0,
           leading: IconButton(
             icon: const Icon(
               Icons.chevron_left_rounded,

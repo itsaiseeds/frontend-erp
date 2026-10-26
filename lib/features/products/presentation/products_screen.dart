@@ -174,6 +174,7 @@ class _ProductsViewState extends State<_ProductsView> {
                         onTapProduct: _openDetail,
                         onAdd: cubit.addToCart,
                         onRemove: cubit.removeFromCart,
+                        onSet: cubit.setCartQuantity,
                       ),
                     ),
                   ],
@@ -211,6 +212,7 @@ class _Body extends StatelessWidget {
   final void Function(ProductPackaging) onTapProduct;
   final void Function(ProductPackaging) onAdd;
   final void Function(ProductPackaging) onRemove;
+  final void Function(ProductPackaging, int) onSet;
 
   const _Body({
     required this.state,
@@ -221,6 +223,7 @@ class _Body extends StatelessWidget {
     required this.onTapProduct,
     required this.onAdd,
     required this.onRemove,
+    required this.onSet,
   });
 
   @override
@@ -285,6 +288,7 @@ class _Body extends StatelessWidget {
             onTap: () => onTapProduct(packaging),
             onAdd: () => onAdd(packaging),
             onRemove: () => onRemove(packaging),
+            onSet: (quantity) => onSet(packaging, quantity),
           );
         },
       ),

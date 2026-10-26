@@ -3,9 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_strings.dart';
+import '../../../core/models/city_model.dart';
 import '../../../core/models/crop_model.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_exception.dart';
+import '../../../core/services/metadata_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
@@ -54,6 +56,7 @@ class _FarmerVisitFormScreenState extends State<FarmerVisitFormScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _contactController = TextEditingController();
   final TextEditingController _villageController = TextEditingController();
+  final TextEditingController _districtController = TextEditingController();
   final TextEditingController _landController = TextEditingController();
 
   final List<CropModel> _crops = [];
@@ -61,6 +64,8 @@ class _FarmerVisitFormScreenState extends State<FarmerVisitFormScreen> {
 
   List<CropModel> _availableCrops = const [];
   List<FarmerProduct> _availableProducts = const [];
+
+  CityModel? _taluka;
 
   String? _nameError;
   String? _contactError;
@@ -93,6 +98,7 @@ class _FarmerVisitFormScreenState extends State<FarmerVisitFormScreen> {
     _nameController.text = visit.farmerName;
     _contactController.text = visit.contactNumber;
     _villageController.text = visit.village;
+    _districtController.text = visit.district;
     _landController.text = _trimZeros(visit.landAreaBigha);
   }
 
@@ -111,6 +117,7 @@ class _FarmerVisitFormScreenState extends State<FarmerVisitFormScreen> {
     _nameController.dispose();
     _contactController.dispose();
     _villageController.dispose();
+    _districtController.dispose();
     _landController.dispose();
     super.dispose();
   }
@@ -140,6 +147,7 @@ class _FarmerVisitFormScreenState extends State<FarmerVisitFormScreen> {
     try {
       final List<CropModel> crops = await _repository.fetchCrops();
       final List<FarmerProduct> products = await _repository.fetchProducts();
+      await MetadataService.instance.ensureLoaded();
       if (!mounted) return;
 
       setState(() {
@@ -149,6 +157,10 @@ class _FarmerVisitFormScreenState extends State<FarmerVisitFormScreen> {
         // The visit names its crops and products; the pickers work in the
         // catalogue's own objects, so they are matched once both are here.
         _seedSelections();
+        final int cityId = widget.existing?.cityId ?? widget.trip.city.id;
+        if (cityId > 0) {
+          _taluka = MetadataService.instance.cityById(cityId);
+        }
       });
     } on ApiException catch (error) {
       if (!mounted) return;
@@ -210,6 +222,8 @@ class _FarmerVisitFormScreenState extends State<FarmerVisitFormScreen> {
           farmerName: _nameController.text,
           contactNumber: _contactController.text,
           village: _villageController.text,
+          district: _districtController.text,
+          cityId: _taluka?.id ?? 0,
           landAreaBigha: _landController.text.trim(),
           cropIds: [for (final CropModel crop in _crops) crop.id],
           productPublicIds: [
@@ -270,6 +284,10 @@ class _FarmerVisitFormScreenState extends State<FarmerVisitFormScreen> {
       village: _villageController.text.trim() == visit.village
           ? null
           : _villageController.text,
+      district: _districtController.text.trim() == visit.district
+          ? null
+          : _districtController.text,
+      cityId: _taluka?.id == visit.cityId ? null : (_taluka?.id ?? 0),
       landAreaBigha: landChanged ? land : null,
       cropIds: cropsChanged ? cropIds : null,
       productPublicIds: productsChanged ? productIds : null,
@@ -354,6 +372,24 @@ class _FarmerVisitFormScreenState extends State<FarmerVisitFormScreen> {
                     label: AppStrings.FARMER_VISIT_VILLAGE,
                     hint: AppStrings.FARMER_VISIT_VILLAGE_HINT,
                     textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: AppSpacing.MD16),
+                  AppTextField(
+                    controller: _districtController,
+                    label: AppStrings.FARMER_VISIT_DISTRICT,
+                    hint: AppStrings.FARMER_VISIT_DISTRICT_HINT,
+                    textInputAction: TextInputAction.next,
+                    inputFormatters: [LengthLimitingTextInputFormatter(255)],
+                  ),
+                  const SizedBox(height: AppSpacing.MD16),
+                  GeoPickerField<CityModel>(
+                    label: AppStrings.FARMER_VISIT_TALUKA,
+                    hint: AppStrings.FARMER_VISIT_PICK_TALUKA,
+                    value: _taluka,
+                    items: MetadataService.instance.cities,
+                    itemLabel: (city) => city.name,
+                    isSame: (a, b) => a.id == b.id,
+                    onSelected: (city) => setState(() => _taluka = city),
                   ),
                   const SizedBox(height: AppSpacing.MD16),
                   AppTextField(

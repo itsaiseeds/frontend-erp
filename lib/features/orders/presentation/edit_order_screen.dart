@@ -110,6 +110,7 @@ class _EditOrderViewState extends State<_EditOrderView> {
             backgroundColor: AppColors.SURFACE,
             surfaceTintColor: AppColors.TRANSPARENT,
             elevation: 0,
+            titleSpacing: 0,
             leading: IconButton(
               onPressed: () {
                 if (isReview) {
@@ -210,6 +211,8 @@ class _ReviewStep extends StatelessWidget {
                     line: lines[index],
                     onAdd: () => cubit.addLine(lines[index].packaging),
                     onRemove: () => cubit.removeLine(lines[index].packaging),
+                    onSet: (quantity) =>
+                        cubit.setLineQuantity(lines[index].packaging, quantity),
                   ),
                 ],
             ],

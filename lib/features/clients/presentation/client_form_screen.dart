@@ -60,6 +60,7 @@ class _ClientFormViewState extends State<_ClientFormView> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   late final TextEditingController _gstController;
+  late final TextEditingController _districtController;
 
   @override
   void initState() {
@@ -68,6 +69,7 @@ class _ClientFormViewState extends State<_ClientFormView> {
     _nameController.text = state.name;
     _phoneController.text = state.phoneNumber;
     _gstController = TextEditingController(text: state.gstNumber);
+    _districtController = TextEditingController(text: state.district);
   }
 
   @override
@@ -75,6 +77,7 @@ class _ClientFormViewState extends State<_ClientFormView> {
     _nameController.dispose();
     _phoneController.dispose();
     _gstController.dispose();
+    _districtController.dispose();
     super.dispose();
   }
 
@@ -226,6 +229,7 @@ class _ClientFormViewState extends State<_ClientFormView> {
             appBar: AppBar(
               backgroundColor: AppColors.SURFACE,
               surfaceTintColor: AppColors.TRANSPARENT,
+              titleSpacing: 0,
               leading: IconButton(
                 icon: const Icon(
                   Icons.chevron_left_rounded,
@@ -277,6 +281,7 @@ class _ClientFormViewState extends State<_ClientFormView> {
                         nameController: _nameController,
                         phoneController: _phoneController,
                         gstController: _gstController,
+                        districtController: _districtController,
                       ),
                     ),
                   ),
@@ -342,6 +347,7 @@ class _StepBody extends StatelessWidget {
   final TextEditingController nameController;
   final TextEditingController phoneController;
   final TextEditingController gstController;
+  final TextEditingController districtController;
 
   const _StepBody({
     required this.state,
@@ -349,6 +355,7 @@ class _StepBody extends StatelessWidget {
     required this.nameController,
     required this.phoneController,
     required this.gstController,
+    required this.districtController,
   });
 
   @override
@@ -402,6 +409,16 @@ class _StepBody extends StatelessWidget {
                 ],
                 onChanged: cubit.updateGstNumber,
                 validator: (value) => AppValidators.gstNumber(value, isRequired: false),
+              ),
+              const SizedBox(height: AppSpacing.MD16),
+              AppTextField(
+                controller: districtController,
+                label: AppStrings.CLIENT_FIELD_DISTRICT,
+                labelStyle: AppTypography.labelStrong,
+                hint: AppStrings.CLIENT_FIELD_DISTRICT_HINT,
+                textInputAction: TextInputAction.done,
+                inputFormatters: [LengthLimitingTextInputFormatter(255)],
+                onChanged: cubit.updateDistrict,
               ),
             ],
           ),

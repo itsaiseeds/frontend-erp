@@ -74,12 +74,18 @@ class _FarmersFilterSheetState extends State<FarmersFilterSheet> {
     super.dispose();
   }
 
+  /// The backend's own label for the farmer's city filter is "City"; this
+  /// app shows it to the user as "Taluka" while the key (`city_id`) and the
+  /// value sent back to the server stay exactly what the backend expects.
+  static String _titleFor(ClientFilter filter) =>
+      filter.key == 'city_id' ? AppStrings.FARMER_VISIT_TALUKA : filter.title;
+
   List<_Section> get _sections {
     final List<_Section> sections = widget.filters
         .where((filter) => filter.kind != FilterKind.unsupported)
         .map(
           (filter) =>
-              _Section(key: filter.key, title: filter.title, filter: filter),
+              _Section(key: filter.key, title: _titleFor(filter), filter: filter),
         )
         .toList();
 

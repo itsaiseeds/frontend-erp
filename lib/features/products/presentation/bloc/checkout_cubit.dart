@@ -367,6 +367,7 @@ class CheckoutCubit extends SafeCubit<CheckoutState> {
       'address': {
         'line_1': draft.line1.trim(),
         'line_2': draft.line2.trim(),
+        'district': draft.district.trim(),
         'pincode': draft.pincode.trim(),
         'city': draft.city!.id,
         'state': draft.state!.id,

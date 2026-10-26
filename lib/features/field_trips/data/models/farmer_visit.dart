@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../../core/models/city_model.dart';
 import '../../../../core/utils/json_parser.dart';
 import 'field_trip.dart';
 
@@ -42,6 +43,10 @@ class FarmerVisit extends Equatable {
   final String farmerName;
   final String contactNumber;
   final String village;
+  final String district;
+
+  /// Labelled "Taluka" in the UI; the key stays `city`/`city_id` on the wire.
+  final CityModel? city;
 
   /// Sent as a decimal string, so it is parsed rather than cast.
   final num landAreaBigha;
@@ -62,6 +67,8 @@ class FarmerVisit extends Equatable {
     this.farmerName = '',
     this.contactNumber = '',
     this.village = '',
+    this.district = '',
+    this.city,
     this.landAreaBigha = 0,
     this.crops = const [],
     this.usesOurProducts = false,
@@ -72,11 +79,17 @@ class FarmerVisit extends Equatable {
   });
 
   factory FarmerVisit.fromJson(Map<String, dynamic> json) {
+    final dynamic city = json['city'];
+
     return FarmerVisit(
       publicId: JsonParser.asString(json['public_id']),
       farmerName: JsonParser.asString(json['farmer_name']),
       contactNumber: JsonParser.asString(json['contact_number']),
       village: JsonParser.asString(json['village']),
+      district: JsonParser.asString(json['district']),
+      city: city is Map
+          ? CityModel.fromJson(Map<String, dynamic>.from(city))
+          : null,
       landAreaBigha: JsonParser.asNum(json['land_area_bigha']),
       crops: JsonParser.asList(json['crops'], FarmerCrop.fromJson),
       usesOurProducts: JsonParser.asBool(json['uses_our_products']),
@@ -100,6 +113,10 @@ class FarmerVisit extends Equatable {
 
   static const int _MAX_DECIMALS = 4;
 
+  String get cityName => city?.name ?? '';
+
+  int? get cityId => city?.id;
+
   String get initial {
     final String trimmed = farmerName.trim();
     return trimmed.isEmpty ? '' : trimmed[0].toUpperCase();
@@ -111,6 +128,8 @@ class FarmerVisit extends Equatable {
     farmerName,
     contactNumber,
     village,
+    district,
+    city,
     landAreaBigha,
     crops,
     usesOurProducts,

@@ -186,6 +186,8 @@ class _Meta extends StatelessWidget {
     final List<String> parts = [
       if (visit.contactNumber.trim().isNotEmpty) visit.contactNumber.trim(),
       if (visit.village.trim().isNotEmpty) visit.village.trim(),
+      if (visit.district.trim().isNotEmpty) visit.district.trim(),
+      if (visit.cityName.trim().isNotEmpty) visit.cityName.trim(),
     ];
     if (parts.isEmpty) return const SizedBox.shrink();
 

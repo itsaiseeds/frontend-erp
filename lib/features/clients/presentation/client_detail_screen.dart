@@ -107,6 +107,7 @@ class _ClientDetailScreenState extends State<ClientDetailScreen> {
         appBar: AppBar(
           backgroundColor: AppColors.SURFACE,
           surfaceTintColor: AppColors.TRANSPARENT,
+          titleSpacing: 0,
           leading: IconButton(
             icon: const Icon(
               Icons.chevron_left_rounded,
@@ -294,6 +295,13 @@ class _IdentityCard extends StatelessWidget {
             _MetaRow(
               icon: Icons.verified_outlined,
               text: '${AppStrings.CLIENT_GST_LABEL} ${client.gstNumber}',
+            ),
+          ],
+          if (client.district.trim().isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.XS6),
+            _MetaRow(
+              icon: Icons.map_outlined,
+              text: '${AppStrings.CLIENT_DISTRICT_LABEL} ${client.district}',
             ),
           ],
         ],

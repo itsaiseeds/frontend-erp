@@ -11,6 +11,7 @@ class Client extends Equatable {
   final String companyName;
   final String companyPhone;
   final String gstNumber;
+  final String district;
   final ClientStatus status;
   final bool isVerified;
   final String verifiedAt;
@@ -27,6 +28,7 @@ class Client extends Equatable {
     required this.companyName,
     this.companyPhone = '',
     this.gstNumber = '',
+    this.district = '',
     this.status = ClientStatus.unknown,
     this.isVerified = false,
     this.verifiedAt = '',
@@ -54,6 +56,7 @@ class Client extends Equatable {
       companyName: JsonParser.asString(json['company_name']),
       companyPhone: JsonParser.asString(json['company_phone']),
       gstNumber: JsonParser.asString(json['gst_number']),
+      district: JsonParser.asString(json['district']),
       status: ClientStatusX.fromRaw(JsonParser.asString(json['status'])),
       isVerified: JsonParser.asBool(json['is_verified']),
       verifiedAt: JsonParser.asString(json['verified_at']),
@@ -90,6 +93,7 @@ class Client extends Equatable {
     'company_name': companyName,
     'company_phone': companyPhone,
     'gst_number': gstNumber,
+    'district': district,
     'addresses': addresses.map((a) => a.toWriteJson()).toList(),
     'contacts': contacts.map((c) => c.toWriteJson()).toList(),
     'transport_agencies': transportAgencies
@@ -118,6 +122,7 @@ class Client extends Equatable {
     companyName,
     companyPhone,
     gstNumber,
+    district,
     status,
     isVerified,
     verifiedAt,

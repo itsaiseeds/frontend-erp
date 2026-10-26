@@ -15,6 +15,7 @@ class ProductCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onAdd;
   final VoidCallback onRemove;
+  final ValueChanged<int>? onSet;
 
   const ProductCard({
     super.key,
@@ -23,6 +24,7 @@ class ProductCard extends StatelessWidget {
     required this.onTap,
     required this.onAdd,
     required this.onRemove,
+    this.onSet,
   });
 
   @override
@@ -91,6 +93,7 @@ class ProductCard extends StatelessWidget {
                 quantity: quantity,
                 onAdd: onAdd,
                 onRemove: onRemove,
+                onSet: onSet,
               ),
             ),
           ),

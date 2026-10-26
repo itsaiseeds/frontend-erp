@@ -9,6 +9,7 @@ class ClientAddress extends Equatable {
   final String label;
   final String line1;
   final String line2;
+  final String district;
   final String pincode;
   final String cityName;
   final String stateName;
@@ -23,6 +24,7 @@ class ClientAddress extends Equatable {
     this.id = 0,
     this.label = '',
     this.line2 = '',
+    this.district = '',
     this.pincode = '',
     this.cityName = '',
     this.stateName = '',
@@ -39,6 +41,7 @@ class ClientAddress extends Equatable {
       label: JsonParser.asString(json['label']),
       line1: JsonParser.asString(json['line_1']),
       line2: JsonParser.asString(json['line_2']),
+      district: JsonParser.asString(json['district']),
       pincode: JsonParser.asString(json['pincode']),
       cityName: JsonParser.asString(json['city']),
       stateName: JsonParser.asString(json['state']),
@@ -53,6 +56,7 @@ class ClientAddress extends Equatable {
   Map<String, dynamic> toWriteJson() => {
     'line_1': line1,
     'line_2': line2,
+    'district': district,
     'pincode': pincode,
     'city': cityId,
     'state': stateId,
@@ -81,6 +85,7 @@ class ClientAddress extends Equatable {
     label,
     line1,
     line2,
+    district,
     pincode,
     cityName,
     stateName,

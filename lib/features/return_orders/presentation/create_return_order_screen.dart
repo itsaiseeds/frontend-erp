@@ -95,6 +95,7 @@ class _CreateReturnOrderView extends StatelessWidget {
             surfaceTintColor: AppColors.TRANSPARENT,
             elevation: 0,
             leadingWidth: AppSizes.APP_BAR_LEADING_WIDTH,
+            titleSpacing: 0,
             leading: IconButton(
               onPressed: () {
                 FocusScope.of(context).unfocus();
