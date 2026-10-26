@@ -97,7 +97,7 @@ class AppStrings {
   static const String DRAWER_PROFILE = 'Profile';
 
   static const String CLIENTS_TITLE = 'Clients';
-  static const String CLIENTS_SELECT_CITY = 'Select city';
+  static const String CLIENTS_SELECT_CITY = 'Select taluka';
   static const String CLIENTS_CITY_LABEL = 'City';
   static const String CLIENTS_ALL_CITIES = 'All cities';
   static const String CLIENTS_SEARCH_NAME_HINT = 'Search company name';
@@ -118,6 +118,7 @@ class AppStrings {
   static const String CLIENTS_COUNT_MANY = 'clients';
   static const String CLIENT_GST_LABEL = 'GST';
   static const String CLIENT_NO_GST = 'GST not registered';
+  static const String CLIENT_DISTRICT_LABEL = 'District';
   static const String CLIENT_ADDRESSES = 'Addresses';
   static const String CLIENT_CONTACTS = 'Contacts';
   static const String CLIENT_TRANSPORT = 'Transport';
@@ -171,10 +172,24 @@ class AppStrings {
   static const String CLIENT_FIELD_PHONE = 'Client Phone';
   static const String CLIENT_FIELD_GST = 'GST Number (optional)';
   static const String CLIENT_FIELD_GST_HINT = '15-character GSTIN';
+  static const String CLIENT_FIELD_DISTRICT = 'District (optional)';
+  static const String CLIENT_FIELD_DISTRICT_HINT = 'e.g. Rajkot';
   static const String CLIENT_FIELD_LINE1 = 'Address Line 1';
   static const String CLIENT_FIELD_LINE2 = 'Address Line 2';
+
+  /// District on one address (separate from CLIENT_FIELD_DISTRICT, which is
+  /// the client's own, single district on the details step).
+  static const String CLIENT_ADDRESS_DISTRICT = 'District';
+  static const String CLIENT_ADDRESS_DISTRICT_HINT = 'District (optional)';
   static const String CLIENT_FIELD_CITY = 'City';
   static const String CLIENT_FIELD_CITY_HINT = 'Select a city';
+
+  /// What an address's `city`/`city_id` field shows as -- the key and the
+  /// value sent to the backend are unchanged.
+  static const String CLIENT_FIELD_TALUKA = 'Taluka';
+  static const String CLIENT_FIELD_TALUKA_HINT = 'Select a taluka';
+  static const String CLIENT_FIELD_TALUKA_LOCKED = 'Choose a state first';
+  static const String CLIENT_VALIDATION_TALUKA = 'Select a taluka';
   static const String CLIENT_FIELD_PINCODE = 'Pincode';
   static const String CLIENT_FIELD_CONTACT_NAME = 'Contact Name';
   static const String CLIENT_FIELD_CONTACT_NAME_HINT = 'Person to reach';
@@ -592,6 +607,8 @@ class AppStrings {
   static const String FARMER_DETAIL_LAND = 'Land area';
   static const String FARMER_DETAIL_CONTACT = 'Contact';
   static const String FARMER_DETAIL_VILLAGE = 'Village';
+  static const String FARMER_DETAIL_DISTRICT = 'District';
+  static const String FARMER_DETAIL_TALUKA = 'Taluka';
   static const String FARMER_DETAIL_RECORDED = 'Recorded';
   static const String FARMER_SEARCH_HINT = 'Search farmer name...';
   static const String FARMER_FILTER_CLEAR = 'Clear';
@@ -705,6 +722,10 @@ class AppStrings {
   static const String FARMER_VISIT_VILLAGE = 'Village';
   static const String FARMER_VISIT_VILLAGE_HINT =
       'Defaults to the meeting village';
+  static const String FARMER_VISIT_DISTRICT = 'District';
+  static const String FARMER_VISIT_DISTRICT_HINT = 'Optional';
+  static const String FARMER_VISIT_TALUKA = 'Taluka';
+  static const String FARMER_VISIT_PICK_TALUKA = 'Select taluka';
   static const String FARMER_VISIT_LAND_AREA = 'Land area (bigha)';
   static const String FARMER_VISIT_LAND_AREA_HINT = '0';
   static const String FARMER_VISIT_BIGHA = 'bigha';

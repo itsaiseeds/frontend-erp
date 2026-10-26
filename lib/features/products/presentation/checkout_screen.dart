@@ -108,6 +108,7 @@ class _CheckoutViewState extends State<_CheckoutView> {
                 backgroundColor: AppColors.SURFACE,
                 surfaceTintColor: AppColors.TRANSPARENT,
                 elevation: 0,
+                titleSpacing: 0,
                 leading: IconButton(
                   onPressed: () {
                     if (isReview) {
@@ -194,6 +195,9 @@ class _ReviewStep extends StatelessWidget {
                   onRemove: () => context.read<ProductsCubit>().removeFromCart(
                     lines[index].packaging,
                   ),
+                  onSet: (quantity) => context
+                      .read<ProductsCubit>()
+                      .setCartQuantity(lines[index].packaging, quantity),
                 ),
               ],
             ],
@@ -539,6 +543,7 @@ class _NewDeliveryPlaceFormState extends State<_NewDeliveryPlaceForm> {
   late final TextEditingController _villageController;
   late final TextEditingController _line1Controller;
   late final TextEditingController _line2Controller;
+  late final TextEditingController _districtController;
   late final TextEditingController _pincodeController;
   late final TextEditingController _transportController;
   late final TextEditingController _contactController;
@@ -551,6 +556,7 @@ class _NewDeliveryPlaceFormState extends State<_NewDeliveryPlaceForm> {
     _villageController = TextEditingController(text: draft.villageName);
     _line1Controller = TextEditingController(text: draft.line1);
     _line2Controller = TextEditingController(text: draft.line2);
+    _districtController = TextEditingController(text: draft.district);
     _pincodeController = TextEditingController(text: draft.pincode);
     _transportController = TextEditingController(text: draft.transportName);
     _contactController = TextEditingController(text: draft.contactNumber);
@@ -575,6 +581,7 @@ class _NewDeliveryPlaceFormState extends State<_NewDeliveryPlaceForm> {
     _villageController.dispose();
     _line1Controller.dispose();
     _line2Controller.dispose();
+    _districtController.dispose();
     _pincodeController.dispose();
     _transportController.dispose();
     _contactController.dispose();
@@ -640,6 +647,17 @@ class _NewDeliveryPlaceFormState extends State<_NewDeliveryPlaceForm> {
               _update((draft) => draft.copyWith(line2: value)),
         ),
         const SizedBox(height: AppSpacing.SMD12),
+        AppTextField(
+          controller: _districtController,
+          label: AppStrings.CLIENT_ADDRESS_DISTRICT,
+          hint: AppStrings.CLIENT_ADDRESS_DISTRICT_HINT,
+          enabled: !isSubmitting,
+          textInputAction: TextInputAction.next,
+          inputFormatters: [LengthLimitingTextInputFormatter(255)],
+          onChanged: (value) =>
+              _update((draft) => draft.copyWith(district: value)),
+        ),
+        const SizedBox(height: AppSpacing.SMD12),
         GeoPickerField<CountryModel>(
           label: AppStrings.CLIENT_FIELD_COUNTRY,
           hint: AppStrings.CLIENT_FIELD_COUNTRY_HINT,
@@ -677,15 +695,15 @@ class _NewDeliveryPlaceFormState extends State<_NewDeliveryPlaceForm> {
         ),
         const SizedBox(height: AppSpacing.SMD12),
         GeoPickerField<CityModel>(
-          label: AppStrings.CLIENT_FIELD_CITY,
-          hint: AppStrings.CLIENT_FIELD_CITY_HINT,
+          label: AppStrings.CLIENT_FIELD_TALUKA,
+          hint: AppStrings.CLIENT_FIELD_TALUKA_HINT,
           value: _draft.city,
           items: MetadataService.instance.citiesInState(_draft.state?.id),
           itemLabel: (item) => item.name,
           isSame: (a, b) => a.id == b.id,
           isRequired: true,
           enabled: !isSubmitting && _draft.state != null,
-          disabledHint: AppStrings.CLIENT_FIELD_CITY_LOCKED,
+          disabledHint: AppStrings.CLIENT_FIELD_TALUKA_LOCKED,
           onSelected: (value) => _update((draft) => draft.copyWith(city: value)),
         ),
         const SizedBox(height: AppSpacing.SMD12),

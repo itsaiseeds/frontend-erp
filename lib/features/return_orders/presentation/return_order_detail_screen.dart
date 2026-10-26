@@ -40,6 +40,7 @@ class ReturnOrderDetailScreen extends StatelessWidget {
         backgroundColor: AppColors.SURFACE,
         surfaceTintColor: AppColors.TRANSPARENT,
         elevation: 0,
+        titleSpacing: 0,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(

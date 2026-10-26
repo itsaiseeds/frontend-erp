@@ -213,6 +213,21 @@ class ProductsCubit extends SafeCubit<ProductsState> {
     emit(state.copyWith(cart: next));
   }
 
+  /// Typed directly into the stepper's count, for a large order that would
+  /// otherwise take one tap per bag.
+  void setCartQuantity(ProductPackaging packaging, int quantity) {
+    if (quantity < 1) return;
+
+    final Map<String, CartLine> next = Map.of(state.cart);
+    final CartLine? existing = next[packaging.publicId];
+
+    next[packaging.publicId] = existing == null
+        ? CartLine(packaging: packaging, quantity: quantity)
+        : existing.copyWith(quantity: quantity);
+
+    emit(state.copyWith(cart: next));
+  }
+
   void clearCart() => emit(state.copyWith(cart: const {}));
 
   void _emitFailure(String message) {

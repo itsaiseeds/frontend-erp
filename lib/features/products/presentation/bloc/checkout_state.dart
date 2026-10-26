@@ -18,6 +18,7 @@ class NewDeliveryPlaceDraft extends Equatable {
   final String villageName;
   final String line1;
   final String line2;
+  final String district;
   final String pincode;
   final CountryModel? country;
   final StateModel? state;
@@ -30,6 +31,7 @@ class NewDeliveryPlaceDraft extends Equatable {
     this.villageName = '',
     this.line1 = '',
     this.line2 = '',
+    this.district = '',
     this.pincode = '',
     this.country,
     this.state,
@@ -43,6 +45,7 @@ class NewDeliveryPlaceDraft extends Equatable {
     String? villageName,
     String? line1,
     String? line2,
+    String? district,
     String? pincode,
     CountryModel? country,
     bool clearCountry = false,
@@ -58,6 +61,7 @@ class NewDeliveryPlaceDraft extends Equatable {
       villageName: villageName ?? this.villageName,
       line1: line1 ?? this.line1,
       line2: line2 ?? this.line2,
+      district: district ?? this.district,
       pincode: pincode ?? this.pincode,
       country: clearCountry ? null : country ?? this.country,
       state: clearState ? null : state ?? this.state,
@@ -81,6 +85,7 @@ class NewDeliveryPlaceDraft extends Equatable {
     villageName,
     line1,
     line2,
+    district,
     pincode,
     country,
     state,

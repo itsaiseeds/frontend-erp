@@ -46,6 +46,7 @@ class ProductDetailScreen extends StatelessWidget {
           quantity: quantity,
           onAdd: () => cubit.addToCart(packaging),
           onRemove: () => cubit.removeFromCart(packaging),
+          onSet: (quantity) => cubit.setCartQuantity(packaging, quantity),
         );
 
         return Scaffold(
@@ -54,6 +55,7 @@ class ProductDetailScreen extends StatelessWidget {
             backgroundColor: AppColors.SURFACE,
             surfaceTintColor: AppColors.TRANSPARENT,
             elevation: 0,
+            titleSpacing: 0,
             leading: IconButton(
               onPressed: () => Navigator.of(context).pop(),
               icon: const Icon(
@@ -393,6 +395,7 @@ class _ViewerFooter extends StatelessWidget {
           quantity: state.quantityOf(packaging.publicId),
           onAdd: () => cubit.addToCart(packaging),
           onRemove: () => cubit.removeFromCart(packaging),
+          onSet: (quantity) => cubit.setCartQuantity(packaging, quantity),
         );
       },
     );
@@ -406,12 +409,14 @@ class _ActionBar extends StatelessWidget {
   final int quantity;
   final VoidCallback onAdd;
   final VoidCallback onRemove;
+  final ValueChanged<int>? onSet;
 
   const _ActionBar({
     required this.packaging,
     required this.quantity,
     required this.onAdd,
     required this.onRemove,
+    this.onSet,
   });
 
   @override
@@ -462,6 +467,7 @@ class _ActionBar extends StatelessWidget {
                 quantity: quantity,
                 onAdd: onAdd,
                 onRemove: onRemove,
+                onSet: onSet,
                 addLabel: AppStrings.PRODUCT_ADD_TO_CART,
                 isFilled: true,
               ),

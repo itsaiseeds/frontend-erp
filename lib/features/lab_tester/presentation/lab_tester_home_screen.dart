@@ -204,6 +204,7 @@ class _ProfileWithMenu extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.SURFACE,
         surfaceTintColor: AppColors.TRANSPARENT,
+        titleSpacing: 0,
         leading: IconButton(
           icon: const Icon(
             Icons.menu_rounded,

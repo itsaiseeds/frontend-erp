@@ -43,6 +43,7 @@ class ClientFormCubit extends SafeCubit<ClientFormState> {
       name: client.companyName,
       phoneNumber: client.companyPhone,
       gstNumber: client.gstNumber,
+      district: client.district,
       addresses: client.addresses
           .asMap()
           .entries
@@ -82,6 +83,7 @@ class ClientFormCubit extends SafeCubit<ClientFormState> {
       label: address.label,
       line1: address.line1,
       line2: address.line2,
+      district: address.district,
       city: address.cityName.isEmpty
           ? null
           : CityModel(
@@ -113,6 +115,8 @@ class ClientFormCubit extends SafeCubit<ClientFormState> {
       emit(state.copyWith(phoneNumber: value));
 
   void updateGstNumber(String value) => emit(state.copyWith(gstNumber: value));
+
+  void updateDistrict(String value) => emit(state.copyWith(district: value));
 
   void goToStep(ClientFormStep step) => emit(state.copyWith(step: step));
 
@@ -250,6 +254,7 @@ class ClientFormCubit extends SafeCubit<ClientFormState> {
         companyName: state.name.trim(),
         companyPhone: state.phoneNumber.trim(),
         gstNumber: state.gstNumber.trim(),
+        district: state.district.trim(),
         addresses: state.addresses.map((a) => a.toModel()).toList(),
         contacts: state.contacts.map((c) => c.toModel()).toList(),
         transportAgencies: state.transportAgencies

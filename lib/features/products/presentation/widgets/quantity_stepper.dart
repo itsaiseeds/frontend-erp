@@ -4,6 +4,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/inputs/editable_stepper_count.dart';
 
 /// ADD until the first tap, then a - count + control, as shopping apps do.
 class QuantityStepper extends StatelessWidget {
@@ -12,6 +13,11 @@ class QuantityStepper extends StatelessWidget {
   final int quantity;
   final VoidCallback onAdd;
   final VoidCallback onRemove;
+
+  /// Typed directly into the count instead of tapping +/- one at a time.
+  /// Optional -- a caller with no backing update path simply omits it and
+  /// the count stays tap-to-step only, as before.
+  final ValueChanged<int>? onSet;
 
   /// Defaults to the compact card label; the detail screen spells it out.
   final String? addLabel;
@@ -25,6 +31,7 @@ class QuantityStepper extends StatelessWidget {
     required this.quantity,
     required this.onAdd,
     required this.onRemove,
+    this.onSet,
     this.addLabel,
     this.isFilled = false,
   });
@@ -49,6 +56,7 @@ class QuantityStepper extends StatelessWidget {
                 quantity: quantity,
                 onAdd: onAdd,
                 onRemove: onRemove,
+                onSet: onSet,
               ),
       ),
     );
@@ -98,12 +106,14 @@ class _Stepper extends StatelessWidget {
   final int quantity;
   final VoidCallback onAdd;
   final VoidCallback onRemove;
+  final ValueChanged<int>? onSet;
 
   const _Stepper({
     super.key,
     required this.quantity,
     required this.onAdd,
     required this.onRemove,
+    this.onSet,
   });
 
   @override
@@ -129,12 +139,21 @@ class _Stepper extends StatelessWidget {
             SizedBox(
               width: AppSizes.STEPPER_COUNT_WIDTH,
               child: Center(
-                child: Text(
-                  '$quantity',
-                  style: AppTypography.labelMedium.copyWith(
-                    color: AppColors.TEXT_ON_PRIMARY,
-                  ),
-                ),
+                child: onSet == null
+                    ? Text(
+                        '$quantity',
+                        style: AppTypography.labelMedium.copyWith(
+                          color: AppColors.TEXT_ON_PRIMARY,
+                        ),
+                      )
+                    : EditableStepperCount(
+                        value: quantity,
+                        minWidth: AppSizes.STEPPER_COUNT_WIDTH,
+                        style: AppTypography.labelMedium.copyWith(
+                          color: AppColors.TEXT_ON_PRIMARY,
+                        ),
+                        onSubmitted: onSet!,
+                      ),
               ),
             ),
             _StepperButton(icon: Icons.add_rounded, onTap: onAdd),

@@ -195,6 +195,20 @@ class _AddProductsViewState extends State<_AddProductsView> {
     });
   }
 
+  void _set(ProductPackaging packaging, int quantity) {
+    if (quantity < 1) return;
+
+    setState(() {
+      final CartLine? existing = _selected[packaging.publicId];
+      _selected = {
+        ..._selected,
+        packaging.publicId: existing == null
+            ? CartLine(packaging: packaging, quantity: quantity)
+            : existing.copyWith(quantity: quantity),
+      };
+    });
+  }
+
   int _quantityOf(String publicId) => _selected[publicId]?.quantity ?? 0;
 
   @override
@@ -213,6 +227,7 @@ class _AddProductsViewState extends State<_AddProductsView> {
           surfaceTintColor: AppColors.TRANSPARENT,
           elevation: 0,
           leadingWidth: AppSpacing.XL32 + AppSpacing.SM8,
+          titleSpacing: 0,
           leading: IconButton(
             onPressed: () => Navigator.of(context).pop(),
             icon: const Icon(
@@ -314,6 +329,7 @@ class _AddProductsViewState extends State<_AddProductsView> {
           onTap: () {},
           onAdd: () => _add(packaging),
           onRemove: () => _remove(packaging),
+          onSet: (quantity) => _set(packaging, quantity),
         );
       },
     );

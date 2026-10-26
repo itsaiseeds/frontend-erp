@@ -25,6 +25,7 @@ class AddressDraft extends Equatable implements MainFlaggable {
   final String label;
   final String line1;
   final String line2;
+  final String district;
   final CityModel? city;
   final StateModel? state;
   final CountryModel? country;
@@ -37,6 +38,7 @@ class AddressDraft extends Equatable implements MainFlaggable {
     required this.line1,
     this.label = '',
     this.line2 = '',
+    this.district = '',
     this.city,
     this.state,
     this.country,
@@ -49,6 +51,7 @@ class AddressDraft extends Equatable implements MainFlaggable {
     String? label,
     String? line1,
     String? line2,
+    String? district,
     CityModel? city,
     StateModel? state,
     CountryModel? country,
@@ -59,6 +62,7 @@ class AddressDraft extends Equatable implements MainFlaggable {
     label: label ?? this.label,
     line1: line1 ?? this.line1,
     line2: line2 ?? this.line2,
+    district: district ?? this.district,
     city: city ?? this.city,
     state: state ?? this.state,
     country: country ?? this.country,
@@ -73,6 +77,7 @@ class AddressDraft extends Equatable implements MainFlaggable {
     label: label,
     line1: line1,
     line2: line2,
+    district: district,
     pincode: pincode,
     cityId: city?.id ?? 0,
     stateId: state?.id ?? city?.stateId ?? 0,
@@ -100,6 +105,7 @@ class AddressDraft extends Equatable implements MainFlaggable {
     label,
     line1,
     line2,
+    district,
     city,
     state,
     country,
@@ -188,6 +194,7 @@ class ClientFormState extends Equatable {
   final String name;
   final String phoneNumber;
   final String gstNumber;
+  final String district;
   final List<AddressDraft> addresses;
   final List<ContactDraft> contacts;
   final List<TransportDraft> transportAgencies;
@@ -199,6 +206,7 @@ class ClientFormState extends Equatable {
     this.name = '',
     this.phoneNumber = '',
     this.gstNumber = '',
+    this.district = '',
     this.addresses = const [],
     this.contacts = const [],
     this.transportAgencies = const [],
@@ -211,6 +219,7 @@ class ClientFormState extends Equatable {
     String? name,
     String? phoneNumber,
     String? gstNumber,
+    String? district,
     List<AddressDraft>? addresses,
     List<ContactDraft>? contacts,
     List<TransportDraft>? transportAgencies,
@@ -223,6 +232,7 @@ class ClientFormState extends Equatable {
       name: name ?? this.name,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       gstNumber: gstNumber ?? this.gstNumber,
+      district: district ?? this.district,
       addresses: addresses ?? this.addresses,
       contacts: contacts ?? this.contacts,
       transportAgencies: transportAgencies ?? this.transportAgencies,
@@ -244,6 +254,7 @@ class ClientFormState extends Equatable {
       name.trim().isNotEmpty ||
       phoneNumber.trim().isNotEmpty ||
       gstNumber.trim().isNotEmpty ||
+      district.trim().isNotEmpty ||
       addresses.isNotEmpty ||
       contacts.isNotEmpty ||
       transportAgencies.isNotEmpty;
@@ -255,6 +266,7 @@ class ClientFormState extends Equatable {
     name,
     phoneNumber,
     gstNumber,
+    district,
     addresses,
     contacts,
     transportAgencies,

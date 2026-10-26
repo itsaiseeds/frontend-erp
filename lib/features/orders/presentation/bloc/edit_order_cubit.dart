@@ -137,6 +137,20 @@ class EditOrderCubit extends SafeCubit<EditOrderState> {
   /// Replaces the whole cart in one go -- what the "add products" picker
   /// hands back on Done, since it edits a full copy of the selection rather
   /// than issuing one add/remove per change.
+  /// Typed directly into the stepper's count rather than one tap per bag.
+  void setLineQuantity(ProductPackaging packaging, int quantity) {
+    if (quantity < 1) return;
+
+    final List<CartLine> next = [...state.lines];
+    final int index = next.indexWhere(
+      (line) => line.packaging.publicId == packaging.publicId,
+    );
+    if (index == -1) return;
+
+    next[index] = next[index].copyWith(quantity: quantity);
+    emit(state.copyWith(lines: next));
+  }
+
   void setLines(List<CartLine> lines) => emit(state.copyWith(lines: lines));
 
   void selectAddress(ClientAddress address) =>

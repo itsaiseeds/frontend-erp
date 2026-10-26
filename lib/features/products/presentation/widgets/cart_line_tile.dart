@@ -12,12 +12,14 @@ class CartLineTile extends StatelessWidget {
   final CartLine line;
   final VoidCallback onAdd;
   final VoidCallback onRemove;
+  final ValueChanged<int>? onSet;
 
   const CartLineTile({
     super.key,
     required this.line,
     required this.onAdd,
     required this.onRemove,
+    this.onSet,
   });
 
   @override
@@ -68,6 +70,7 @@ class CartLineTile extends StatelessWidget {
               quantity: line.quantity,
               onAdd: onAdd,
               onRemove: onRemove,
+              onSet: onSet,
             ),
           ),
         ],

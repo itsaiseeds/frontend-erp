@@ -215,6 +215,7 @@ class _FastModeScreenState extends State<FastModeScreen> {
         surfaceTintColor: AppColors.TRANSPARENT,
         elevation: 0,
         leadingWidth: AppSizes.APP_BAR_LEADING_WIDTH,
+        titleSpacing: 0,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(Icons.chevron_left_rounded),

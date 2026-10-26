@@ -71,12 +71,18 @@ class _ClientsFilterSheetState extends State<ClientsFilterSheet> {
     super.dispose();
   }
 
+  /// The backend's own label for the client address's city filter is
+  /// "City"; this app shows it as "Taluka" while the query param
+  /// (`city_id`) stays what the backend expects.
+  static String _titleFor(ClientFilter filter) =>
+      filter.key == 'city_id' ? AppStrings.CLIENT_FIELD_TALUKA : filter.title;
+
   List<_Section> get _sections {
     final List<_Section> sections = widget.filters
         .where((filter) => filter.kind != FilterKind.unsupported)
         .map(
           (filter) =>
-              _Section(key: filter.key, title: filter.title, filter: filter),
+              _Section(key: filter.key, title: _titleFor(filter), filter: filter),
         )
         .toList();
 

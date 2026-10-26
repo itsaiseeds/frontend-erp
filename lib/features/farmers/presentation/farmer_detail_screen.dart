@@ -270,6 +270,16 @@ class _Facts extends StatelessWidget {
           ),
           const _Separator(),
           _Row(
+            label: AppStrings.FARMER_DETAIL_DISTRICT,
+            value: farmer.district,
+          ),
+          const _Separator(),
+          _Row(
+            label: AppStrings.FARMER_DETAIL_TALUKA,
+            value: farmer.cityName,
+          ),
+          const _Separator(),
+          _Row(
             label: AppStrings.FARMER_DETAIL_LAND,
             value: '${farmer.landAreaBigha} ${AppStrings.FARMER_VISIT_BIGHA}',
           ),

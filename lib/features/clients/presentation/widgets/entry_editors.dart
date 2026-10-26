@@ -92,6 +92,7 @@ class _AddressEditorState extends State<AddressEditor> {
   late final TextEditingController _labelController;
   late final TextEditingController _line1Controller;
   late final TextEditingController _line2Controller;
+  late final TextEditingController _districtController;
   late final TextEditingController _pincodeController;
 
   CountryModel? _country;
@@ -115,6 +116,7 @@ class _AddressEditorState extends State<AddressEditor> {
     _labelController = TextEditingController(text: initial?.label ?? '');
     _line1Controller = TextEditingController(text: initial?.line1 ?? '');
     _line2Controller = TextEditingController(text: initial?.line2 ?? '');
+    _districtController = TextEditingController(text: initial?.district ?? '');
     _pincodeController = TextEditingController(text: initial?.pincode ?? '');
     _city = initial?.city;
     _state = MetadataService.instance.stateById(initial?.city?.stateId);
@@ -138,6 +140,7 @@ class _AddressEditorState extends State<AddressEditor> {
     _labelController.dispose();
     _line1Controller.dispose();
     _line2Controller.dispose();
+    _districtController.dispose();
     _pincodeController.dispose();
     super.dispose();
   }
@@ -145,7 +148,7 @@ class _AddressEditorState extends State<AddressEditor> {
   void submit() {
     final bool isValid = _formKey.currentState?.validate() ?? false;
     final String? cityError = _city == null
-        ? AppStrings.CLIENT_VALIDATION_CITY
+        ? AppStrings.CLIENT_VALIDATION_TALUKA
         : null;
     final String? stateError = _state == null
         ? AppStrings.CLIENT_VALIDATION_STATE
@@ -164,6 +167,7 @@ class _AddressEditorState extends State<AddressEditor> {
         label: _labelController.text.trim(),
         line1: _line1Controller.text.trim(),
         line2: _line2Controller.text.trim(),
+        district: _districtController.text.trim(),
         city: _city,
         state: _state,
         country: _country,
@@ -221,6 +225,15 @@ class _AddressEditorState extends State<AddressEditor> {
               textInputAction: TextInputAction.next,
             ),
             const SizedBox(height: AppSpacing.SMD12),
+            AppTextField(
+              controller: _districtController,
+              label: AppStrings.CLIENT_ADDRESS_DISTRICT,
+              labelStyle: AppTypography.labelStrong,
+              hint: AppStrings.CLIENT_ADDRESS_DISTRICT_HINT,
+              textInputAction: TextInputAction.next,
+              inputFormatters: [LengthLimitingTextInputFormatter(255)],
+            ),
+            const SizedBox(height: AppSpacing.SMD12),
             GeoPickerField<CountryModel>(
               label: AppStrings.CLIENT_FIELD_COUNTRY,
               hint: AppStrings.CLIENT_FIELD_COUNTRY_HINT,
@@ -259,15 +272,15 @@ class _AddressEditorState extends State<AddressEditor> {
             ),
             const SizedBox(height: AppSpacing.SMD12),
             GeoPickerField<CityModel>(
-              label: AppStrings.CLIENT_FIELD_CITY,
-              hint: AppStrings.CLIENT_FIELD_CITY_HINT,
+              label: AppStrings.CLIENT_FIELD_TALUKA,
+              hint: AppStrings.CLIENT_FIELD_TALUKA_HINT,
               value: _city,
               items: MetadataService.instance.citiesInState(_state?.id),
               itemLabel: (city) => city.name,
               isSame: (a, b) => a.id == b.id,
               isRequired: true,
               enabled: _state != null,
-              disabledHint: AppStrings.CLIENT_FIELD_CITY_LOCKED,
+              disabledHint: AppStrings.CLIENT_FIELD_TALUKA_LOCKED,
               errorText: _cityError,
               onSelected: (city) => setState(() {
                 _isDirty = true;
