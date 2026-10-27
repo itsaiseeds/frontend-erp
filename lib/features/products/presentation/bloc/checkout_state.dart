@@ -20,6 +20,7 @@ class NewDeliveryPlaceDraft extends Equatable {
   final String line2;
   final String district;
   final String pincode;
+  final String deliveryTo;
   final CountryModel? country;
   final StateModel? state;
   final CityModel? city;
@@ -33,6 +34,7 @@ class NewDeliveryPlaceDraft extends Equatable {
     this.line2 = '',
     this.district = '',
     this.pincode = '',
+    this.deliveryTo = '',
     this.country,
     this.state,
     this.city,
@@ -47,6 +49,7 @@ class NewDeliveryPlaceDraft extends Equatable {
     String? line2,
     String? district,
     String? pincode,
+    String? deliveryTo,
     CountryModel? country,
     bool clearCountry = false,
     StateModel? state,
@@ -63,6 +66,7 @@ class NewDeliveryPlaceDraft extends Equatable {
       line2: line2 ?? this.line2,
       district: district ?? this.district,
       pincode: pincode ?? this.pincode,
+      deliveryTo: deliveryTo ?? this.deliveryTo,
       country: clearCountry ? null : country ?? this.country,
       state: clearState ? null : state ?? this.state,
       city: clearCity ? null : city ?? this.city,
@@ -87,6 +91,7 @@ class NewDeliveryPlaceDraft extends Equatable {
     line2,
     district,
     pincode,
+    deliveryTo,
     country,
     state,
     city,

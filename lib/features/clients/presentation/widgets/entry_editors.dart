@@ -94,6 +94,7 @@ class _AddressEditorState extends State<AddressEditor> {
   late final TextEditingController _line2Controller;
   late final TextEditingController _districtController;
   late final TextEditingController _pincodeController;
+  late final TextEditingController _deliveryToController;
 
   CountryModel? _country;
   StateModel? _state;
@@ -118,6 +119,9 @@ class _AddressEditorState extends State<AddressEditor> {
     _line2Controller = TextEditingController(text: initial?.line2 ?? '');
     _districtController = TextEditingController(text: initial?.district ?? '');
     _pincodeController = TextEditingController(text: initial?.pincode ?? '');
+    _deliveryToController = TextEditingController(
+      text: initial?.deliveryTo ?? '',
+    );
     _city = initial?.city;
     _state = MetadataService.instance.stateById(initial?.city?.stateId);
     _country = _resolveInitialCountry(initial);
@@ -142,6 +146,7 @@ class _AddressEditorState extends State<AddressEditor> {
     _line2Controller.dispose();
     _districtController.dispose();
     _pincodeController.dispose();
+    _deliveryToController.dispose();
     super.dispose();
   }
 
@@ -172,6 +177,7 @@ class _AddressEditorState extends State<AddressEditor> {
         state: _state,
         country: _country,
         pincode: _pincodeController.text.trim(),
+        deliveryTo: _deliveryToController.text.trim(),
         isMain: _isMain,
       ),
     );
@@ -287,6 +293,15 @@ class _AddressEditorState extends State<AddressEditor> {
                 _city = city;
                 _cityError = null;
               }),
+            ),
+            const SizedBox(height: AppSpacing.SMD12),
+            AppTextField(
+              controller: _deliveryToController,
+              label: AppStrings.CLIENT_FIELD_DELIVERY_TO,
+              labelStyle: AppTypography.labelStrong,
+              hint: AppStrings.CLIENT_FIELD_DELIVERY_TO_HINT,
+              textInputAction: TextInputAction.next,
+              inputFormatters: [LengthLimitingTextInputFormatter(255)],
             ),
             const SizedBox(height: AppSpacing.SMD12),
             AppTextField(

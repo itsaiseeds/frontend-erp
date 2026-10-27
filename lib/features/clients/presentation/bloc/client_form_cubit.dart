@@ -93,6 +93,7 @@ class ClientFormCubit extends SafeCubit<ClientFormState> {
               stateId: address.stateId,
             ),
       pincode: address.pincode,
+      deliveryTo: address.deliveryTo,
       state: MetadataService.instance.stateById(address.stateId),
       country: MetadataService.instance.countryById(address.countryId),
       isMain: address.isPrimary,

@@ -30,6 +30,7 @@ class AddressDraft extends Equatable implements MainFlaggable {
   final StateModel? state;
   final CountryModel? country;
   final String pincode;
+  final String deliveryTo;
   @override
   final bool isMain;
 
@@ -43,6 +44,7 @@ class AddressDraft extends Equatable implements MainFlaggable {
     this.state,
     this.country,
     this.pincode = '',
+    this.deliveryTo = '',
     this.isMain = false,
   });
 
@@ -56,6 +58,7 @@ class AddressDraft extends Equatable implements MainFlaggable {
     StateModel? state,
     CountryModel? country,
     String? pincode,
+    String? deliveryTo,
     bool? isMain,
   }) => AddressDraft(
     key: key ?? this.key,
@@ -67,6 +70,7 @@ class AddressDraft extends Equatable implements MainFlaggable {
     state: state ?? this.state,
     country: country ?? this.country,
     pincode: pincode ?? this.pincode,
+    deliveryTo: deliveryTo ?? this.deliveryTo,
     isMain: isMain ?? this.isMain,
   );
 
@@ -86,6 +90,7 @@ class AddressDraft extends Equatable implements MainFlaggable {
     stateName: state?.name ?? city?.stateName ?? '',
     countryName: country?.name ?? '',
     isPrimary: isMain,
+    deliveryTo: deliveryTo,
   );
 
   String get title => label.isNotEmpty ? label : line1;
@@ -110,6 +115,7 @@ class AddressDraft extends Equatable implements MainFlaggable {
     state,
     country,
     pincode,
+    deliveryTo,
     isMain,
   ];
 }

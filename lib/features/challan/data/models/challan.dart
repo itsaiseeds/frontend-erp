@@ -7,6 +7,7 @@ class ChallanAddressModel {
   final String state;
   final String country;
   final int? cityId;
+  final String deliveryTo;
 
   const ChallanAddressModel({
     this.line1 = '',
@@ -16,6 +17,7 @@ class ChallanAddressModel {
     this.state = '',
     this.country = '',
     this.cityId,
+    this.deliveryTo = '',
   });
 
   factory ChallanAddressModel.fromJson(Map<String, dynamic> json) {
@@ -27,6 +29,7 @@ class ChallanAddressModel {
       state: json['state'] as String? ?? '',
       country: json['country'] as String? ?? '',
       cityId: _asNullableInt(json['city_id']),
+      deliveryTo: json['delivery_to'] as String? ?? '',
     );
   }
 
@@ -452,6 +455,30 @@ class Challan {
   /// set, else the dispatch's own destination city as before.
   String get deliveryToPlace =>
       bookedFor != null ? bookedFor!.villageName : (dispatch?.toCity ?? '');
+
+  /// The "TO" journey cell's value: the address-level `delivery_to`
+  /// (booked-for's own address when set, else the consignee's) -- falls
+  /// back to [deliveryToPlace] for any record predating the field so the
+  /// cell is never blank. Mirrors admin_saiseeds's equivalent getter.
+  String get deliveryTo {
+    final String value = bookedFor != null
+        ? bookedFor!.address?.deliveryTo ?? ''
+        : receiver?.address?.deliveryTo ?? '';
+    return value.trim().isNotEmpty ? value : deliveryToPlace;
+  }
+
+  /// The "TRANSPORT" journey cell's value: the booked-for party's own
+  /// courier when the order was placed for someone else (e.g. "Navkar
+  /// Roadlines"), else the dispatch's own transport agency -- same priority
+  /// [deliveryToContact] already uses, so the two never disagree about whose
+  /// transport this is. Mirrors admin_saiseeds's equivalent getter.
+  String get transportLabel {
+    if (bookedFor != null) {
+      final String transport = bookedFor!.transportName.trim();
+      if (transport.isNotEmpty) return transport;
+    }
+    return dispatch?.transportLabel ?? '';
+  }
 
   static String _decimalOf(dynamic value) {
     if (value == null) return '';

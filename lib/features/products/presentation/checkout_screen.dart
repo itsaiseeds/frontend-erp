@@ -545,6 +545,7 @@ class _NewDeliveryPlaceFormState extends State<_NewDeliveryPlaceForm> {
   late final TextEditingController _line2Controller;
   late final TextEditingController _districtController;
   late final TextEditingController _pincodeController;
+  late final TextEditingController _deliveryToController;
   late final TextEditingController _transportController;
   late final TextEditingController _contactController;
 
@@ -558,6 +559,7 @@ class _NewDeliveryPlaceFormState extends State<_NewDeliveryPlaceForm> {
     _line2Controller = TextEditingController(text: draft.line2);
     _districtController = TextEditingController(text: draft.district);
     _pincodeController = TextEditingController(text: draft.pincode);
+    _deliveryToController = TextEditingController(text: draft.deliveryTo);
     _transportController = TextEditingController(text: draft.transportName);
     _contactController = TextEditingController(text: draft.contactNumber);
 
@@ -583,6 +585,7 @@ class _NewDeliveryPlaceFormState extends State<_NewDeliveryPlaceForm> {
     _line2Controller.dispose();
     _districtController.dispose();
     _pincodeController.dispose();
+    _deliveryToController.dispose();
     _transportController.dispose();
     _contactController.dispose();
     super.dispose();
@@ -705,6 +708,17 @@ class _NewDeliveryPlaceFormState extends State<_NewDeliveryPlaceForm> {
           enabled: !isSubmitting && _draft.state != null,
           disabledHint: AppStrings.CLIENT_FIELD_TALUKA_LOCKED,
           onSelected: (value) => _update((draft) => draft.copyWith(city: value)),
+        ),
+        const SizedBox(height: AppSpacing.SMD12),
+        AppTextField(
+          controller: _deliveryToController,
+          label: AppStrings.CLIENT_FIELD_DELIVERY_TO,
+          hint: AppStrings.CLIENT_FIELD_DELIVERY_TO_HINT,
+          enabled: !isSubmitting,
+          textInputAction: TextInputAction.next,
+          inputFormatters: [LengthLimitingTextInputFormatter(255)],
+          onChanged: (value) =>
+              _update((draft) => draft.copyWith(deliveryTo: value)),
         ),
         const SizedBox(height: AppSpacing.SMD12),
         AppTextField(
