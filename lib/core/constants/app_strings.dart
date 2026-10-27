@@ -181,6 +181,9 @@ class AppStrings {
   /// the client's own, single district on the details step).
   static const String CLIENT_ADDRESS_DISTRICT = 'District';
   static const String CLIENT_ADDRESS_DISTRICT_HINT = 'District (optional)';
+  static const String CLIENT_FIELD_DELIVERY_TO = 'Delivery To';
+  static const String CLIENT_FIELD_DELIVERY_TO_HINT =
+      'Optional - defaults to the taluka name';
   static const String CLIENT_FIELD_CITY = 'City';
   static const String CLIENT_FIELD_CITY_HINT = 'Select a city';
 

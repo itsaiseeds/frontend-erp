@@ -18,6 +18,7 @@ class ClientAddress extends Equatable {
   final int stateId;
   final int countryId;
   final bool isPrimary;
+  final String deliveryTo;
 
   const ClientAddress({
     required this.line1,
@@ -33,6 +34,7 @@ class ClientAddress extends Equatable {
     this.stateId = 0,
     this.countryId = 0,
     this.isPrimary = false,
+    this.deliveryTo = '',
   });
 
   factory ClientAddress.fromJson(Map<String, dynamic> json) {
@@ -50,6 +52,7 @@ class ClientAddress extends Equatable {
       stateId: JsonParser.asInt(json['state_id']),
       countryId: JsonParser.asInt(json['country_id']),
       isPrimary: JsonParser.asBool(json['is_primary']),
+      deliveryTo: JsonParser.asString(json['delivery_to']),
     );
   }
 
@@ -63,6 +66,7 @@ class ClientAddress extends Equatable {
     'country': countryId,
     'label': label,
     'is_primary': isPrimary,
+    'delivery_to': deliveryTo,
   };
 
   String get formatted => [
@@ -94,5 +98,6 @@ class ClientAddress extends Equatable {
     stateId,
     countryId,
     isPrimary,
+    deliveryTo,
   ];
 }

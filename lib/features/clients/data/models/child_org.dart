@@ -14,6 +14,7 @@ class ChildOrgAddress extends Equatable {
   final int cityId;
   final int stateId;
   final int countryId;
+  final String deliveryTo;
 
   const ChildOrgAddress({
     this.line1 = '',
@@ -25,6 +26,7 @@ class ChildOrgAddress extends Equatable {
     this.cityId = 0,
     this.stateId = 0,
     this.countryId = 0,
+    this.deliveryTo = '',
   });
 
   factory ChildOrgAddress.fromJson(Map<String, dynamic> json) {
@@ -38,6 +40,7 @@ class ChildOrgAddress extends Equatable {
       cityId: JsonParser.asInt(json['city_id']),
       stateId: JsonParser.asInt(json['state_id']),
       countryId: JsonParser.asInt(json['country_id']),
+      deliveryTo: JsonParser.asString(json['delivery_to']),
     );
   }
 
@@ -60,6 +63,7 @@ class ChildOrgAddress extends Equatable {
     cityId,
     stateId,
     countryId,
+    deliveryTo,
   ];
 }
 

@@ -372,6 +372,7 @@ class CheckoutCubit extends SafeCubit<CheckoutState> {
         'city': draft.city!.id,
         'state': draft.state!.id,
         'country': draft.country!.id,
+        'delivery_to': draft.deliveryTo.trim(),
       },
       if (draft.transportName.trim().isNotEmpty)
         'transport_name': draft.transportName.trim(),
